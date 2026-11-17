@@ -31,8 +31,8 @@ fixes it, and exits 1:
    jobs, so it has no checks, and a head whose Desk tests finished while
    elixir sat queued once read as all passed (#396, 2026-11-02). A required
    workflow that is queued or missing is a wait, never a pass.
-6. Each review the diff requires has a successful sign-off on the head, or
-   inherited only through verified clean update merges from master.
+6. Each review the diff requires has a successful sign-off on the head
+   itself. A rebase makes new commits, so a sign-off never carries over.
 7. Its commits are none of them merges, and GitHub verifies every one's
    signature: bring a branch up to date by rebasing it, not by merging its
    base in.
@@ -49,7 +49,6 @@ whose `origin` is this repository.
 import argparse
 import json
 from pathlib import Path
-import re
 import subprocess
 import sys
 import time
@@ -58,9 +57,6 @@ FIELDS = "id,number,url,state,isDraft,baseRefName,headRefOid,mergeable,statusChe
 PASSED = {"SUCCESS", "SKIPPED", "NEUTRAL"}
 # The workflows every pull request runs, by their `name:`.
 REQUIRED_WORKFLOWS = ("connector", "checks")
-# The checks a merge queue requires when the ruleset names none. There is no
-# queue here; the live ruleset's own list wins (required_checks).
-REQUIRED_CHECKS = ()
 # The paths whose change needs an architecture review: what this repository
 # publishes for the server and the Mac to read (contract/client/ and its
 # generator), the phone's API into the Connector, the status file the Mac
@@ -159,38 +155,13 @@ def head_statuses(repo, head):
     return [status for page in pages for status in page]
 
 
-def clean_update_parent(head, master):
-    parents = run("git", "show", "-s", "--format=%P", head).split()
-    if len(parents) != 2 or not ancestor(parents[1], master):
-        return None
-    merged = subprocess.run(["git", "merge-tree", "--write-tree", *parents],
-                            capture_output=True, text=True)
-    lines = merged.stdout.splitlines()
-    has_tree = bool(lines and re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", lines[0]))
-    if merged.returncode == 1 and has_tree:  # Conflicts still produce a tree.
-        return None
-    if merged.returncode != 0 or not has_tree:
-        sys.exit(f"bin/merge-pr: cannot verify update merge: {merged.stderr.strip()}")
-    if merged.stdout.strip() == run("git", "show", "-s", "--format=%T", head):
-        return parents[0]
-    return None
-
-
-def found_sign_offs(head, needed, statuses, update_parent):
-    """Newest per kind wins, including withdrawals; walk at most 20 clean updates."""
+def found_sign_offs(needed, statuses):
+    """Each kind's newest sign-off on the head, withdrawals included."""
     found = {}
-    for step in range(21):
-        for status in statuses(head):  # GitHub returns newest first, across pages.
-            context = status["context"]
-            for kind in needed - found.keys():
-                if context == f"sign-off/{kind}":
-                    found[kind] = status["state"]
-                    break
-        if needed <= found.keys() or step == 20:
-            break
-        head = update_parent(head)
-        if head is None:
-            break
+    for status in statuses:  # GitHub returns newest first, across pages.
+        kind = status["context"].removeprefix("sign-off/")
+        if status["context"].startswith("sign-off/") and kind in needed:
+            found.setdefault(kind, status["state"])
     return found
 
 
@@ -247,20 +218,13 @@ def head_runs(head):
                           "--limit", "100", "--json", RUN_FIELDS))
 
 
-def required_checks(rules):
-    """The check names the base's active rules require, or REQUIRED_CHECKS when they name none."""
-    named = [check["context"] for rule in rules or [] if rule.get("type") == "required_status_checks"
-             for check in (rule.get("parameters") or {}).get("required_status_checks") or []]
-    return tuple(dict.fromkeys(named)) or REQUIRED_CHECKS
-
-
 def queue_required(rules):
     """Whether a branch's active rules (`gh api repos/:repo/rules/branches/:base`) require a merge queue."""
     return any(rule.get("type") == "merge_queue" for rule in rules or [])
 
 
-def refusals(pr, default_branch, has_base_tip, stacked=False, queue=False, required=REQUIRED_CHECKS):
-    """Why `pr` may not merge (or join the queue) yet, each with its fix; empty when it may."""
+def refusals(pr, default_branch, has_base_tip, stacked=False):
+    """Why `pr` may not land yet, each with its fix; empty when it may."""
     said = []
     if pr["state"] != "OPEN":
         said.append(f"it is {pr['state'].lower()}, not open")
@@ -273,13 +237,13 @@ def refusals(pr, default_branch, has_base_tip, stacked=False, queue=False, requi
             f"its base is {base}, not {default_branch}: retarget it to {default_branch}, "
             "or pass --stacked if merging into the branch below is meant"
         )
-    if not queue and not has_base_tip:
-        said.append(f"its head does not contain the current {base}: merge {base} in and wait for CI")
+    if not has_base_tip:
+        said.append(f"its head does not contain the current {base}: rebase it onto {base}, resolve any conflicts, push with --force-with-lease, and wait for CI")
     if pr["mergeable"] != "MERGEABLE":
         if pr["mergeable"] == "UNKNOWN":
             said.append("GitHub has not worked out whether it merges cleanly yet: try again in a minute")
         else:
-            said.append(f"GitHub says it is {pr['mergeable'].lower()}: merge {base} in and resolve the conflicts")
+            said.append(f"GitHub says it is {pr['mergeable'].lower()}: rebase it onto {base}, resolve any conflicts, push with --force-with-lease, and wait for CI")
     checks = [check_state(check) for check in pr.get("statusCheckRollup") or []]
     if not checks:
         said.append("its head has no checks, which is what a conflicting or unbuilt head gets: push, and wait for CI")
@@ -290,11 +254,6 @@ def refusals(pr, default_branch, has_base_tip, stacked=False, queue=False, requi
         said.append(f"checks still running: {', '.join(pending)}: wait for them")
     if failed:
         said.append(f"checks not passed: {', '.join(failed)}: fix them and push")
-    names = {name for name, _ in checks}
-    missing = [name for name in required if name not in names]
-    if queue and missing and checks and not pending:
-        said.append(f"its head has no {', '.join(missing)}, which the queue requires: its CI predates them, so "
-                    f"bring it up to {base} (gh api -X PUT repos/:repo/pulls/{pr['number']}/update-branch) and wait for CI")
     return said
 
 
@@ -312,9 +271,6 @@ def main():
     run("git", "fetch", "--quiet", "origin",
         f"+refs/heads/{base}:refs/remotes/origin/{base}", f"refs/pull/{args.number}/head")
     has_base_tip = ancestor(f"origin/{base}", head)
-    if base != default_branch:
-        run("git", "fetch", "--quiet", "origin",
-            f"+refs/heads/{default_branch}:refs/remotes/origin/{default_branch}")
     merge_base = run("git", "merge-base", f"origin/{base}", head)
     # Disabling rename detection exposes both the deleted and added paths.
     paths = run("git", "diff", "--no-renames", "--name-only", "-z", merge_base, head).split("\0")
@@ -325,9 +281,8 @@ def main():
     repo = run("gh", "repo", "view", "--json", "nameWithOwner", "--jq", ".nameWithOwner")
     rules = branch_rules(repo, base)
     queue = queue_required(rules)
-    found = found_sign_offs(head, needed, lambda sha: head_statuses(repo, sha),
-                           lambda sha: clean_update_parent(sha, f"origin/{default_branch}")) if needed else {}
-    said = refusals(pr, default_branch, has_base_tip, args.stacked, queue, required_checks(rules)) + \
+    found = found_sign_offs(needed, head_statuses(repo, head)) if needed else {}
+    said = refusals(pr, default_branch, has_base_tip, args.stacked) + \
         run_refusals(head_runs(head)) + sign_off_refusals(needed, found, args.number, head) + \
         private_refusals(head, merge_base)
     if queue:
@@ -336,12 +291,12 @@ def main():
     merges = merge_commits(merge_base, head)
     if merges:
         said.append(f"it holds merge commits ({', '.join(sha[:9] for sha in merges)}): "
-                    f"rebase it onto {base} instead, and push")
+                    f"rebase it onto {base}, resolve any conflicts, push with --force-with-lease, and wait for CI")
     unsigned = unverified(repo, merge_base, head)
     if unsigned:
         said.append(f"GitHub does not verify the signature of {', '.join(sha[:9] for sha in unsigned)}: "
                     "sign every commit, and push")
-    print(f"#{pr['number']} {pr['url']}\n  head {head[:9]} into {base}{' (merge queue)' if queue else ''}")
+    print(f"#{pr['number']} {pr['url']}\n  head {head[:9]} into {base}")
     if said:
         print("refused:")
         for reason in said:
