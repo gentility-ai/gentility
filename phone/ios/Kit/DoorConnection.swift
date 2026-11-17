@@ -99,7 +99,7 @@ public final class DoorConnection: DoorSink, @unchecked Sendable {
         let patience = within ?? Self.patience(for: request)
         let (id, doorID): (Int, String) = try lock.withLock {
             if let ended { throw DoorError.closed(ended) }
-            guard let doorID else { throw DoorError.closed("not open") }
+            guard let doorID = self.doorID else { throw DoorError.closed("not open") }
             counter += 1
             return (counter, doorID)
         }

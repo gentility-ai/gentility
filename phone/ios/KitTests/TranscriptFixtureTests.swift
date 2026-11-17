@@ -16,6 +16,7 @@ final class TranscriptFixtureTests: XCTestCase {
         .deletingLastPathComponent() // KitTests
         .deletingLastPathComponent() // ios
         .deletingLastPathComponent() // phone
+        .deletingLastPathComponent() // the repository
         .appendingPathComponent("contract/transcript", isDirectory: true)
 
     /// A case's `items.json`, as the rows a core hands the phone: a tool

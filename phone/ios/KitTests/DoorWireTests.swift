@@ -373,7 +373,7 @@ final class DoorWireTests: XCTestCase {
               case .question(let questionID, let expiresAt, let form)? = question.attention else {
             return XCTFail("no question on the row")
         }
-        XCTAssertEqual(questionID, "00000000-0000-7000-8000-000000000015")
+        XCTAssertEqual(questionID, "00000000-0000-7000-8000-000000000016")
         XCTAssertEqual(expiresAt, "2099-01-01T00:00:00.000000Z")
         XCTAssertEqual(form.requestID, questionID)
         guard case .form(_, let fields) = form.mode else { return XCTFail("a question is always a form") }
@@ -399,7 +399,7 @@ final class DoorWireTests: XCTestCase {
         guard case .reply(_, .queued(let queueID)) = try DoorFrame(Fixture.doorText("prompt_queued")) else {
             return XCTFail("not queued")
         }
-        XCTAssertEqual(queueID, "00000000-0000-7000-8000-000000000011")
+        XCTAssertEqual(queueID, "00000000-0000-7000-8000-000000000012")
         guard case .reply(_, .error(let answer)) = try DoorFrame(Fixture.doorText("answer_refused")),
               case .reply(_, .error(let steer)) = try DoorFrame(Fixture.doorText("steer_refused")) else {
             return XCTFail("not refusals")
