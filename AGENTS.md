@@ -98,9 +98,19 @@ need Gentility's server running in development, and do not run here.
 
 - One change per pull request, each from `main`; never stacked.
 - Branches and titles describe the change, never the tool that made it.
-- Land with `bin/merge-pr <number>`, not `gh pr merge`. It merges once every
-  check and workflow on the head has passed and the sign-offs the change
-  needs are on that head.
+- Land with `bin/merge-pr <number>`, never `gh pr merge` or GitHub's merge
+  button. Once every check and workflow on the head has passed and the
+  sign-offs the change needs are on that head, it pushes the head to `main`.
+- **Nothing lands through GitHub's merge.** Each of its methods writes a
+  commit under the account that lands it: a merge or squash commit is
+  authored by that account, and a rebase makes it every commit's committer
+  and drops the signatures. That would put a person's identity into this
+  public history. Pushing the head lands exactly its signed commits, and
+  GitHub marks the pull request merged. So keep a branch a fast-forward of
+  `main`: bring it up to date by rebasing onto `main`, never by merging `main`
+  in or with GitHub's update button. `bin/merge-pr` refuses merge commits and
+  commits GitHub cannot verify, and runs the private deny check over the
+  head first.
 - **Architecture sign-off** is needed for what this repository publishes and
   for the checks that guard everything else, so that no pull request weakens
   a check it would fail: `contract/client/`, `connector/cmd/clientcontract/`,
