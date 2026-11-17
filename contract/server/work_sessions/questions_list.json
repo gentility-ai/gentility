@@ -1,0 +1,60 @@
+{
+  "event": "questions_list",
+  "payload": {
+    "limit": 1
+  },
+  "reply": {
+    "response": {
+      "closed_count": 0,
+      "data": [
+        {
+          "answerable": true,
+          "asked_at": "2026-01-01T00:00:00.000000Z",
+          "expires_at": "2026-01-01T00:00:00.000000Z",
+          "form": {
+            "properties": {
+              "answer": {
+                "enum": [
+                  "Small",
+                  "Full"
+                ],
+                "title": "Choose one",
+                "type": "string"
+              }
+            },
+            "required": [
+              "answer"
+            ],
+            "type": "object"
+          },
+          "holder_online": false,
+          "joined_count": 0,
+          "machine": {
+            "id": "00000000-0000-7000-8000-000000000001",
+            "label": "test-desktop"
+          },
+          "parked": false,
+          "project": {
+            "name": "acme/app"
+          },
+          "question_id": "00000000-0000-7000-8000-000000000002",
+          "session_id": "00000000-0000-7000-8000-000000000003",
+          "source": "agent",
+          "state": "open",
+          "text": "Which approach?",
+          "thread_title": "Fix the flaky test"
+        }
+      ],
+      "has_more": true,
+      "next_cursor": "<cursor>",
+      "now": "2026-01-01T00:00:00.000000Z",
+      "open_count": 2,
+      "open_session_ids": [
+        "00000000-0000-7000-8000-000000000003"
+      ],
+      "starts_at": "2026-01-01T00:00:00.000000Z"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

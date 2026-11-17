@@ -1,0 +1,92 @@
+[
+  {
+    "content": "fix the flaky test",
+    "id": "0199f000-0000-7000-8000-0000000000b1",
+    "kind": "message",
+    "message_id": null,
+    "parent_call_id": null,
+    "position": 1,
+    "role": "user",
+    "tool": null,
+    "turn": 1
+  },
+  {
+    "content": "Reading the test.",
+    "id": "0199f000-0000-7000-8000-0000000000b2",
+    "kind": "message",
+    "message_id": null,
+    "parent_call_id": null,
+    "position": 2,
+    "role": "assistant",
+    "tool": null,
+    "turn": 1
+  },
+  {
+    "content": null,
+    "id": "0199f000-0000-7000-8000-0000000000d1",
+    "kind": "tool_call",
+    "message_id": "0199f000-0000-7000-8000-0000000000b2",
+    "parent_call_id": null,
+    "position": 3,
+    "role": null,
+    "tool": {
+      "arguments": {
+        "path": "test/flaky_test.exs"
+      },
+      "name": "Read",
+      "provider_tool_call_id": "call-d1",
+      "result": {
+        "text": "defmodule FlakyTest do"
+      },
+      "status": "executed",
+      "title": "Read test/flaky_test.exs",
+      "tool_kind": "read"
+    },
+    "turn": 1
+  },
+  {
+    "content": "now pin the clock",
+    "id": "0199f000-0000-7000-8000-0000000000b3",
+    "kind": "message",
+    "message_id": null,
+    "parent_call_id": null,
+    "position": 4,
+    "role": "user",
+    "tool": null,
+    "turn": 2
+  },
+  {
+    "content": "Pinned.",
+    "id": "0199f000-0000-7000-8000-0000000000b4",
+    "kind": "message",
+    "message_id": null,
+    "parent_call_id": null,
+    "position": 5,
+    "role": "assistant",
+    "tool": null,
+    "turn": 2
+  },
+  {
+    "content": null,
+    "id": "0199f000-0000-7000-8000-0000000000d2",
+    "kind": "tool_call",
+    "message_id": "0199f000-0000-7000-8000-0000000000b4",
+    "parent_call_id": null,
+    "position": 6,
+    "role": null,
+    "tool": {
+      "arguments": {
+        "path": "test/flaky_test.exs"
+      },
+      "name": "Edit",
+      "provider_tool_call_id": "call-d2",
+      "result": {
+        "text": "defmodule FlakyTest do"
+      },
+      "status": "executed",
+      "title": "Edit test/flaky_test.exs",
+      "tool_kind": "edit"
+    },
+    "turn": 2
+  }
+]

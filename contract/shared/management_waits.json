@@ -1,0 +1,653 @@
+[
+  {
+    "name": "open timer",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "timer",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 1,
+      "next_due_at": "2026-11-06T12:00:00Z"
+    }
+  },
+  {
+    "name": "fired timer",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "timer",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 0,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "held before fire",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "timer",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_held",
+        {
+          "id": "w"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 1,
+      "next_due_at": "2026-11-06T12:00:00Z"
+    }
+  },
+  {
+    "name": "held after fire",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "timer",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w"
+        }
+      ],
+      [
+        "wait_held",
+        {
+          "id": "w"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 1,
+      "next_due_at": "2026-11-06T12:00:00Z"
+    }
+  },
+  {
+    "name": "released after fire",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "timer",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w"
+        }
+      ],
+      [
+        "wait_held",
+        {
+          "id": "w"
+        }
+      ],
+      [
+        "wait_released",
+        {
+          "id": "w"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 0,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "released before fire",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "timer",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_held",
+        {
+          "id": "w"
+        }
+      ],
+      [
+        "wait_released",
+        {
+          "id": "w"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 1,
+      "next_due_at": "2026-11-06T12:00:00Z"
+    }
+  },
+  {
+    "name": "cancelled",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "timer",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_cancelled",
+        {
+          "id": "w"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 0,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "command timeout",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "command",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_started",
+        {
+          "id": "w"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w",
+          "outcome": "timed_out"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 1,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "held command timeout",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "command",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w",
+          "outcome": "timed_out"
+        }
+      ],
+      [
+        "wait_held",
+        {
+          "id": "w"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 1,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "command exit after held timeout",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "command",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w",
+          "outcome": "timed_out"
+        }
+      ],
+      [
+        "wait_held",
+        {
+          "id": "w"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w",
+          "outcome": "exited"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 0,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "command exit",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "command",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w",
+          "outcome": "exited"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 0,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "pull request checks",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "pull_request",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w",
+          "outcome": "checks_passed"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 1,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "held pull request hearing",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "pull_request",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w",
+          "outcome": "checks_passed"
+        }
+      ],
+      [
+        "wait_held",
+        {
+          "id": "w"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w",
+          "outcome": "remarks"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 1,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "pull request merged",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "pull_request",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w",
+          "outcome": "merged"
+        }
+      ],
+      [
+        "wait_held",
+        {
+          "id": "w"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 0,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "pull request closed",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "pull_request",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_fired",
+        {
+          "id": "w",
+          "outcome": "closed"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 0,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "unknown kind",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "future_kind",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 0,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "no due time",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "timer"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 1,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "closed row",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "timer",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 0,
+      "next_due_at": null
+    },
+    "ended": "closed"
+  },
+  {
+    "name": "archived row without an archive event",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "timer",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 0,
+      "next_due_at": null
+    },
+    "ended": "archived"
+  },
+  {
+    "name": "earliest timer only",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "command",
+          "kind": "command",
+          "due_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      [
+        "wait_set",
+        {
+          "id": "later",
+          "kind": "timer",
+          "due_at": "2026-11-07T00:00:00Z"
+        }
+      ],
+      [
+        "wait_set",
+        {
+          "id": "earlier",
+          "kind": "timer",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 3,
+      "next_due_at": "2026-11-06T12:00:00Z"
+    }
+  },
+  {
+    "name": "archived then unarchived live row",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "timer",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "archived",
+        {}
+      ],
+      [
+        "unarchived",
+        {}
+      ]
+    ],
+    "expected": {
+      "count": 0,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "closed then resumed cancels open and held waits",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "open",
+          "kind": "command"
+        }
+      ],
+      [
+        "wait_set",
+        {
+          "id": "held",
+          "kind": "timer",
+          "due_at": "2026-11-06T12:00:00Z"
+        }
+      ],
+      [
+        "wait_held",
+        {
+          "id": "held"
+        }
+      ],
+      [
+        "closed",
+        {}
+      ],
+      [
+        "resumed",
+        {}
+      ]
+    ],
+    "expected": {
+      "count": 0,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "archive cancels held waits but permits a new wait after reopening",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "old",
+          "kind": "timer"
+        }
+      ],
+      [
+        "wait_held",
+        {
+          "id": "old"
+        }
+      ],
+      [
+        "archived",
+        {}
+      ],
+      [
+        "unarchived",
+        {}
+      ],
+      [
+        "wait_set",
+        {
+          "id": "new",
+          "kind": "command"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 1,
+      "next_due_at": null
+    }
+  },
+  {
+    "name": "end words with a wait id do not end the thread",
+    "events": [
+      [
+        "wait_set",
+        {
+          "id": "w",
+          "kind": "command"
+        }
+      ],
+      [
+        "archived",
+        {
+          "id": "w"
+        }
+      ],
+      [
+        "closed",
+        {
+          "id": "w"
+        }
+      ]
+    ],
+    "expected": {
+      "count": 1,
+      "next_due_at": null
+    }
+  }
+]

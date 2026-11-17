@@ -1,0 +1,24 @@
+{
+  "event": "open",
+  "payload": {
+    "brief": "contract-worker",
+    "id": "00000000-0000-7000-8000-000000000001",
+    "project": "platform"
+  },
+  "reply": {
+    "response": {
+      "accepts": [
+        "internal"
+      ],
+      "epoch": 1,
+      "holder": {
+        "kind": "desk",
+        "machine": "00000000-0000-7000-8000-000000000002"
+      },
+      "id": "00000000-0000-7000-8000-000000000001",
+      "last_client_seq": 1
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

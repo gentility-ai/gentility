@@ -1,0 +1,19 @@
+{
+  "event": "ask",
+  "payload": {
+    "kind": "session_tags",
+    "payload": {
+      "manager_id": "00000000-0000-7000-8000-000000000001",
+      "role": null
+    },
+    "session_id": "00000000-0000-7000-8000-000000000002"
+  },
+  "reply": {
+    "response": {
+      "ask_id": "00000000-0000-7000-8000-000000000003",
+      "status": "pending"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

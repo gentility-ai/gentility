@@ -1,0 +1,36 @@
+{
+  "vectors": [
+    {
+      "bearer": "Z2F0ZXdheToxNzU2MDAwMDAw.cquCM4RY1jHQEVlruqhoqbNm_4aHVYp6eo-XXghvOSk",
+      "name": "ordinary",
+      "peer": "fd06:6e7:0:1::2",
+      "secret": "overlay wire vector secret",
+      "signature": "HyCKX7oT3pf68Gn3_oYjv89qHOaT26QydaTyFqR6SoA",
+      "unix_ts": 1756000000
+    },
+    {
+      "bearer": "Z2F0ZXdheTox.44cpK8f4e7ujSQTJDDuKk7nir6OqAJjposnbkmZuGB0",
+      "name": "another organization",
+      "peer": "fd06:6e7:0:2::1a",
+      "secret": "overlay wire vector secret",
+      "signature": "5FVDGk-5TXjq_-hsU2NLrNeva4xy7v5opZiiottIMkc",
+      "unix_ts": 1
+    },
+    {
+      "bearer": "Z2F0ZXdheToyMTQ3NDgzNjQ3.R6anZkH3dlTKNGXsCUTLp2zZLiizeHl4_59tArYlyMY",
+      "name": "another key",
+      "peer": "fd06:6e7:0:ffff::ffff",
+      "secret": "another secret entirely",
+      "signature": "lQdO0CuK9z2fofcYoHoXuWuwlsBLIZNKYVqeoGHmnBM",
+      "unix_ts": 2147483647
+    },
+    {
+      "bearer": "Z2F0ZXdheTow.Zsce1WbNbSmUms5lRN1XtSi0hH6GP-2ZpyZK1DdEVxk",
+      "name": "zero second",
+      "peer": "fd06:6e7::1",
+      "secret": "x",
+      "signature": "5NKfBEdNvYsnPvzinAOgvXuU0_ItFrliLHengu-WJNY",
+      "unix_ts": 0
+    }
+  ]
+}

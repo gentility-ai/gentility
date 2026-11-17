@@ -1,0 +1,46 @@
+[
+  {
+    "blocks": [
+      {
+        "id": "0199f000-0000-7000-8000-0000000000b2",
+        "text": "Reading the test."
+      }
+    ],
+    "calls": [
+      {
+        "children": [],
+        "id": "call-d1",
+        "kind": "read",
+        "name": "Read",
+        "parent_call_id": null,
+        "status": "executed",
+        "title": "Read test/flaky_test.exs"
+      }
+    ],
+    "number": 1,
+    "thoughts": [],
+    "user": "fix the flaky test"
+  },
+  {
+    "blocks": [
+      {
+        "id": "0199f000-0000-7000-8000-0000000000b4",
+        "text": "Pinned."
+      }
+    ],
+    "calls": [
+      {
+        "children": [],
+        "id": "call-d2",
+        "kind": "edit",
+        "name": "Edit",
+        "parent_call_id": null,
+        "status": "executed",
+        "title": "Edit test/flaky_test.exs"
+      }
+    ],
+    "number": 2,
+    "thoughts": [],
+    "user": "now pin the clock"
+  }
+]

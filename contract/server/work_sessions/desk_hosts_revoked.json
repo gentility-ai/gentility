@@ -1,0 +1,59 @@
+{
+  "event": "desk_hosts",
+  "payload": {
+    "node_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "hosts": [
+        {
+          "desk": null,
+          "holders": [],
+          "kind": "organization",
+          "label": "routing-holder",
+          "machine_id": "00000000-0000-7000-8000-000000000002",
+          "node": {
+            "address": "<address>",
+            "door_port": 6446,
+            "last_seen_at": null,
+            "name": "<node>",
+            "presence": "offline"
+          },
+          "reachable": false,
+          "role": null,
+          "slug": "routing-holder"
+        },
+        {
+          "desk": {
+            "account": null,
+            "arch": null,
+            "generation": 0,
+            "incarnation": null,
+            "last_seen_at": "2026-01-01T00:00:00.000000Z",
+            "live": false,
+            "os": null,
+            "registered_at": null,
+            "store_id": "00000000-0000-7000-8000-000000000003"
+          },
+          "holders": [],
+          "kind": "personal",
+          "label": "test-desktop",
+          "machine_id": null,
+          "node": {
+            "address": "<address>",
+            "door_port": null,
+            "last_seen_at": null,
+            "name": "<node>",
+            "presence": "offline"
+          },
+          "reachable": false,
+          "role": "owner",
+          "slug": null,
+          "store_id": "00000000-0000-7000-8000-000000000003"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

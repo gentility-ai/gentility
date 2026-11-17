@@ -1,0 +1,45 @@
+{
+  "event": "refusal_review",
+  "payload": {
+    "id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "review": {
+        "can_allow": false,
+        "count": 1,
+        "destination": {
+          "name": "test-machine",
+          "node_id": "00000000-0000-7000-8000-000000000002"
+        },
+        "expiries": [
+          "1d",
+          "7d",
+          "30d",
+          "365d"
+        ],
+        "first_seen_at": "2026-01-01T00:00:00.000000Z",
+        "id": "00000000-0000-7000-8000-000000000001",
+        "kinds": [],
+        "last_seen_at": "2026-01-01T00:00:00.000000Z",
+        "open": null,
+        "owner_name": "<owner>",
+        "port": 6447,
+        "proposed_kind": null,
+        "protocol": "tcp",
+        "reason": "port_not_declared",
+        "same_owner": true,
+        "service": null,
+        "source": {
+          "name": "mac",
+          "node_id": "00000000-0000-7000-8000-000000000003"
+        },
+        "withdrawn": {
+          "kind": "desk"
+        }
+      }
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

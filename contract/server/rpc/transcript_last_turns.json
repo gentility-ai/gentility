@@ -1,0 +1,58 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "sessions.transcript",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001",
+      "request": {
+        "last_turns": 2,
+        "session_id": "00000000-0000-7000-8000-000000000002",
+        "type": "session_transcript"
+      }
+    }
+  },
+  "response": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+      "as_of": "2026-01-01T00:00:00.000000Z",
+      "earlier": 2,
+      "from_turn": 7,
+      "items": [
+        {
+          "content": "turn 0",
+          "created_at": "2026-01-01T00:00:00.000000Z",
+          "id": "00000000-0000-7000-8000-000000000003",
+          "kind": "message",
+          "message_item_id": null,
+          "ordinal": 2,
+          "parent_call_id": null,
+          "remote_id": "00000000-0000-7000-8000-000000000003",
+          "role": "assistant",
+          "seq": 2,
+          "session_id": "00000000-0000-7000-8000-000000000002",
+          "turn": 0
+        },
+        {
+          "content": "turn 8",
+          "created_at": "2026-01-01T00:00:00.000000Z",
+          "id": "00000000-0000-7000-8000-000000000004",
+          "kind": "message",
+          "message_item_id": null,
+          "ordinal": 5,
+          "parent_call_id": null,
+          "remote_id": "00000000-0000-7000-8000-000000000004",
+          "role": "assistant",
+          "seq": 5,
+          "session_id": "00000000-0000-7000-8000-000000000002",
+          "turn": 8
+        }
+      ],
+      "reset": true,
+      "source": "copy",
+      "through_seq": 5,
+      "type": "transcript"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "event": "append",
+  "payload": {
+    "events": [
+      {
+        "client_seq": 2,
+        "event_type": "turn_body",
+        "payload": {
+          "complete": true,
+          "items": [
+            {
+              "complete": true,
+              "content": "Done.",
+              "id": "00000000-0000-7000-8000-000000000001",
+              "kind": "message",
+              "operation": "replace",
+              "position": 1,
+              "role": "assistant",
+              "turn": 1
+            }
+          ],
+          "part": 1,
+          "said": "00000000-0000-7000-8000-000000000001",
+          "turn": 1
+        }
+      }
+    ]
+  },
+  "reply": {
+    "response": {
+      "last_client_seq": 2
+    },
+    "status": "ok"
+  },
+  "topic": "work_session:<session>"
+}

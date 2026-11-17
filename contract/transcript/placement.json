@@ -1,0 +1,603 @@
+[
+  {
+    "name": "later insertion withdraws a colliding placed row",
+    "steps": [
+      {
+        "expected": [
+          {
+            "content": "first",
+            "kind": "message",
+            "position": 1,
+            "turn": 1
+          },
+          {
+            "content": {
+              "from": "claude",
+              "to": "codex"
+            },
+            "kind": "handoff",
+            "position": 2,
+            "turn": 1
+          }
+        ],
+        "facts": [
+          {
+            "event_type": "transcript_updated",
+            "payload": {
+              "complete": true,
+              "content": "first",
+              "id": "0199f000-0000-7000-8000-000000000011",
+              "kind": "message",
+              "operation": "replace",
+              "position": 1,
+              "role": "assistant",
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "handoff_prepared",
+            "payload": {
+              "from": "claude",
+              "position": 2,
+              "to": "codex",
+              "turn": 1
+            }
+          }
+        ]
+      },
+      {
+        "expected": [
+          {
+            "content": "first",
+            "kind": "message",
+            "position": 1,
+            "turn": 1
+          },
+          {
+            "content": "second",
+            "kind": "message",
+            "position": 2,
+            "turn": 1
+          }
+        ],
+        "facts": [
+          {
+            "event_type": "transcript_updated",
+            "payload": {
+              "complete": true,
+              "content": "second",
+              "id": "0199f000-0000-7000-8000-000000000012",
+              "kind": "message",
+              "operation": "replace",
+              "position": 2,
+              "role": "assistant",
+              "turn": 1
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "implicit configuration position uses insertion order not last change",
+    "steps": [
+      {
+        "expected": [
+          {
+            "content": "after",
+            "kind": "message",
+            "position": 1,
+            "turn": 1
+          },
+          {
+            "content": {
+              "from": "supervised",
+              "to": "auto_accept_edits"
+            },
+            "kind": "mode_changed",
+            "position": 2,
+            "turn": 1
+          }
+        ],
+        "facts": [
+          {
+            "event_type": "turn_started",
+            "payload": {
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "transcript_updated",
+            "payload": {
+              "complete": true,
+              "content": "before",
+              "id": "0199f000-0000-7000-8000-000000000021",
+              "kind": "message",
+              "operation": "replace",
+              "position": 1,
+              "role": "assistant",
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "mode_changed",
+            "payload": {
+              "mode": "auto_accept_edits"
+            }
+          },
+          {
+            "event_type": "transcript_updated",
+            "payload": {
+              "complete": true,
+              "content": "after",
+              "id": "0199f000-0000-7000-8000-000000000021",
+              "kind": "message",
+              "operation": "replace",
+              "position": 1,
+              "role": "assistant",
+              "turn": 1
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "an old turn ending without position is filed after the transcript",
+    "steps": [
+      {
+        "expected": [
+          {
+            "content": "finished",
+            "kind": "message",
+            "position": 1,
+            "turn": 1
+          },
+          {
+            "content": {},
+            "kind": "turn_ended_late",
+            "position": 2,
+            "turn": 1
+          }
+        ],
+        "facts": [
+          {
+            "event_type": "turn_started",
+            "payload": {
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "transcript_updated",
+            "payload": {
+              "complete": true,
+              "content": "finished",
+              "id": "0199f000-0000-7000-8000-000000000031",
+              "kind": "message",
+              "operation": "replace",
+              "position": 1,
+              "role": "assistant",
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "turn_completed",
+            "payload": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "a model change retains the harness that names its models",
+    "steps": [
+      {
+        "expected": [
+          {
+            "content": "before model change",
+            "kind": "message",
+            "position": 1,
+            "turn": 1
+          },
+          {
+            "content": {
+              "from": "one",
+              "harness": "claude",
+              "to": "two"
+            },
+            "kind": "model_changed",
+            "position": 2,
+            "turn": 1
+          }
+        ],
+        "facts": [
+          {
+            "event_type": "harness_selected",
+            "payload": {
+              "harness": "claude",
+              "model": "one"
+            }
+          },
+          {
+            "event_type": "turn_started",
+            "payload": {
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "transcript_updated",
+            "payload": {
+              "complete": true,
+              "content": "before model change",
+              "id": "0199f000-0000-7000-8000-000000000041",
+              "kind": "message",
+              "operation": "replace",
+              "position": 1,
+              "role": "assistant",
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "harness_selected",
+            "payload": {
+              "harness": "claude",
+              "model": "two"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "a recorded revert is a ledger step with the original target and commit",
+    "steps": [
+      {
+        "expected": [
+          {
+            "content": "work before undo",
+            "kind": "message",
+            "position": 1,
+            "turn": 1
+          },
+          {
+            "content": {
+              "sha": "0123456789abcdef0123456789abcdef01234567",
+              "turn": 1
+            },
+            "kind": "reverted",
+            "position": 2,
+            "turn": 2
+          }
+        ],
+        "facts": [
+          {
+            "event_type": "turn_started",
+            "payload": {
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "transcript_updated",
+            "payload": {
+              "complete": true,
+              "content": "work before undo",
+              "id": "0199f000-0000-7000-8000-000000000051",
+              "kind": "message",
+              "operation": "replace",
+              "position": 1,
+              "role": "assistant",
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "checkpoint_reverted",
+            "payload": {
+              "sha": "0123456789abcdef0123456789abcdef01234567",
+              "turn": 1
+            }
+          }
+        ],
+        "holder_revert_step": 2
+      }
+    ]
+  },
+  {
+    "known_difference": "The holder has checkpoint refs ahead of its ledger and labels the revert step 7. The copy cannot see refs and labels the same row step 2. Order and content agree; later streamed turn numbers remain the holder's numbers. A revert after closure writes no fact and cannot appear in the copy.",
+    "name": "refs ahead leave copy numbering on its own ledger",
+    "steps": [
+      {
+        "expected": [
+          {
+            "content": "work before undo",
+            "kind": "message",
+            "position": 1,
+            "turn": 1
+          },
+          {
+            "content": {
+              "sha": "0123456789abcdef0123456789abcdef01234567",
+              "turn": 1
+            },
+            "kind": "reverted",
+            "position": 2,
+            "turn": 2
+          }
+        ],
+        "facts": [
+          {
+            "event_type": "turn_started",
+            "payload": {
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "transcript_updated",
+            "payload": {
+              "complete": true,
+              "content": "work before undo",
+              "id": "0199f000-0000-7000-8000-000000000061",
+              "kind": "message",
+              "operation": "replace",
+              "position": 1,
+              "role": "assistant",
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "checkpoint_reverted",
+            "payload": {
+              "sha": "0123456789abcdef0123456789abcdef01234567",
+              "turn": 1
+            }
+          }
+        ],
+        "holder_revert_step": 7
+      }
+    ]
+  },
+  {
+    "name": "an agent-started turn receives its origin when it ends",
+    "steps": [
+      {
+        "expected": [
+          {
+            "content": {
+              "origin": "context"
+            },
+            "kind": "continued",
+            "position": 1,
+            "turn": 1
+          },
+          {
+            "content": "continued work",
+            "kind": "message",
+            "position": 2,
+            "turn": 1
+          },
+          {
+            "content": {
+              "origin": "context",
+              "started_by": "agent"
+            },
+            "kind": "turn_ended",
+            "position": 3,
+            "turn": 1
+          }
+        ],
+        "facts": [
+          {
+            "event_type": "turn_started",
+            "payload": {
+              "position": 1,
+              "started_by": "agent",
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "transcript_updated",
+            "payload": {
+              "complete": true,
+              "content": "continued work",
+              "id": "0199f000-0000-7000-8000-000000000071",
+              "kind": "message",
+              "operation": "replace",
+              "position": 2,
+              "role": "assistant",
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "turn_completed",
+            "payload": {
+              "origin": "context",
+              "position": 3,
+              "started_by": "agent",
+              "turn": 1
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "a withdrawn continued row cannot overwrite its replacement's origin",
+    "steps": [
+      {
+        "expected": [
+          {
+            "content": {
+              "from": "claude",
+              "to": "codex"
+            },
+            "kind": "handoff",
+            "position": 1,
+            "turn": 1
+          },
+          {
+            "content": {
+              "origin": "context",
+              "started_by": "agent"
+            },
+            "kind": "turn_ended",
+            "position": 2,
+            "turn": 1
+          }
+        ],
+        "facts": [
+          {
+            "event_type": "turn_started",
+            "payload": {
+              "position": 1,
+              "started_by": "agent",
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "handoff_prepared",
+            "payload": {
+              "from": "claude",
+              "position": 1,
+              "to": "codex",
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "turn_completed",
+            "payload": {
+              "origin": "context",
+              "position": 2,
+              "started_by": "agent",
+              "turn": 1
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "desk starts head changes plans and aborted turns keep placement across replacements",
+    "steps": [
+      {
+        "expected": [
+          {
+            "content": {
+              "origin": "wait",
+              "summary": "A test timer finished"
+            },
+            "kind": "continued",
+            "position": 1,
+            "turn": 1
+          },
+          {
+            "content": {
+              "sha": "abcdef0123456789"
+            },
+            "kind": "head_moved",
+            "position": 2,
+            "turn": 1
+          },
+          {
+            "content": {
+              "entries": [],
+              "revision": 1
+            },
+            "kind": "plan",
+            "position": 3,
+            "turn": 1
+          },
+          {
+            "content": {},
+            "kind": "turn_ended",
+            "position": 4,
+            "turn": 1
+          }
+        ],
+        "facts": [
+          {
+            "event_type": "turn_started",
+            "payload": {
+              "origin": "wait",
+              "position": 1,
+              "started_by": "desk",
+              "summary": "A test timer finished",
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "head_moved",
+            "payload": {
+              "position": 2,
+              "sha": "abcdef0123456789",
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "plan_updated",
+            "payload": {
+              "entries": [],
+              "position": 3,
+              "revision": 1,
+              "turn": 1
+            }
+          },
+          {
+            "event_type": "turn_aborted",
+            "payload": {
+              "position": 4,
+              "turn": 1
+            }
+          }
+        ]
+      },
+      {
+        "expected": [
+          {
+            "content": {
+              "origin": "wait",
+              "summary": "A test timer finished"
+            },
+            "kind": "continued",
+            "position": 1,
+            "turn": 1
+          },
+          {
+            "content": {
+              "entries": [],
+              "revision": 2
+            },
+            "kind": "plan",
+            "position": 2,
+            "turn": 1
+          },
+          {
+            "content": {
+              "entries": [],
+              "revision": 1
+            },
+            "kind": "plan",
+            "position": 3,
+            "turn": 1
+          },
+          {
+            "content": {},
+            "kind": "turn_ended",
+            "position": 4,
+            "turn": 1
+          }
+        ],
+        "facts": [
+          {
+            "event_type": "plan_updated",
+            "payload": {
+              "entries": [],
+              "position": 2,
+              "revision": 2,
+              "turn": 1
+            }
+          }
+        ],
+        "reset": true
+      }
+    ]
+  }
+]

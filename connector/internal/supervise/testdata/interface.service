@@ -1,0 +1,18 @@
+[Unit]
+Description=Gentility connector (ai.gentility.connector)
+After=network-online.target NetworkManager.service systemd-resolved.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/connector serve --state-dir /var/lib/gentility --interface
+ExecStopPost=/usr/local/bin/connector cleanup --interface
+Restart=on-failure
+RestartPreventExitStatus=2 3 4 5
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=true
+
+[Install]
+WantedBy=multi-user.target

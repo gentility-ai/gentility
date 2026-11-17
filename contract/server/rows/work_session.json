@@ -1,0 +1,49 @@
+{
+  "archived_at": null,
+  "attention": "none",
+  "attention_line": null,
+  "branch": "fix-flaky",
+  "epoch": 1,
+  "harness": "claude_code",
+  "holder": {
+    "kind": "desk",
+    "machine": "00000000-0000-7000-8000-000000000001"
+  },
+  "host": "test-desktop",
+  "id": "00000000-0000-7000-8000-000000000002",
+  "last_client_seq": 1,
+  "last_event_at": "2026-01-01T00:00:00.000000Z",
+  "last_server_seq": 0,
+  "looper_id": null,
+  "machine_id": "00000000-0000-7000-8000-000000000001",
+  "owner_id": "00000000-0000-7000-8000-000000000003",
+  "presence": {
+    "seen_at": null,
+    "state": "offline"
+  },
+  "pull_request": null,
+  "pull_requests": [],
+  "rank": null,
+  "recap": null,
+  "recap_hidden": false,
+  "recap_line": null,
+  "recap_waiting_on": null,
+  "repository": "github.com/acme/app",
+  "settled_at": null,
+  "snoozed_until": null,
+  "starred_at": null,
+  "status": "open",
+  "tags": {
+    "can_manage": false,
+    "keep_open": false,
+    "manager": null,
+    "managing": [],
+    "role": null,
+    "started_by": null
+  },
+  "title": "Fix the flaky test",
+  "turns": 0,
+  "waiting_on": null,
+  "waiting_reason": null,
+  "working": false
+}

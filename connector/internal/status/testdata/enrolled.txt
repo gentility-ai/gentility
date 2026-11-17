@@ -1,0 +1,10 @@
+connector 0.1.0 (node_capver 1)
+enrollment enr-1
+head       https://head.example
+
+this machine is enrolled and has not joined the overlay yet.
+
+the daemon has not written a status yet. On a server, start it, which is what
+spends the enrollment:
+
+  connector serve

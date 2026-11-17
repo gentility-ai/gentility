@@ -1,0 +1,25 @@
+{
+  "event": "pr_review",
+  "payload": {
+    "body": "Looks right.",
+    "comments": [
+      {
+        "body": "Say why here.",
+        "line": 3,
+        "path": "lib/app.ex"
+      }
+    ],
+    "session_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "comment_id": null,
+      "number": 12,
+      "repo": "acme/app",
+      "review_id": 802,
+      "url": "https://github.com/acme/app/pull/12#pullrequestreview-802"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

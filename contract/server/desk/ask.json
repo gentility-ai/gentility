@@ -1,0 +1,12 @@
+{
+  "event": "ask",
+  "payload": {
+    "expires_at": "2026-01-01T00:00:00.000000Z",
+    "id": "00000000-0000-7000-8000-000000000001",
+    "kind": "phone_claim",
+    "payload": {
+      "phone_name": "Test iPhone"
+    }
+  },
+  "topic": "desk:<org>:<machine>"
+}

@@ -1,0 +1,31 @@
+{
+  "event": "append",
+  "payload": {
+    "events": [
+      {
+        "client_seq": 2,
+        "event_type": "question_asked",
+        "payload": {
+          "call_id": "item_fake_1",
+          "message": "Codex needs your input to continue.",
+          "request_id": "item_fake_1#0"
+        }
+      },
+      {
+        "client_seq": 3,
+        "event_type": "question_answered",
+        "payload": {
+          "action": "accept",
+          "request_id": "item_fake_1#0"
+        }
+      }
+    ]
+  },
+  "reply": {
+    "response": {
+      "last_client_seq": 3
+    },
+    "status": "ok"
+  },
+  "topic": "work_session:<session>"
+}

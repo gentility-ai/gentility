@@ -1,0 +1,22 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "loopers.dance",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32601,
+      "data": {
+        "event": "loopers.dance",
+        "reason": "unknown_event"
+      },
+      "message": "unknown_event"
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

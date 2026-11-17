@@ -1,0 +1,31 @@
+{
+  "event": "feed",
+  "payload": {
+    "limit": 1,
+    "since": 0
+  },
+  "reply": {
+    "response": {
+      "cursor": 1,
+      "generation": 4000000000000001,
+      "gone": [],
+      "grants": [],
+      "holders": [
+        {
+          "kind": "desk",
+          "label": "test-desktop",
+          "machine": "00000000-0000-7000-8000-000000000001",
+          "presence": "offline",
+          "row_seq": 1,
+          "seen_at": null
+        }
+      ],
+      "more": true,
+      "reads": [],
+      "reset": false,
+      "rows": []
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

@@ -1,0 +1,131 @@
+{
+  "join": {
+    "desk": {
+      "build": "0.1.200-abc1234",
+      "features": [
+        "fact_accepts"
+      ],
+      "protocol": {
+        "major": 1
+      },
+      "version": "0.1.200"
+    }
+  },
+  "reply": {
+    "response": {
+      "accepts": {
+        "facts": [
+          "approval_decided",
+          "approval_requested",
+          "archived",
+          "availability_set",
+          "branch_moved",
+          "branch_pushed",
+          "branch_renamed",
+          "checkpoint_created",
+          "checkpoint_reverted",
+          "closed",
+          "handoff_prepared",
+          "harness_selected",
+          "head_moved",
+          "message_delivered",
+          "message_failed",
+          "message_held",
+          "message_receipt",
+          "message_refused",
+          "message_released",
+          "message_requested",
+          "message_sent",
+          "mode_changed",
+          "opened",
+          "plan_updated",
+          "question_answered",
+          "question_asked",
+          "ranked",
+          "recapped",
+          "reopened",
+          "retitled",
+          "settled",
+          "snoozed",
+          "starred",
+          "subscribed",
+          "subscription_fired",
+          "subscription_held",
+          "subscription_released",
+          "transcript_updated",
+          "turn_aborted",
+          "turn_body",
+          "turn_completed",
+          "turn_started",
+          "unsettled",
+          "unstarred",
+          "unsubscribed",
+          "wait_cancelled",
+          "wait_fired",
+          "wait_held",
+          "wait_released",
+          "wait_set",
+          "wait_started",
+          "woken"
+        ]
+      },
+      "adapters": [],
+      "claude_route": false,
+      "features": [
+        "brief_body",
+        "thread_briefs",
+        "join_hello",
+        "fact_accepts",
+        "adapter_policy",
+        "asks",
+        "thread_policy",
+        "lease",
+        "message_limits",
+        "inbox",
+        "session_feed",
+        "lease_routing",
+        "lease_asks",
+        "subscriptions",
+        "facts_read",
+        "addressed_questions",
+        "questions_list",
+        "looper_feed",
+        "reach_hints",
+        "turn_bodies",
+        "rpc_loopers",
+        "claude_route",
+        "rpc_machine",
+        "rpc_session",
+        "rpc_sessions",
+        "rpc_inbox",
+        "rpc_grants",
+        "rpc_hosts",
+        "rpc_door",
+        "rpc_refusals",
+        "rpc_pulls",
+        "rpc_projects",
+        "rpc_questions",
+        "rpc_models",
+        "rpc_mcp",
+        "rpc_phone",
+        "transcript_copy",
+        "transcript_copy_paging",
+        "delegated_grants"
+      ],
+      "message_limits": {
+        "chain_hops": 1000,
+        "peer_turns": 1000,
+        "pending_messages": 1000,
+        "self_hops": 100,
+        "sender_burst": 300,
+        "sender_refill_per_second": 10,
+        "wake_turns": 500
+      },
+      "threads": {
+        "self_manage": true
+      }
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

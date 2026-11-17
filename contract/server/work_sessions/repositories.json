@@ -1,0 +1,17 @@
+{
+  "event": "repositories",
+  "payload": {},
+  "reply": {
+    "response": {
+      "repositories": [
+        {
+          "default_branch": "main",
+          "full_name": "acme/app",
+          "private": false
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

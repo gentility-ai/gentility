@@ -1,0 +1,27 @@
+{
+  "event": "ask",
+  "payload": {
+    "expires_at": "2026-01-01T00:00:00.000000Z",
+    "id": "00000000-0000-7000-8000-000000000001",
+    "kind": "session_fork",
+    "payload": {
+      "forked_from": {
+        "session_id": "00000000-0000-7000-8000-000000000002",
+        "turn": 3
+      },
+      "harness": "claude",
+      "looper_id": "00000000-0000-7000-8000-000000000003",
+      "mode": "auto",
+      "organization_id": "00000000-0000-7000-8000-000000000004",
+      "prompt": "# Run 19\n\nThe check failed.",
+      "reason": "Fix the flaky test",
+      "repository": {
+        "ref": "feat/fix-ci",
+        "remote_url": "git@github.com:acme/app.git"
+      },
+      "session_id": "00000000-0000-7000-8000-000000000005",
+      "user_id": "00000000-0000-7000-8000-000000000006"
+    }
+  },
+  "topic": "desk:<org>:<machine>"
+}

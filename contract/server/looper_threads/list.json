@@ -1,0 +1,40 @@
+{
+  "event": "list",
+  "payload": {},
+  "reply": {
+    "response": {
+      "runs": [
+        {
+          "ended_at": null,
+          "id": "00000000-0000-7000-8000-000000000001",
+          "last_activity_at": "2026-01-01T00:00:00.000000Z",
+          "looper": {
+            "id": "00000000-0000-7000-8000-000000000002",
+            "name": "Steward",
+            "responder": false,
+            "slug": "steward"
+          },
+          "model": {
+            "display_name": "Claude Sonnet 4.6",
+            "id": "00000000-0000-7000-8000-000000000003",
+            "slug": "claude-sonnet-4-6"
+          },
+          "number": 1,
+          "requests": [],
+          "started_at": "2026-01-01T00:00:00.000000Z",
+          "status": "running",
+          "title": "Steward #1",
+          "wake": {
+            "by": null,
+            "causation_id": null,
+            "hop": null,
+            "source": null,
+            "task": null
+          }
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "looper_threads:<org>"
+}

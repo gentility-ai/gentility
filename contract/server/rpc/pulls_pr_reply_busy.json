@@ -1,0 +1,25 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "pulls.reply",
+    "params": {
+      "body": "Review",
+      "comment_id": 1,
+      "org": "00000000-0000-7000-8000-000000000001",
+      "session_id": "00000000-0000-7000-8000-000000000002"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32001,
+      "data": {
+        "message": "Pull requests are busy. Try again shortly.",
+        "reason": "unavailable"
+      },
+      "message": "Pull requests are busy. Try again shortly."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

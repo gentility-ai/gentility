@@ -1,0 +1,11 @@
+connector 0.1.0 (node_capver 1)
+
+this machine is not enrolled in any organization.
+
+join 6net as yourself:
+
+  gentility net join
+
+or enrol it as a server — the organization is chosen in the browser:
+
+  connector login --server

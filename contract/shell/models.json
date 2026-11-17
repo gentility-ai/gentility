@@ -1,0 +1,17 @@
+[
+  {"direction":"incoming","frame":{"type":"shell_attach","build":"fixture-build","bundle_path":"/fixture/bundle","wants":["shell_models"]}},
+  {"direction":"outgoing","frame":{"type":"shell_attached","attachment_id":"fixture-attachment","accepted":["shell_models"]}},
+  {"direction":"outgoing","frame":{"type":"shell_attention","waiting":2,"working":1,"tray_title":"2","tray_tooltip":"Desk","badge":2}},
+  {"direction":"outgoing","frame":{"type":"shell_attention","waiting":0,"working":null,"tray_title":null,"tray_tooltip":"Desk","badge":null}},
+  {"direction":"outgoing","frame":{"type":"shell_status","mothership":"fixture","net":["6net not joined"],"person":"Not logged in","dock_mode":"plain","dock_dot":"grey"}},
+  {"direction":"outgoing","frame":{"type":"shell_machines","desk":{"type":"organizations","groups":[{"title":"Fixture","machines":[{"title":"Fixture Mac","addresses":["192.0.2.1"]}],"more":2}],"more_groups":1},"all":{"type":"note","text":"Machines unavailable"}}},
+  {"direction":"outgoing","frame":{"type":"shell_notice","notice_id":"fixture-opaque-notice","title":"Fixture thread","text":"Needs your answer"}},
+  {"direction":"incoming","frame":{"type":"notice_clicked","notice_id":"fixture-opaque-notice"}},
+  {"direction":"outgoing","frame":{"type":"open_thread","session_id":"fixture-thread"}},
+  {"direction":"incoming","frame":{"type":"shell_attach","build":"fixture-build","bundle_path":"/fixture/bundle","wants":["shell_models","shell_run_navigation"]}},
+  {"direction":"outgoing","frame":{"type":"shell_attached","attachment_id":"fixture-attachment","accepted":["shell_models","shell_run_navigation"]}},
+  {"direction":"outgoing","frame":{"type":"open_run","session_id":"fixture-run","environment_id":"fixture-environment"}},
+  {"direction":"outgoing","frame":{"type":"show_window"}},
+  {"direction":"incoming","frame":{"type":"machines_chosen"}},
+  {"direction":"outgoing","frame":{"type":"open_machines"}}
+]

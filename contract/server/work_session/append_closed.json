@@ -1,0 +1,19 @@
+{
+  "event": "append",
+  "payload": {
+    "events": [
+      {
+        "client_seq": 5,
+        "event_type": "closed",
+        "payload": {}
+      }
+    ]
+  },
+  "reply": {
+    "response": {
+      "last_client_seq": 5
+    },
+    "status": "ok"
+  },
+  "topic": "work_session:<session>"
+}

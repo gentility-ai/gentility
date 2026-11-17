@@ -1,0 +1,28 @@
+{
+  "event": "feed",
+  "payload": {
+    "generation": 4000000000000001,
+    "since": 7
+  },
+  "reply": {
+    "response": {
+      "cursor": 8,
+      "generation": 4000000000000001,
+      "gone": [],
+      "grants": [],
+      "holders": [],
+      "more": false,
+      "reads": [
+        {
+          "read_at": "2026-01-01T00:00:00.000000Z",
+          "row_seq": 8,
+          "session_id": "00000000-0000-7000-8000-000000000001"
+        }
+      ],
+      "reset": false,
+      "rows": []
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

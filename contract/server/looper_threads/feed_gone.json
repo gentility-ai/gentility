@@ -1,0 +1,25 @@
+{
+  "event": "feed",
+  "payload": {
+    "generation": 4000000000000002,
+    "since": 4
+  },
+  "reply": {
+    "response": {
+      "cursor": 6,
+      "generation": 4000000000000002,
+      "gone_loopers": [
+        "00000000-0000-7000-8000-000000000001"
+      ],
+      "gone_runs": [
+        "00000000-0000-7000-8000-000000000002"
+      ],
+      "loopers": [],
+      "more": false,
+      "reset": false,
+      "runs": []
+    },
+    "status": "ok"
+  },
+  "topic": "looper_threads:<org>"
+}

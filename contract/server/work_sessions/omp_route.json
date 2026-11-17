@@ -1,0 +1,21 @@
+{
+  "event": "omp_route",
+  "payload": {
+    "session_id": "<session>"
+  },
+  "reply": {
+    "response": {
+      "route": {
+        "base_url": "http://[<address>]:8317/v1",
+        "models": [
+          "glm-5.3-flash",
+          "mimo-v2.6-pro",
+          "deepseek-v4-pro"
+        ],
+        "token": "<token>"
+      }
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

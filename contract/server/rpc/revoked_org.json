@@ -1,0 +1,11 @@
+{
+  "notification": {
+    "jsonrpc": "2.0",
+    "method": "rpc.revoked",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001",
+      "reason": "mcp_disabled",
+      "scope": "org"
+    }
+  }
+}

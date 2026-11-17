@@ -1,0 +1,17 @@
+{
+  "event": "claude_route",
+  "payload": {
+    "session_id": "<session>"
+  },
+  "reply": {
+    "response": {
+      "route": {
+        "base_url": "http://[<address>]:8317",
+        "label": "Core7",
+        "token": "fixture-claude-token"
+      }
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

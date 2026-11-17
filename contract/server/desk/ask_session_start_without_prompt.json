@@ -1,0 +1,21 @@
+{
+  "event": "ask",
+  "payload": {
+    "expires_at": "2026-01-01T00:00:00.000000Z",
+    "id": "00000000-0000-7000-8000-000000000001",
+    "kind": "session_start",
+    "payload": {
+      "cwd": "/code/app",
+      "effort": null,
+      "harness": "claude",
+      "mode": "supervised",
+      "model": null,
+      "organization_id": "00000000-0000-7000-8000-000000000002",
+      "repository": null,
+      "session_id": "00000000-0000-7000-8000-000000000003",
+      "title": null,
+      "user_id": "00000000-0000-7000-8000-000000000004"
+    }
+  },
+  "topic": "desk:<org>:<machine>"
+}

@@ -1,0 +1,31 @@
+{
+  "cases": [
+    "agent_started_turn",
+    "append_without_its_start",
+    "message_replaced",
+    "message_streamed",
+    "sub_agent_items",
+    "thought_before_message",
+    "tool_call_cancelled_by_close",
+    "tool_call_cancelled_by_turn_end",
+    "tool_call_declined",
+    "tool_call_pending_then_executed",
+    "turn_body_parts",
+    "two_turns",
+    "unseen_words"
+  ],
+  "desk_cases": [
+    "start"
+  ],
+  "notes": {
+    "copy_reader": "TranscriptCopyGoldensTest reads these cases through the actual structural index and agent_* content rows, applying the documented role/tool-kind cuts. Separate placement.json cases hold lifecycle placement in the Elixir copy reader and Rust store, including the stated refs-ahead revert numbering difference. Privacy, source cursors and incomplete index coverage are checked separately against the database.",
+    "items": "Every message, thought and tool_call the stream named, in position order, text whole. The synthetic rows the Desk projects from lifecycle facts (continued, handoff, head_moved, turn_ended, plan) are not items: the server has no such rows, and the web reads those facts itself.",
+    "order": "turns.json records what each turn holds and how a launcher's children nest; the order of items within a turn is items.json's position order, which a reader that interleaves texts and calls (the phone) is held to directly. turns.json carries no outcome: the window's fold guesses end_turn for a turn it reads with no live tail, and an outcome is the facts' to say.",
+    "readers": "Checked: the server's fold (Elixir), the Desk core's projection (Rust, as appended and as rebuilt), the window's fold (Desk TS, which writes turns.json); and for tool_call_declined alone, the phone's TranscriptFold (Swift, KitTests/TranscriptFixtureTests.swift: the call's line carries the declined mark). Deferred to a follow-up PR: the rest of the phone's TranscriptFold, the web's _exchanges (TS) and the Rust brief cut (api/transcript_shape.rs). The web's rows have no turn, no parent_call_id, no tool title and no position, and hold a thought as its message's reasoning, so it can be held to items.json only in part; what it can be held to is the follow-up's to say.",
+    "status": "A tool call still pending when its turn ends, or the session closes, is cancelled on both sides. One refused at its permission question and then settled without running is recorded declined by the Desk, which alone hears both the answer and the settling; every reader takes the word as said.",
+    "stored": "The Elixir check holds the fold (SessionStream.reduce/1), not the table it is projected into (Transcripts.project_session_item/4), which adds doors and cuts of its own: a message whose role changes between two facts is refused (invalid_role), as is a tool call that names another message; a private call's arguments and result are withheld to stubs; an empty message content is stored as null. None is a disagreement a server stream can hold — a refused fact never lands — so none is fixtured; the Desk's projection keeps the first role, message and ordinal of a row it has, and the fold takes the last.",
+    "tool_kind": "A tool_call fact with no tool_kind key is accepted by the server and folded; the Desk's projection writes no row for it. Today's Desk always sends the key, so no stream holds one; recorded here, not fixtured.",
+    "unseen_words": "An operation or a status this build has not heard of moves nothing, a kind is no item, and a role or a tool kind stays as said in the fold; the server's rows cut those two (see `stored`), and no reader may take either for a word it knows."
+  },
+  "transcript_fold_version": 1
+}

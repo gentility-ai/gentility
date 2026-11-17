@@ -1,0 +1,21 @@
+{
+  "environments": {
+    "production": "https://mcp.gentility.ai",
+    "staging": "https://mcp-staging.gentility.ai"
+  },
+  "normalization": [
+    {
+      "input": "http://mcp.localhost/login",
+      "origin": "http://mcp.localhost",
+      "development": true
+    },
+    {
+      "input": "https://MCP.example:443/login",
+      "origin": "https://MCP.example:443"
+    },
+    {
+      "input": "https://[::1]:443/login",
+      "origin": "https://[::1]:443"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "event": "loopers",
+  "payload": {},
+  "reply": {
+    "response": {
+      "loopers": [
+        {
+          "id": "00000000-0000-7000-8000-000000000001",
+          "model": {
+            "display_name": "Claude Sonnet 4.6",
+            "id": "00000000-0000-7000-8000-000000000002",
+            "slug": "claude-sonnet-4-6"
+          },
+          "name": "Steward",
+          "net_access": false,
+          "next_run_at": "2026-01-01T00:00:00.000000Z",
+          "notify_handle": null,
+          "responder": false,
+          "schedule": {
+            "cron": "0 */4 * * 1-5",
+            "enabled": true,
+            "timezone": "Europe/London"
+          },
+          "slug": "steward",
+          "system_prompt": "Label every open issue.",
+          "tasks_enabled": false,
+          "visibility": "private"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "looper_threads:<org>"
+}

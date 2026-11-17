@@ -1,0 +1,16 @@
+{
+  "event": "question_dismiss",
+  "payload": {
+    "question_id": "00000000-0000-7000-8000-000000000001",
+    "session_id": "00000000-0000-7000-8000-000000000002"
+  },
+  "reply": {
+    "response": {
+      "ask_id": "00000000-0000-7000-8000-000000000003",
+      "question_id": "00000000-0000-7000-8000-000000000001",
+      "status": "pending"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

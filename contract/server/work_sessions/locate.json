@@ -1,0 +1,61 @@
+{
+  "event": "locate",
+  "payload": {
+    "words": "the flaky test one"
+  },
+  "reply": {
+    "response": {
+      "model": "<model>",
+      "picks": [
+        {
+          "archived": false,
+          "branches": [
+            "fix-flaky"
+          ],
+          "confidence": "sure",
+          "first_at": "2026-01-01T00:00:00.000000Z",
+          "former_titles": [],
+          "id": "00000000-0000-7000-8000-000000000001",
+          "last_at": "2026-01-01T00:00:00.000000Z",
+          "looper_id": null,
+          "owner": {
+            "email": "someone@example.com",
+            "id": "00000000-0000-7000-8000-000000000002"
+          },
+          "places": [
+            {
+              "branch": "fix-flaky",
+              "first_seen_at": "2026-01-01T00:00:00.000000Z",
+              "last_seen_at": "2026-01-01T00:00:00.000000Z",
+              "machine": "test-desktop",
+              "worktree_fingerprint": "abababababababababababababababababababababababababababababababab",
+              "worktree_path": "/Users/someone/code/app"
+            }
+          ],
+          "prompt": null,
+          "pull_request": null,
+          "reason": "The branch.",
+          "recap_hidden": false,
+          "recap_line": null,
+          "recap_waiting_on": null,
+          "repository": "acme/app",
+          "status": "open",
+          "tags": {
+            "can_manage": false,
+            "keep_open": false,
+            "manager": null,
+            "managing": [],
+            "role": null,
+            "started_by": null
+          },
+          "title": "Fix the flaky test",
+          "url": "https://gentility.test/acme/sessions/00000000-0000-7000-8000-000000000001"
+        }
+      ],
+      "run_id": "<run>",
+      "status": "completed"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

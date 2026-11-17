@@ -1,0 +1,183 @@
+{
+  "assets": {
+    "LICENSE": {
+      "reason": "The Apache License 2.0, verbatim; its URLs name the licence's publisher",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "phone/ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon-Dark.png": {
+      "reason": "Visually inspected: abstract terracotta blocks on a dark background, no identifying text",
+      "sha256": "cc33b1f4838208de168ec540b2a8946dedf7717823275d18cf64f5e041c63193"
+    },
+    "phone/ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon-Tinted.png": {
+      "reason": "Visually inspected: abstract white blocks on a black background, no identifying text",
+      "sha256": "90a9cadc5b542fe170dbb17486a13333e6b9bd7817fe43cc19029aaa6852fc7a"
+    },
+    "phone/ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon.png": {
+      "reason": "Visually inspected: abstract white blocks on a terracotta background, no identifying text",
+      "sha256": "fb670bf70452a5a740b4f46c3dab96807e7df07c7bcae394bb9d4b8aa2264fa2"
+    }
+  },
+  "hosts": {
+    "": "Deliberately empty authority in parser tests and URL prefix construction",
+    "%s": "Go formatting placeholder for the address",
+    "127.0.0.1": "Loopback server in transport tests",
+    "192.168.1.10": "Private-range refusal fixture, not a deployment address",
+    "2001:db8::1": "Documentation IPv6 in origin tests",
+    "9fans.net": "Public Go dependency module domain",
+    "::1": "Loopback IPv6 in origin refusal tests",
+    "acme.example": "Reserved example domain in peer identity fixtures",
+    "address": "Literal URL placeholder in a comment",
+    "beta.example": "Reserved example domain in peer identity fixtures",
+    "cedar.morgan.acme.6net.io": "Invented machine name in CLI and status fixtures",
+    "cedar.morgan.northwind.6net.io": "Invented machine name in CLI and status fixtures",
+    "db.acme.example.ts.net": "Invented DNS boundary fixture",
+    "different.example": "Reserved example domain in redirect fixtures",
+    "driftwood-2.morgan.northwind.6net.io": "Invented duplicate-label fixture",
+    "driftwood.local": "Invented machine label in phone test fixture",
+    "driftwood.morgan.acme.6net.io": "Invented machine name in snapshot fixture",
+    "elsewhere.invalid": "Non-routable synchronization fixture",
+    "elsewhere.test": "Invented different-origin test fixture",
+    "elsewhere.test\\(request.url!.path": "Swift interpolation in a redirect refusal fixture",
+    "evil-github.com": "Negative suffix-match case in allowlist contract vectors",
+    "evil.example": "Reserved example domain in origin refusal fixtures",
+    "evillocalhost": "Negative localhost suffix test",
+    "example.invalid": "Non-routable attachment fixture",
+    "fd06:6e7:0:1::1": "Synthetic overlay gateway in fixtures",
+    "fd06:6e7:\u2026": "Abbreviated overlay URL in a comment",
+    "filippo.io": "Public cryptography dependency module domain",
+    "from-env.example": "Reserved example domain in configuration precedence fixtures",
+    "from-flag.example": "Reserved example domain in configuration precedence fixtures",
+    "gentility-overlay.internal": "Gateway's configured internal certificate name",
+    "gentility-web": "Container service name used by the gateway",
+    "go4.org": "Public Go dependency module domain",
+    "golang.org": "Public Go module and toolchain domain",
+    "golang.zx2c4.com": "Public WireGuard dependency module domain",
+    "google.golang.org": "Public Go dependency module domain",
+    "gvisor.dev": "Public network-stack dependency module domain",
+    "head.example": "Reserved example domain in head fixtures",
+    "head.invalid": "Non-routable head fixture in installation tests",
+    "honnef.co": "Public Go dependency module domain",
+    "howett.net": "Public plist dependency module domain",
+    "kubernetes.io": "Public domain used by allowlist contract vectors",
+    "localhost.": "Negative trailing-dot origin test",
+    "localhost.evil.example": "Reserved example domain in origin refusal fixtures",
+    "log.tailscale.com": "Upstream logging endpoint named by the logging opt-out comment",
+    "login.example": "Reserved example domain in login fixtures",
+    "mcp.elsewhere": "Synthetic alternate MCP origin",
+    "mcp.example": "Reserved example domain in MCP fixtures",
+    "mcp.first.example": "Reserved example domain in origin fixtures",
+    "mcp.gentility.ai.": "Negative trailing-dot origin test",
+    "mcp.let-s-revisit.localhost.": "Negative trailing-dot origin test",
+    "mcp.localhost.evil": "Negative localhost suffix test",
+    "mcp.other": "Synthetic alternate MCP origin",
+    "mcp.second.example": "Reserved example domain in origin fixtures",
+    "n1.acme.overlay.internal": "Invented gateway peer fixture",
+    "n2.acme.overlay.internal": "Invented gateway peer fixture",
+    "notgithub.com": "Negative suffix-match case in allowlist contract vectors",
+    "o.local": "Overlay wiring test fixture",
+    "old.example": "Reserved example domain in origin fixtures",
+    "original.example": "Reserved example domain in redirect fixtures",
+    "other.example": "Reserved example domain in origin fixtures",
+    "registry.npmjs.org": "Public registry used by allowlist contract vectors",
+    "relay-1.acme.6net.io": "Invented relay name in snapshot fixture",
+    "remote.example": "Reserved example domain in remote fixtures",
+    "router.local": "Local-network refusal fixture",
+    "software.sslmate.com": "Public certificate dependency module domain",
+    "someone-else.acme.overlay.internal": "Negative gateway lease peer fixture",
+    "staging.example": "Reserved example domain in claim fixtures",
+    "stored.example": "Reserved example domain in configuration precedence fixtures",
+    "stranger.example.ts.net": "Invented DNS boundary fixture",
+    "tailscale.com": "Public dependency module and documentation domain",
+    "u212aubernetes.io": "Escaped Unicode normalization case in Go test source",
+    "willow.local": "Local-network enrollment test fixture",
+    "www.apple.com": "Apple property-list DTD",
+    "www.w3.org": "SVG namespace",
+    "x": "Minimal URL in parser tests"
+  },
+  "identifiers": {
+    "Console.app": "System application name",
+    "DeskPhone.app": "Generated phone application name",
+    "EXAMPLETEAM.ai": "Invented APNs topic team prefix",
+    "Grant.Org": "Go field",
+    "KitTestHost.app": "Generated test application name",
+    "Log.app": "Swift logger property",
+    "Log.app.info": "Swift logger call",
+    "Log.conversation.info": "Swift logger call",
+    "Log.door.info": "Swift logger call",
+    "Log.go.info": "Swift logger call",
+    "Log.home.info": "Swift logger call",
+    "Log.node.info": "Swift logger call",
+    "Log.pairing.info": "Swift logger call",
+    "Log.push.info": "Swift logger call",
+    "Log.socket.info": "Swift logger call",
+    "Signing.local": "Git-ignored signing configuration filename",
+    "a.org": "Go field",
+    "after.Dev": "Go filesystem field",
+    "ai.gentility.desk.phone.test": "Bundle identifier prefix",
+    "b.org": "Go field",
+    "before.Dev": "Go filesystem field",
+    "c.org": "Go field",
+    "cg.Org": "Go field",
+    "chip.logic.test": "Source filename in a fixture",
+    "clean.info": "Go field",
+    "document.Egress.Org": "Go field",
+    "elsewhere.Org": "Go field",
+    "grant.Org": "Go field",
+    "l.org": "Go field",
+    "org.Org": "Go field",
+    "park.logic.test": "Source filename in a fixture",
+    "s.org": "Go field",
+    "self.app": "Swift property",
+    "service.Org": "Go field",
+    "snapshot.Egress.Org": "Go field",
+    "src.Org": "Go field",
+    "start.Name.Local": "Go XML field",
+    "stat.Dev": "Go filesystem field",
+    "svc.Org": "Go field",
+    "target.Org": "Go field"
+  },
+  "private_ipv4": {
+    "connector/internal/egress/hygiene.go": {
+      "10.0.0.0": "RFC1918 ranges and NAT64 examples defining the SSRF block policy",
+      "10.0.0.1": "RFC1918 ranges and NAT64 examples defining the SSRF block policy",
+      "172.16.0.0": "RFC1918 ranges and NAT64 examples defining the SSRF block policy",
+      "192.168.0.0": "RFC1918 ranges and NAT64 examples defining the SSRF block policy",
+      "192.168.1.1": "RFC1918 ranges and NAT64 examples defining the SSRF block policy"
+    },
+    "connector/internal/egress/hygiene_test.go": {
+      "010.0.0.1": "RFC1918 and alternate-spelling refusal vectors",
+      "10.0.0.1": "RFC1918 and alternate-spelling refusal vectors",
+      "10.0.0.5": "RFC1918 and alternate-spelling refusal vectors",
+      "172.16.4.4": "RFC1918 and alternate-spelling refusal vectors",
+      "192.168.1.1": "RFC1918 and alternate-spelling refusal vectors"
+    },
+    "connector/internal/egress/relay_test.go": {
+      "192.168.1.1": "DNS resolution to an RFC1918 destination must be refused"
+    },
+    "connector/internal/gateway/lease_test.go": {
+      "10.9.9.9": "Untrusted destination and source refusal fixtures",
+      "172.18.0.9": "Untrusted destination and source refusal fixtures"
+    },
+    "connector/internal/mcp/client_test.go": {
+      "192.168.1.10": "Private plaintext origin refusal fixture"
+    },
+    "connector/internal/report/presence_test.go": {
+      "192.168.1.0": "Invented LAN address/subnet serialization fixture",
+      "192.168.1.42": "Invented LAN address/subnet serialization fixture"
+    },
+    "connector/internal/tsnode/network_report_test.go": {
+      "10.4.0.0": "Invented LAN address/subnet canonicalization vectors",
+      "10.4.0.9": "Invented LAN address/subnet canonicalization vectors",
+      "172.17.0.0": "Invented LAN address/subnet canonicalization vectors",
+      "172.17.0.1": "Invented LAN address/subnet canonicalization vectors",
+      "192.168.1.0": "Invented LAN address/subnet canonicalization vectors",
+      "192.168.1.42": "Invented LAN address/subnet canonicalization vectors"
+    },
+    "connector/phonenode/door_test.go": {
+      "10.0.0.1": "IPv4 destination refusal fixture"
+    },
+    "connector/phonenode/path_test.go": {
+      "192.168.1.5": "Non-overlay IPv4 refusal fixture"
+    }
+  }
+}

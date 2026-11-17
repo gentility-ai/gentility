@@ -1,0 +1,81 @@
+{
+  "id": 1,
+  "response": {
+    "accepted": [
+      "operate"
+    ],
+    "build": "0.0.0",
+    "capabilities": [
+      "attachments",
+      "fake"
+    ],
+    "commit": "000000000",
+    "features": [
+      "brief_body",
+      "thread_briefs",
+      "thread_settle_finished",
+      "questions_list",
+      "hello_wants",
+      "machine_confirmation",
+      "shell_models",
+      "frame_trace",
+      "transcript_paging",
+      "hello_host",
+      "start_later",
+      "thread_traffic",
+      "index_follow",
+      "host_upgrade",
+      "steer_injects",
+      "model_catalog",
+      "project_agent_defaults",
+      "inherited_turns",
+      "upgrade_wait",
+      "phone_pairing",
+      "hosts_everywhere",
+      "transcript_brief",
+      "transcript_seq",
+      "transcript_copy",
+      "session_get",
+      "lease_routing",
+      "start_on_host",
+      "titled_open",
+      "named_models",
+      "host_diagnostics",
+      "rehome",
+      "harness_capabilities",
+      "assign_elsewhere",
+      "harness_driver_selection",
+      "native_codex_selection",
+      "unknown_words",
+      "upgrade_following",
+      "repository_store",
+      "repo_warm_base",
+      "fork_review",
+      "transcript_find",
+      "session_star",
+      "machines_read",
+      "session_reopen",
+      "thread_delegate"
+    ],
+    "host": {
+      "account": "recorded",
+      "admitted": null,
+      "arch": "aarch64",
+      "generation": null,
+      "home": "/tmp/recorded/home",
+      "incarnation": "1:recorded",
+      "machine_id": null,
+      "os": "macos",
+      "principal": null,
+      "store": "/tmp/recorded/desk.sqlite",
+      "store_id": "recorded"
+    },
+    "pairing_port": null,
+    "protocol": {
+      "major": 1,
+      "minor": 55
+    },
+    "type": "hello",
+    "version": "0.0.0"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "event": "open_pr",
+  "payload": {
+    "body": null,
+    "draft": false,
+    "head": "fix-flaky",
+    "session_id": "00000000-0000-7000-8000-000000000001",
+    "title": "Fix the flaky test"
+  },
+  "reply": {
+    "response": {
+      "head": "fix-flaky",
+      "number": 12,
+      "repo": "acme/app",
+      "url": "https://github.com/acme/app/pull/12"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

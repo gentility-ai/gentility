@@ -1,0 +1,10 @@
+{"client_seq":1,"event_type":"opened","inserted_at":"2026-01-01T00:00:01.000000Z","internal":false,"payload":{"branch":"fix-flaky","harness":"claude_code","mode":"supervised","model":"claude-sonnet-4-6","remote_url":"git@github.com:acme/app.git","title":"Fix the flaky test"},"seq":1}
+{"client_seq":2,"event_type":"agent_opened","inserted_at":"2026-01-01T00:00:02.000000Z","internal":true,"payload":{},"seq":2}
+{"client_seq":3,"event_type":"turn_started","inserted_at":"2026-01-01T00:00:03.000000Z","internal":false,"payload":{"prompt":"fix the flaky test"},"seq":3}
+{"client_seq":4,"event_type":"turn_completed","inserted_at":"2026-01-01T00:00:04.000000Z","internal":false,"payload":{"cost":"0.0123","input_tokens":1200,"output_tokens":300},"seq":4}
+{"client_seq":5,"event_type":"settled","inserted_at":"2026-01-01T00:00:05.000000Z","internal":false,"payload":{},"seq":5}
+{"client_seq":null,"event_type":"unsettled","inserted_at":"2026-01-01T00:00:06.000000Z","internal":false,"payload":{},"seq":6}
+{"client_seq":6,"event_type":"snoozed","inserted_at":"2026-01-01T00:00:07.000000Z","internal":false,"payload":{"until":"2026-01-02T09:00:00Z"},"seq":7}
+{"client_seq":null,"event_type":"woken","inserted_at":"2026-01-01T00:00:08.000000Z","internal":false,"payload":{},"seq":8}
+{"client_seq":null,"event_type":"archived","inserted_at":"2026-01-01T00:00:09.000000Z","internal":false,"payload":{},"seq":9}
+{"client_seq":null,"event_type":"unarchived","inserted_at":"2026-01-01T00:00:10.000000Z","internal":false,"payload":{},"seq":10}

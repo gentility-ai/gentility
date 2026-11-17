@@ -1,0 +1,29 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "session.append",
+    "params": {
+      "events": [
+        {
+          "client_seq": 1,
+          "event_type": "turn_started",
+          "payload": {}
+        }
+      ],
+      "session": "00000000-0000-7000-8000-000000000001"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32001,
+      "data": {
+        "message": "This connection may not write that session.",
+        "reason": "forbidden"
+      },
+      "message": "This connection may not write that session."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

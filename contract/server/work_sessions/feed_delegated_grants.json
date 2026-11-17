@@ -1,0 +1,55 @@
+{
+  "event": "feed",
+  "payload": {
+    "generation": 4000000000000001,
+    "since": 17
+  },
+  "reply": {
+    "response": {
+      "cursor": 19,
+      "generation": 4000000000000001,
+      "gone": [],
+      "grants": [
+        {
+          "basis_granted_at": "2026-01-01T00:00:00.000000Z",
+          "basis_scope": "organization:00000000-0000-7000-8000-000000000001",
+          "by_session_id": "00000000-0000-7000-8000-000000000002",
+          "expires_at": "2026-01-01T00:00:00.000000Z",
+          "granted_at": "2026-01-01T00:00:00.000000Z",
+          "grantee_session_id": "00000000-0000-7000-8000-000000000003",
+          "id": "00000000-0000-7000-8000-000000000004",
+          "organization_id": "00000000-0000-7000-8000-000000000001",
+          "reason": "Reopen the target for its proof",
+          "revoked_at": null,
+          "row_seq": 18,
+          "scope": "session:00000000-0000-7000-8000-000000000005",
+          "user_id": "00000000-0000-7000-8000-000000000006"
+        }
+      ],
+      "holders": [],
+      "more": false,
+      "reads": [],
+      "reset": false,
+      "rows": [
+        {
+          "$row": "feed",
+          "holder": {
+            "epoch": 1,
+            "kind": "desk",
+            "machine": "00000000-0000-7000-8000-000000000007"
+          },
+          "last_client_seq": 2,
+          "last_server_seq": 3,
+          "manager_id": "00000000-0000-7000-8000-000000000002",
+          "organization_id": "00000000-0000-7000-8000-000000000001",
+          "owner_id": "00000000-0000-7000-8000-000000000006",
+          "row_seq": 19,
+          "session_id": "00000000-0000-7000-8000-000000000003",
+          "title": "Child"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

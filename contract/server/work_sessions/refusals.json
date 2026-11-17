@@ -1,0 +1,45 @@
+{
+  "event": "refusals",
+  "payload": {},
+  "reply": {
+    "response": {
+      "now": "2026-01-01T00:00:00.000000Z",
+      "refusals": [
+        {
+          "can_allow": true,
+          "count": 14,
+          "destination": "test-machine",
+          "destination_node_id": "00000000-0000-7000-8000-000000000001",
+          "first_seen_at": "2026-01-01T00:00:00.000000Z",
+          "id": "00000000-0000-7000-8000-000000000002",
+          "key": "00000000-0000-7000-8000-000000000003/00000000-0000-7000-8000-000000000001/tcp/8080",
+          "last_seen_at": "2026-01-01T00:00:00.000000Z",
+          "organization_slug": "acme-overlay",
+          "port": 8080,
+          "protocol": "tcp",
+          "reason": "port_not_declared",
+          "source": "mac",
+          "source_node_id": "00000000-0000-7000-8000-000000000003"
+        },
+        {
+          "can_allow": false,
+          "count": 1,
+          "destination": "test-machine",
+          "destination_node_id": "00000000-0000-7000-8000-000000000001",
+          "first_seen_at": "2026-01-01T00:00:00.000000Z",
+          "id": "00000000-0000-7000-8000-000000000004",
+          "key": "00000000-0000-7000-8000-000000000003/00000000-0000-7000-8000-000000000001/tcp/6447",
+          "last_seen_at": "2026-01-01T00:00:00.000000Z",
+          "organization_slug": "acme-overlay",
+          "port": 6447,
+          "protocol": "tcp",
+          "reason": "port_not_declared",
+          "source": "mac",
+          "source_node_id": "00000000-0000-7000-8000-000000000003"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

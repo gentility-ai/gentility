@@ -1,0 +1,16 @@
+{
+  "event": "question_dismiss",
+  "payload": {
+    "question_id": "00000000-0000-7000-8000-000000000001",
+    "reason": "No longer needed",
+    "session_id": "00000000-0000-7000-8000-000000000002"
+  },
+  "reply": {
+    "response": {
+      "question_id": "00000000-0000-7000-8000-000000000001",
+      "status": "dismissed"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

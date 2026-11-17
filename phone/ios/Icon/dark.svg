@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!--
+    The dark-appearance cut: iOS asks for a dark tile with the brand kept in
+    the glyph, so the tile goes to a warm near-black and the bricks take the
+    terracotta. Same grid and placement as light.svg.
+  -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2B2220"/>
+      <stop offset="1" stop-color="#171210"/>
+    </linearGradient>
+    <linearGradient id="brick" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D4785C"/>
+      <stop offset="1" stop-color="#BE5F45"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#tile)"/>
+  <g fill="url(#brick)" transform="translate(174.08 174.08) scale(6.7584)">
+    <rect x="0" y="0" width="100" height="22.75" rx="3"/>
+    <rect x="0" y="25.75" width="22.75" height="22.75" rx="3"/>
+    <rect x="0" y="51.5" width="22.75" height="22.75" rx="3"/>
+    <rect x="51.5" y="51.5" width="48.5" height="22.75" rx="3"/>
+    <rect x="0" y="77.25" width="74.25" height="22.75" rx="3"/>
+    <rect x="77.25" y="77.25" width="22.75" height="22.75" rx="3"/>
+  </g>
+</svg>

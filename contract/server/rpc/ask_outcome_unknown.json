@@ -1,0 +1,26 @@
+{
+  "request": {
+    "id": 43,
+    "jsonrpc": "2.0",
+    "method": "sessions.ask",
+    "params": {
+      "kind": "session_stop",
+      "org": "00000000-0000-7000-8000-000000000001",
+      "payload": {},
+      "session_id": "00000000-0000-7000-8000-000000000002"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32603,
+      "data": {
+        "ask_id": "00000000-0000-7000-8000-000000000003",
+        "message": "Couldn't confirm whether the request was raised.",
+        "reason": "outcome_unknown"
+      },
+      "message": "Couldn't confirm whether the request was raised."
+    },
+    "id": 43,
+    "jsonrpc": "2.0"
+  }
+}

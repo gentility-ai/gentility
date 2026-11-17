@@ -1,0 +1,9 @@
+{"client_seq":1,"event_type":"opened","inserted_at":"2026-01-01T00:00:01.000000Z","internal":false,"payload":{"harness":"claude_code","mode":"supervised","model":"claude-sonnet-4-6","title":"Fix the flaky test"},"seq":1}
+{"client_seq":2,"event_type":"turn_started","inserted_at":"2026-01-01T00:00:02.000000Z","internal":false,"payload":{"prompt":"go on"},"seq":2}
+{"client_seq":3,"event_type":"turn_completed","inserted_at":"2026-01-01T00:00:03.000000Z","internal":false,"payload":{},"seq":3}
+{"client_seq":4,"event_type":"checkpoint_created","inserted_at":"2026-01-01T00:00:04.000000Z","internal":false,"payload":{"sha":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},"seq":4}
+{"client_seq":5,"event_type":"checkpoint_reverted","inserted_at":"2026-01-01T00:00:05.000000Z","internal":false,"payload":{"sha":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","turn":1},"seq":5}
+{"client_seq":6,"event_type":"mode_changed","inserted_at":"2026-01-01T00:00:06.000000Z","internal":false,"payload":{"mode":"auto"},"seq":6}
+{"client_seq":7,"event_type":"turn_started","inserted_at":"2026-01-01T00:00:07.000000Z","internal":false,"payload":{"prompt":"go on"},"seq":7}
+{"client_seq":8,"event_type":"turn_completed","inserted_at":"2026-01-01T00:00:08.000000Z","internal":false,"payload":{},"seq":8}
+{"client_seq":9,"event_type":"mode_changed","inserted_at":"2026-01-01T00:00:09.000000Z","internal":false,"payload":{"mode":"full_access"},"seq":9}

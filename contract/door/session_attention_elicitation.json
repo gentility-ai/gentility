@@ -1,0 +1,186 @@
+{
+  "event": {
+    "session": {
+      "archived_at": null,
+      "attention": {
+        "request": {
+          "call_id": null,
+          "message": "Where should the report go?\nDesk sends it once a day.",
+          "mode": {
+            "fields": [
+              {
+                "description": null,
+                "kind": {
+                  "default": 1.0,
+                  "integer": true,
+                  "max": 5.0,
+                  "min": 1.0,
+                  "type": "number"
+                },
+                "name": "count",
+                "required": true,
+                "secret": false,
+                "title": "Copies"
+              },
+              {
+                "description": null,
+                "kind": {
+                  "default": null,
+                  "format": "email",
+                  "max_len": 120,
+                  "min_len": null,
+                  "pattern": null,
+                  "type": "text"
+                },
+                "name": "email",
+                "required": true,
+                "secret": false,
+                "title": "Email"
+              },
+              {
+                "description": "Anything else",
+                "kind": {
+                  "default": null,
+                  "format": null,
+                  "max_len": null,
+                  "min_len": null,
+                  "pattern": null,
+                  "type": "text"
+                },
+                "name": "note",
+                "required": false,
+                "secret": false,
+                "title": "Note"
+              },
+              {
+                "description": null,
+                "kind": {
+                  "default": false,
+                  "type": "boolean"
+                },
+                "name": "notify",
+                "required": false,
+                "secret": false,
+                "title": "Notify me"
+              }
+            ],
+            "title": "Report settings",
+            "type": "form"
+          },
+          "request_id": "elicitation#0"
+        },
+        "type": "elicitation"
+      },
+      "availability": "accept",
+      "branch": "main",
+      "checkout_gone": false,
+      "config": [
+        {
+          "category": "model",
+          "choices": [
+            {
+              "description": null,
+              "name": "Fake Large",
+              "value": "fake-large"
+            },
+            {
+              "description": null,
+              "name": "Fake Small",
+              "value": "fake-small"
+            }
+          ],
+          "current": "fake-large",
+          "id": "model",
+          "name": "Model"
+        },
+        {
+          "category": "effort",
+          "choices": [
+            {
+              "description": null,
+              "name": "Low",
+              "value": "low"
+            },
+            {
+              "description": null,
+              "name": "Medium",
+              "value": "medium"
+            },
+            {
+              "description": null,
+              "name": "High",
+              "value": "high"
+            }
+          ],
+          "current": "medium",
+          "id": "thought_level",
+          "name": "Effort"
+        }
+      ],
+      "context": {
+        "size": 200000,
+        "used": 12000
+      },
+      "effort": null,
+      "elsewhere_working": false,
+      "environment_id": "00000000-0000-7000-8000-000000000006",
+      "harness": "fake",
+      "harness_capabilities": {
+        "driver": "acp",
+        "fork": true,
+        "load": true,
+        "steer": false,
+        "subagent_lineage": true
+      },
+      "held": true,
+      "here": true,
+      "holder": {
+        "epoch": 1,
+        "kind": "desk",
+        "machine": "00000000-0000-7000-8000-000000000007"
+      },
+      "id": "00000000-0000-7000-8000-000000000014",
+      "inbox_address": null,
+      "last_event_at": "2026-01-01T00:00:00.000000Z",
+      "last_outcome": null,
+      "mode": "supervised",
+      "mode_pending": null,
+      "model": "fake-large",
+      "organization_id": "00000000-0000-7000-8000-000000000008",
+      "organization_slug": "cool-corp",
+      "project": "checkout",
+      "project_path": "/tmp/recorded",
+      "pull_request": null,
+      "pull_requests": [],
+      "rank": null,
+      "recap_away": false,
+      "settled_at": null,
+      "snoozed_until": null,
+      "spent": {
+        "cached_read_tokens": 0,
+        "cached_write_tokens": 0,
+        "cost": null,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "starting": null,
+      "status": "open",
+      "tags": {
+        "can_manage": false,
+        "manager": null,
+        "role": null,
+        "started_by": null
+      },
+      "title": "A form for the phone",
+      "turn_started_at": "2026-01-01T00:00:00.000000Z",
+      "turns": 1,
+      "unread": true,
+      "url": "https://desk.test/cool-corp/sessions/00000000-0000-7000-8000-000000000014",
+      "waiting": 1,
+      "woke": false,
+      "working": true,
+      "worktree_path": "/tmp/recorded"
+    },
+    "type": "session"
+  }
+}

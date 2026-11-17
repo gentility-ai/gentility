@@ -1,0 +1,57 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "sessions.transcript",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001",
+      "request": {
+        "session_id": "00000000-0000-7000-8000-000000000002",
+        "type": "session_transcript"
+      }
+    }
+  },
+  "response": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+      "as_of": "2026-01-01T00:00:00.000000Z",
+      "earlier": 0,
+      "from_turn": null,
+      "items": [
+        {
+          "created_at": "2026-01-01T00:00:00.000000Z",
+          "id": "00000000-0000-7000-8000-000000000003",
+          "kind": "message",
+          "message_item_id": null,
+          "ordinal": 1,
+          "parent_call_id": null,
+          "remote_id": "00000000-0000-7000-8000-000000000003",
+          "role": "assistant",
+          "seq": 2,
+          "session_id": "00000000-0000-7000-8000-000000000002",
+          "turn": 1,
+          "withheld": true
+        },
+        {
+          "created_at": "2026-01-01T00:00:00.000000Z",
+          "id": "00000000-0000-7000-8000-000000000004",
+          "kind": "tool_call",
+          "message_item_id": "00000000-0000-7000-8000-000000000003",
+          "ordinal": 2,
+          "parent_call_id": null,
+          "remote_id": "00000000-0000-7000-8000-000000000004",
+          "role": null,
+          "seq": 2,
+          "session_id": "00000000-0000-7000-8000-000000000002",
+          "turn": 1,
+          "withheld": true
+        }
+      ],
+      "reset": true,
+      "source": "copy",
+      "through_seq": 2,
+      "type": "transcript"
+    }
+  }
+}

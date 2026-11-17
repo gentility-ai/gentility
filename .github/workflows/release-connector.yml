@@ -1,0 +1,46 @@
+# A Connector release: a connector/v<major>.<minor>.<patch> tag, built the way
+# connector.yml proves reproducible, with its checksums and the client-owned
+# contract files. Unsigned: a binary is signed where it is bundled.
+name: release connector
+
+on:
+  push:
+    tags: ["connector/v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: connector/go.mod
+          cache: false
+      - name: Build
+        id: build
+        run: |
+          version=${GITHUB_REF_NAME#connector/v}
+          echo "$version" | grep -Eqx '[0-9]+\.[0-9]+\.[0-9]+' ||
+            { echo "not a release tag: $GITHUB_REF_NAME" >&2; exit 1; }
+          for target in linux/amd64 darwin/arm64; do
+            bin/connector-build "$target" "$version" "$GITHUB_SHA" dist
+          done
+          # The same files give the same bytes: sorted, no times, no owners.
+          tar --format=gnu --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner \
+            -C contract -cf - client | gzip -n > dist/client-contract.tgz
+          (cd dist && sha256sum connector-* client-contract.tgz > SHA256SUMS)
+          cat dist/SHA256SUMS
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.build.outputs.version }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* --verify-tag \
+            --title "Connector $VERSION" \
+            --notes "Built from $GITHUB_SHA. Rebuild with bin/connector-build and compare against SHA256SUMS."

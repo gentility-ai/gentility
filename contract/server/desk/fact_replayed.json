@@ -1,0 +1,21 @@
+{
+  "event": "fact",
+  "payload": {
+    "events": [
+      {
+        "client_seq": 7,
+        "event_type": "node_up",
+        "node": "test-desktop.00000000-0000-7000-8000-000000000001/core@0.1.200",
+        "payload": {}
+      }
+    ]
+  },
+  "reply": {
+    "response": {
+      "last_client_seq": 7,
+      "seq": null
+    },
+    "status": "ok"
+  },
+  "topic": "desk:<org>:<machine>"
+}

@@ -1,0 +1,5 @@
+{
+  "event": "projects_changed",
+  "payload": {},
+  "topic": "work_sessions:<org>"
+}

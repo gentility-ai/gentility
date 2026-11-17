@@ -1,0 +1,14 @@
+{
+  "event": "desk_door_withdraw",
+  "payload": {
+    "address": "<address>",
+    "port": 6447
+  },
+  "reply": {
+    "response": {
+      "withdrawn": true
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

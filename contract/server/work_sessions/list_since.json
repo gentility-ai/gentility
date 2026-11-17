@@ -1,0 +1,19 @@
+{
+  "event": "list",
+  "payload": {
+    "since": "2026-01-01T00:00:00.000000Z"
+  },
+  "reply": {
+    "response": {
+      "now": "2026-01-01T00:00:00.000000Z",
+      "sessions": [
+        {
+          "$row": "work_session",
+          "archived_at": "2026-01-01T00:00:00.000000Z"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

@@ -1,0 +1,25 @@
+{
+  "event": "append",
+  "payload": {
+    "epoch": 1,
+    "events": [
+      {
+        "client_seq": 2,
+        "event_type": "turn_started",
+        "payload": {}
+      },
+      {
+        "client_seq": 3,
+        "event_type": "turn_completed",
+        "payload": {}
+      }
+    ]
+  },
+  "reply": {
+    "response": {
+      "last_client_seq": 3
+    },
+    "status": "ok"
+  },
+  "topic": "work_session:<session>"
+}

@@ -1,0 +1,14 @@
+{
+  "event": {
+    "said": {
+      "by": "person",
+      "kind": "answered",
+      "option_id": "allow-once",
+      "request_id": "call_fake_1#0"
+    },
+    "seq": 2,
+    "session_id": "00000000-0000-7000-8000-000000000009",
+    "turn": 1,
+    "type": "said"
+  }
+}

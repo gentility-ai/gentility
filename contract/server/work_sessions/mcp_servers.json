@@ -1,0 +1,54 @@
+{
+  "event": "mcp_servers",
+  "payload": {
+    "project": "github.com/acme/app"
+  },
+  "reply": {
+    "response": {
+      "servers": [
+        {
+          "id": "00000000-0000-7000-8000-000000000001",
+          "level": "org",
+          "name": "Linear",
+          "on": true,
+          "on_here": true,
+          "project_key": null,
+          "state": "connected",
+          "tool_count": 1
+        },
+        {
+          "id": "00000000-0000-7000-8000-000000000002",
+          "level": "org",
+          "name": "Repo",
+          "on": true,
+          "on_here": true,
+          "project_key": "github.com/acme/app",
+          "state": "connected",
+          "tool_count": 1
+        },
+        {
+          "id": "00000000-0000-7000-8000-000000000003",
+          "level": "org",
+          "name": "Sentry",
+          "on": true,
+          "on_here": true,
+          "project_key": null,
+          "state": "needs_login",
+          "tool_count": 0
+        },
+        {
+          "id": "00000000-0000-7000-8000-000000000004",
+          "level": "user",
+          "name": "Notes",
+          "on": true,
+          "on_here": true,
+          "project_key": null,
+          "state": "connected",
+          "tool_count": 1
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

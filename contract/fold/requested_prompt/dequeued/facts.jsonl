@@ -1,0 +1,2 @@
+{"client_seq":1,"event_type":"prompt_queued","inserted_at":"2026-01-01T00:00:01.000000Z","internal":true,"payload":{"queue_id":"q1","text":"then the docs"},"seq":1}
+{"client_seq":2,"event_type":"prompt_requested","inserted_at":"2026-01-01T00:00:02.000000Z","internal":true,"payload":{"queue_id":"q1","text":"then the docs"},"seq":2}

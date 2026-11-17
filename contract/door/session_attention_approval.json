@@ -1,0 +1,158 @@
+{
+  "event": {
+    "session": {
+      "archived_at": null,
+      "attention": {
+        "request": {
+          "call_id": "call_fake_1",
+          "changes": [
+            {
+              "patch": "diff --git a/README.md b/README.md\n--- a/README.md\n+++ b/README.md\n@@ -1 +1 @@\n-old\n+new\n",
+              "path": "README.md",
+              "unshown": null
+            }
+          ],
+          "changes_dropped": false,
+          "input": {
+            "file_path": "README.md",
+            "new_string": "disposable",
+            "old_string": "throwaway"
+          },
+          "input_dropped": false,
+          "kind": "edit",
+          "options": [
+            {
+              "id": "allow-once",
+              "kind": "allow_once",
+              "name": "Yes"
+            },
+            {
+              "id": "allow-always",
+              "kind": "allow_always",
+              "name": "Yes, and don't ask again"
+            },
+            {
+              "id": "reject",
+              "kind": "reject_once",
+              "name": "No"
+            }
+          ],
+          "request_id": "call_fake_1#0",
+          "server": null,
+          "tool": "Edit README.md"
+        },
+        "type": "approval"
+      },
+      "availability": "accept",
+      "branch": "main",
+      "checkout_gone": false,
+      "config": [
+        {
+          "category": "model",
+          "choices": [
+            {
+              "description": null,
+              "name": "Fake Large",
+              "value": "fake-large"
+            },
+            {
+              "description": null,
+              "name": "Fake Small",
+              "value": "fake-small"
+            }
+          ],
+          "current": "fake-large",
+          "id": "model",
+          "name": "Model"
+        },
+        {
+          "category": "effort",
+          "choices": [
+            {
+              "description": null,
+              "name": "Low",
+              "value": "low"
+            },
+            {
+              "description": null,
+              "name": "Medium",
+              "value": "medium"
+            },
+            {
+              "description": null,
+              "name": "High",
+              "value": "high"
+            }
+          ],
+          "current": "medium",
+          "id": "thought_level",
+          "name": "Effort"
+        }
+      ],
+      "context": {
+        "size": 200000,
+        "used": 12000
+      },
+      "effort": null,
+      "elsewhere_working": false,
+      "environment_id": "00000000-0000-7000-8000-000000000006",
+      "harness": "fake",
+      "harness_capabilities": {
+        "driver": "acp",
+        "fork": true,
+        "load": true,
+        "steer": true,
+        "subagent_lineage": true
+      },
+      "held": true,
+      "here": true,
+      "holder": {
+        "epoch": 1,
+        "kind": "desk",
+        "machine": "00000000-0000-7000-8000-000000000007"
+      },
+      "id": "00000000-0000-7000-8000-000000000009",
+      "inbox_address": null,
+      "last_event_at": "2026-01-01T00:00:00.000000Z",
+      "last_outcome": null,
+      "mode": "supervised",
+      "mode_pending": null,
+      "model": "fake-large",
+      "organization_id": "00000000-0000-7000-8000-000000000008",
+      "organization_slug": "cool-corp",
+      "project": "checkout",
+      "project_path": "/tmp/recorded",
+      "pull_request": null,
+      "pull_requests": [],
+      "rank": null,
+      "recap_away": false,
+      "settled_at": null,
+      "snoozed_until": null,
+      "spent": {
+        "cached_read_tokens": 0,
+        "cached_write_tokens": 0,
+        "cost": null,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "starting": null,
+      "status": "open",
+      "tags": {
+        "can_manage": false,
+        "manager": null,
+        "role": null,
+        "started_by": null
+      },
+      "title": "Acted on from the phone",
+      "turn_started_at": "2026-01-01T00:00:00.000000Z",
+      "turns": 1,
+      "unread": true,
+      "url": "https://desk.test/cool-corp/sessions/00000000-0000-7000-8000-000000000009",
+      "waiting": 1,
+      "woke": false,
+      "working": true,
+      "worktree_path": "/tmp/recorded"
+    },
+    "type": "session"
+  }
+}

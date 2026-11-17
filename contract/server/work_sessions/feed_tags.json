@@ -1,0 +1,236 @@
+{
+  "reply": {
+    "response": {
+      "expected": [
+        {
+          "session_id": "00000000-0000-7000-8000-000000000001",
+          "tags": {
+            "can_manage": false,
+            "keep_open": false,
+            "manager": null,
+            "managing": [
+              {
+                "session_id": "00000000-0000-7000-8000-000000000002",
+                "title": "Child"
+              }
+            ],
+            "role": null,
+            "started_by": null
+          }
+        },
+        {
+          "session_id": "00000000-0000-7000-8000-000000000002",
+          "tags": {
+            "can_manage": true,
+            "keep_open": true,
+            "manager": {
+              "session_id": "00000000-0000-7000-8000-000000000001",
+              "title": "Coordinator"
+            },
+            "managing": [],
+            "role": "coordinator",
+            "started_by": {
+              "session_id": "00000000-0000-7000-8000-000000000001",
+              "title": "Coordinator"
+            }
+          }
+        },
+        {
+          "session_id": "00000000-0000-7000-8000-000000000003",
+          "tags": {
+            "can_manage": false,
+            "keep_open": false,
+            "manager": null,
+            "managing": [],
+            "role": "looper",
+            "started_by": null
+          }
+        },
+        {
+          "session_id": "00000000-0000-7000-8000-000000000004",
+          "tags": {
+            "can_manage": false,
+            "keep_open": false,
+            "manager": null,
+            "managing": [],
+            "role": "responder",
+            "started_by": null
+          }
+        }
+      ],
+      "loopers": [
+        {
+          "id": "00000000-0000-7000-8000-000000000005",
+          "model": {
+            "display_name": "Claude Sonnet 4.6",
+            "id": "00000000-0000-7000-8000-000000000006",
+            "slug": "claude-sonnet-4-6"
+          },
+          "name": "Listener",
+          "net_access": false,
+          "next_run_at": null,
+          "notify_handle": null,
+          "responder": true,
+          "schedule": {
+            "cron": null,
+            "enabled": false,
+            "timezone": "UTC"
+          },
+          "slug": "listener",
+          "system_prompt": null,
+          "tasks_enabled": false,
+          "visibility": "private"
+        },
+        {
+          "id": "00000000-0000-7000-8000-000000000007",
+          "model": {
+            "display_name": "Claude Sonnet 4.6",
+            "id": "00000000-0000-7000-8000-000000000006",
+            "slug": "claude-sonnet-4-6"
+          },
+          "name": "Scheduled",
+          "net_access": false,
+          "next_run_at": null,
+          "notify_handle": null,
+          "responder": false,
+          "schedule": {
+            "cron": null,
+            "enabled": false,
+            "timezone": "UTC"
+          },
+          "slug": "scheduled",
+          "system_prompt": null,
+          "tasks_enabled": false,
+          "visibility": "private"
+        }
+      ],
+      "page": {
+        "cursor": 17,
+        "generation": 4000000000000001,
+        "gone": [],
+        "grants": [
+          {
+            "basis_granted_at": null,
+            "basis_scope": null,
+            "by_session_id": null,
+            "expires_at": null,
+            "granted_at": "2026-01-01T00:00:00.000000Z",
+            "grantee_session_id": "00000000-0000-7000-8000-000000000002",
+            "id": "00000000-0000-7000-8000-000000000008",
+            "organization_id": "00000000-0000-7000-8000-000000000009",
+            "reason": null,
+            "revoked_at": null,
+            "row_seq": 10,
+            "scope": "organization:00000000-0000-7000-8000-000000000009",
+            "user_id": "00000000-0000-7000-8000-000000000010"
+          }
+        ],
+        "holders": [
+          {
+            "kind": "server",
+            "label": null,
+            "machine": null,
+            "presence": "online",
+            "row_seq": 1,
+            "seen_at": null
+          },
+          {
+            "kind": "desk",
+            "label": "test desk",
+            "machine": "00000000-0000-7000-8000-000000000010",
+            "presence": "offline",
+            "row_seq": 8,
+            "seen_at": null
+          }
+        ],
+        "more": false,
+        "reads": [],
+        "reset": false,
+        "rows": [
+          {
+            "$row": "feed",
+            "branch": null,
+            "harness": null,
+            "holder": {
+              "epoch": 1,
+              "kind": "desk",
+              "machine": null
+            },
+            "last_server_seq": 0,
+            "manage_grant": false,
+            "manage_grant_expires_at": null,
+            "organization_id": "00000000-0000-7000-8000-000000000009",
+            "owner_id": "00000000-0000-7000-8000-000000000010",
+            "repository": null,
+            "row_seq": 4,
+            "title": "Coordinator"
+          },
+          {
+            "$row": "feed",
+            "branch": null,
+            "harness": null,
+            "holder": {
+              "epoch": 1,
+              "kind": "desk",
+              "machine": "00000000-0000-7000-8000-000000000010"
+            },
+            "keep_open": true,
+            "last_client_seq": 5,
+            "last_server_seq": 0,
+            "manage_grant_expires_at": null,
+            "manager_id": "00000000-0000-7000-8000-000000000001",
+            "organization_id": "00000000-0000-7000-8000-000000000009",
+            "owner_id": "00000000-0000-7000-8000-000000000010",
+            "repository": null,
+            "role": "coordinator",
+            "row_seq": 11,
+            "session_id": "00000000-0000-7000-8000-000000000002",
+            "started_by_id": "00000000-0000-7000-8000-000000000001",
+            "title": "Child"
+          },
+          {
+            "$row": "feed",
+            "branch": null,
+            "harness": "looper",
+            "holder": {
+              "epoch": 1,
+              "kind": "server",
+              "machine": null
+            },
+            "last_server_seq": 0,
+            "looper_id": "00000000-0000-7000-8000-000000000007",
+            "manage_grant": false,
+            "manage_grant_expires_at": null,
+            "organization_id": "00000000-0000-7000-8000-000000000009",
+            "owner_id": "00000000-0000-7000-8000-000000000010",
+            "repository": null,
+            "row_seq": 14,
+            "session_id": "00000000-0000-7000-8000-000000000003",
+            "title": "Scheduled"
+          },
+          {
+            "$row": "feed",
+            "branch": null,
+            "harness": "looper",
+            "holder": {
+              "epoch": 1,
+              "kind": "server",
+              "machine": null
+            },
+            "last_server_seq": 0,
+            "looper_id": "00000000-0000-7000-8000-000000000005",
+            "manage_grant": false,
+            "manage_grant_expires_at": null,
+            "organization_id": "00000000-0000-7000-8000-000000000009",
+            "owner_id": "00000000-0000-7000-8000-000000000010",
+            "repository": null,
+            "row_seq": 17,
+            "session_id": "00000000-0000-7000-8000-000000000004",
+            "title": "Listener"
+          }
+        ]
+      }
+    },
+    "status": "ok"
+  }
+}

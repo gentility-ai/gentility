@@ -1,0 +1,11 @@
+{
+  "attention": {
+    "pending": "R3: Rust reads an approval only off the local approval_parked; the server folds any approval_requested. Ruled: a guess about history, not a contract; stays pending",
+    "server": "approval"
+  },
+  "attention_line": "Wants approval",
+  "branch": "fix-flaky",
+  "last_event_at": "2026-01-01T00:00:04.000000Z",
+  "turns": 1,
+  "working": true
+}

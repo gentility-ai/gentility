@@ -1,0 +1,17 @@
+{
+  "event": "codex_route",
+  "payload": {},
+  "reply": {
+    "response": {
+      "route": {
+        "base_url": "http://[<address>]:8317/v1",
+        "bearer": "codex_fixture-secret",
+        "id": "00000000-0000-7000-8000-000000000001",
+        "label": "Core7",
+        "service_id": "00000000-0000-7000-8000-000000000002"
+      }
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

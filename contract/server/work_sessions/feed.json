@@ -1,0 +1,50 @@
+{
+  "event": "feed",
+  "payload": {
+    "since": 0
+  },
+  "reply": {
+    "response": {
+      "cursor": 6,
+      "generation": 4000000000000001,
+      "gone": [],
+      "grants": [
+        {
+          "basis_granted_at": null,
+          "basis_scope": null,
+          "by_session_id": null,
+          "expires_at": "2026-01-01T00:00:00.000000Z",
+          "granted_at": "2026-01-01T00:00:00.000000Z",
+          "grantee_session_id": "00000000-0000-7000-8000-000000000001",
+          "id": "00000000-0000-7000-8000-000000000002",
+          "organization_id": "00000000-0000-7000-8000-000000000003",
+          "reason": "Manage this organization",
+          "revoked_at": null,
+          "row_seq": 5,
+          "scope": "organization:00000000-0000-7000-8000-000000000003",
+          "user_id": "00000000-0000-7000-8000-000000000004"
+        }
+      ],
+      "holders": [
+        {
+          "kind": "desk",
+          "label": "test-desktop",
+          "machine": "00000000-0000-7000-8000-000000000005",
+          "presence": "offline",
+          "row_seq": 1,
+          "seen_at": null
+        }
+      ],
+      "more": false,
+      "reads": [],
+      "reset": false,
+      "rows": [
+        {
+          "$row": "feed"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

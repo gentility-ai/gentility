@@ -1,0 +1,8 @@
+{
+  "event": "changed",
+  "payload": {
+    "cursor": 2,
+    "scope": "runs"
+  },
+  "topic": "looper_threads:<org>"
+}

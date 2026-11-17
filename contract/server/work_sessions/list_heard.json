@@ -1,0 +1,56 @@
+{
+  "event": "list",
+  "payload": {},
+  "reply": {
+    "response": {
+      "now": "2026-01-01T00:00:00.000000Z",
+      "sessions": [
+        {
+          "$row": "work_session",
+          "last_server_seq": 5,
+          "pull_request": {
+            "checks": "none",
+            "draft": false,
+            "head": "fix-docs",
+            "number": 13,
+            "review": "none",
+            "state": "open",
+            "url": "https://github.com/acme/app/pull/13"
+          },
+          "pull_requests": [
+            {
+              "checks": "none",
+              "draft": false,
+              "head": "fix-flaky",
+              "heard_at": "2026-01-01T00:00:00.000000Z",
+              "linked_at": "2026-01-01T00:00:00.000000Z",
+              "number": 12,
+              "repo_full_name": "acme/app",
+              "review": "none",
+              "source": "desk",
+              "state": "open",
+              "title": null,
+              "url": "https://github.com/acme/app/pull/12"
+            },
+            {
+              "checks": "none",
+              "draft": false,
+              "head": "fix-docs",
+              "heard_at": null,
+              "linked_at": "2026-01-01T00:00:00.000000Z",
+              "number": 13,
+              "repo_full_name": "acme/app",
+              "review": "none",
+              "source": "desk",
+              "state": "open",
+              "title": null,
+              "url": "https://github.com/acme/app/pull/13"
+            }
+          ]
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

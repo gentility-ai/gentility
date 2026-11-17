@@ -1,0 +1,10 @@
+[
+  {
+    "from": "gpt-5.5",
+    "harness": "codex",
+    "kind": "model",
+    "seq": 7,
+    "to": "gpt-5.5-mini",
+    "turn": 2
+  }
+]

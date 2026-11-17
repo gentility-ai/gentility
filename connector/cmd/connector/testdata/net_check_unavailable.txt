@@ -1,0 +1,4 @@
+Daemon observations written: 2026-11-14T08:59:55Z (5s ago)
+UDP probe unavailable. Update the Connector daemon, or wait for its first probe.
+Peer paths unavailable. Update the Connector daemon.
+Peer endpoints: run with sudo and --endpoints to include them.

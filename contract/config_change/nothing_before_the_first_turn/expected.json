@@ -1,0 +1,17 @@
+[
+  {
+    "from": "auto",
+    "kind": "mode",
+    "seq": 6,
+    "to": "full_access",
+    "turn": 1
+  },
+  {
+    "from": "claude-opus-4-6",
+    "harness": "claude_code",
+    "kind": "model",
+    "seq": 7,
+    "to": "claude-sonnet-4-6",
+    "turn": 1
+  }
+]

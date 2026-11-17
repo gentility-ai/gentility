@@ -1,0 +1,2 @@
+// Device signing is local to the developer. Simulator builds need no team.
+#include? "Signing.local.xcconfig"

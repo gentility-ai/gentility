@@ -1,0 +1,31 @@
+{
+  "event": "open",
+  "payload": {
+    "branch": "fix-flaky",
+    "desk_build": "0.1.200-abc1234",
+    "harness": "claude_code",
+    "id": "00000000-0000-7000-8000-000000000001",
+    "mode": "supervised",
+    "model": "claude-sonnet-4-6",
+    "remote_url": "git@github.com:acme/app.git",
+    "title": "Fix the flaky test",
+    "worktree_fingerprint": "abababababababababababababababababababababababababababababababab",
+    "worktree_path": "/Users/someone/code/app"
+  },
+  "reply": {
+    "response": {
+      "accepts": [
+        "internal"
+      ],
+      "epoch": 1,
+      "holder": {
+        "kind": "desk",
+        "machine": "00000000-0000-7000-8000-000000000002"
+      },
+      "id": "00000000-0000-7000-8000-000000000001",
+      "last_client_seq": 1
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

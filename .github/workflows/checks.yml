@@ -1,0 +1,55 @@
+# What every pull request must keep true: nothing private in the tree, the
+# contract whole, the workflows well-formed and holding nothing to steal, and
+# the server-owned contract paths changed only by the contract's publisher.
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      # The general rules over the source, with the reviewed exceptions in
+      # bin/contract-check-allow.json; contract/ is checked as the published
+      # artifact it is, under the rules its publisher applies.
+      - name: Nothing private
+        run: |
+          bin/contract-check --source --exclude contract .
+          bin/contract-check contract
+      - name: The contract, whole
+        run: contract/tools/verify contract
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: connector/go.mod
+          cache: false
+      # No pull request may reach a secret or a write token: no trigger that
+      # runs a pull request's code with this repository's privileges, and no
+      # secret at all.
+      - name: The workflows hold nothing to steal
+        run: |
+          # Bracketed so that this line does not match itself.
+          if grep -rnE 'pull_request[_]target|workflow[_]run|secrets[.]' .github/workflows; then
+            echo "a workflow uses a forbidden trigger or a secret; see AGENTS.md" >&2
+            exit 1
+          fi
+      - name: The workflows, well-formed
+        env:
+          ACTIONLINT: v1.7.12
+        run: go run "github.com/rhysd/actionlint/cmd/actionlint@$ACTIONLINT"
+      - name: The server's contract paths, the publisher's alone
+        if: github.event_name == 'pull_request'
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          HEAD_REF: ${{ github.head_ref }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: bin/publisher-scope "$BASE" "$HEAD" "$HEAD_REF" "$AUTHOR"

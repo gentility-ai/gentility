@@ -1,0 +1,61 @@
+{
+  "join": {
+    "desk": {
+      "build": "0.1.200-abc1234",
+      "features": [
+        "fact_accepts"
+      ],
+      "protocol": {
+        "major": 1
+      },
+      "version": "0.1.200"
+    }
+  },
+  "reply": {
+    "response": {
+      "features": [
+        "brief_body",
+        "thread_briefs",
+        "join_hello",
+        "fact_accepts",
+        "adapter_policy",
+        "asks",
+        "thread_policy",
+        "lease",
+        "message_limits",
+        "inbox",
+        "session_feed",
+        "lease_routing",
+        "lease_asks",
+        "subscriptions",
+        "facts_read",
+        "addressed_questions",
+        "questions_list",
+        "looper_feed",
+        "reach_hints",
+        "turn_bodies",
+        "rpc_loopers",
+        "claude_route",
+        "rpc_machine",
+        "rpc_session",
+        "rpc_sessions",
+        "rpc_inbox",
+        "rpc_grants",
+        "rpc_hosts",
+        "rpc_door",
+        "rpc_refusals",
+        "rpc_pulls",
+        "rpc_projects",
+        "rpc_questions",
+        "rpc_models",
+        "rpc_mcp",
+        "rpc_phone",
+        "transcript_copy",
+        "transcript_copy_paging",
+        "delegated_grants"
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "looper_threads:<org>"
+}

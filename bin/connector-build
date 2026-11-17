@@ -1,0 +1,29 @@
+#!/bin/sh
+# Build one Connector release target, the way every release is built.
+#
+#     bin/connector-build <goos>/<goarch> <version> <commit> <out-dir> [<connector-dir>]
+#
+# Writes <out-dir>/connector-<goos>-<goarch>. The same commit and Go version
+# give the same bytes: no cgo, no file system paths (-trimpath), no
+# version-control stamp (-buildvcs=false), and the version and commit only
+# from the linker flags. The Go version is the one connector/go.mod names;
+# GOTOOLCHAIN=local refuses to fetch another.
+set -eu
+
+target=${1:?usage: connector-build <goos>/<goarch> <version> <commit> <out-dir> [<connector-dir>]}
+version=${2:?version required}
+commit=${3:?commit required}
+out=${4:?out-dir required}
+root=$(cd "$(dirname "$0")/.." && pwd)
+connector=${5:-$root/connector}
+goos=${target%/*}
+goarch=${target#*/}
+module=github.com/gentility-ai/gentility/connector
+
+mkdir -p "$out"
+out=$(cd "$out" && pwd)
+cd "$connector"
+CGO_ENABLED=0 GOOS="$goos" GOARCH="$goarch" GOTOOLCHAIN=local GOFLAGS=-mod=readonly \
+	go build -trimpath -buildvcs=false \
+	-ldflags "-s -w -X $module/internal/version.Connector=$version -X $module/internal/version.Commit=$commit" \
+	-o "$out/connector-$goos-$goarch" ./cmd/connector

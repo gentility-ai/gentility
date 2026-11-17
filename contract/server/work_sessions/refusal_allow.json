@@ -1,0 +1,18 @@
+{
+  "event": "refusal_allow",
+  "payload": {
+    "expires_in": "365d",
+    "id": "00000000-0000-7000-8000-000000000001",
+    "kind": "api",
+    "reach": "all_my_machines"
+  },
+  "reply": {
+    "response": {
+      "kind": "api",
+      "opened": "now",
+      "port": 8080
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

@@ -1,0 +1,28 @@
+{
+  "event": "inbox",
+  "payload": {
+    "at": "2026-01-01T00:00:00.000000Z",
+    "by": {
+      "kind": "person",
+      "session_id": "00000000-0000-7000-8000-000000000001"
+    },
+    "changes": {
+      "settled_at": "2026-01-01T00:00:00.000000Z",
+      "snoozed_until": "2026-01-01T00:00:00.000000Z"
+    },
+    "op_id": "00000000-0000-7000-8000-000000000002",
+    "session_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "applied": [
+        "settled_at",
+        "snoozed_until"
+      ],
+      "row_seq": 5,
+      "stale": []
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

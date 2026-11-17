@@ -1,0 +1,25 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "pulls.open",
+    "params": {
+      "head": "change",
+      "org": "00000000-0000-7000-8000-000000000001",
+      "session_id": "00000000-0000-7000-8000-000000000002",
+      "title": "Change"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32603,
+      "data": {
+        "message": "GitHub may have acted. Check the pull request before asking again.",
+        "reason": "outcome_unknown"
+      },
+      "message": "GitHub may have acted. Check the pull request before asking again."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "questions.dismiss",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001",
+      "question_id": "00000000-0000-7000-8000-000000000002",
+      "session_id": "00000000-0000-7000-8000-000000000003"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32001,
+      "data": {
+        "message": "This connection may not act in that organization.",
+        "reason": "forbidden"
+      },
+      "message": "This connection may not act in that organization."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

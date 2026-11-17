@@ -1,0 +1,24 @@
+[
+  {
+    "content": "fix the flaky test",
+    "id": "0199f000-0000-7000-8000-0000000000b1",
+    "kind": "message",
+    "message_id": null,
+    "parent_call_id": null,
+    "position": 1,
+    "role": "user",
+    "tool": null,
+    "turn": 1
+  },
+  {
+    "content": "Reading the test. It races the deadline.",
+    "id": "0199f000-0000-7000-8000-0000000000b2",
+    "kind": "message",
+    "message_id": null,
+    "parent_call_id": null,
+    "position": 2,
+    "role": "assistant",
+    "tool": null,
+    "turn": 1
+  }
+]

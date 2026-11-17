@@ -1,0 +1,52 @@
+{
+  "event": "refusal_review",
+  "payload": {
+    "id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "review": {
+        "can_allow": true,
+        "count": 14,
+        "destination": {
+          "name": "test-machine",
+          "node_id": "00000000-0000-7000-8000-000000000002"
+        },
+        "expiries": [
+          "1d",
+          "7d",
+          "30d",
+          "365d"
+        ],
+        "first_seen_at": "2026-01-01T00:00:00.000000Z",
+        "id": "00000000-0000-7000-8000-000000000001",
+        "kinds": [
+          "api",
+          "ssh",
+          "desk"
+        ],
+        "last_seen_at": "2026-01-01T00:00:00.000000Z",
+        "open": {
+          "until": null
+        },
+        "owner_name": "<owner>",
+        "port": 8080,
+        "proposed_kind": "api",
+        "protocol": "tcp",
+        "reason": "port_not_declared",
+        "same_owner": true,
+        "service": {
+          "kind": "api",
+          "state": "approved"
+        },
+        "source": {
+          "name": "mac",
+          "node_id": "00000000-0000-7000-8000-000000000003"
+        },
+        "withdrawn": null
+      }
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

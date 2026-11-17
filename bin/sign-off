@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+"""Record a review: bin/sign-off <number> <kind> --sha <sha> --session <id>.
+
+Run from the reviewer's branch, after giving the verdict in its Desk thread.
+--session names that thread, defaulting to DESK_SESSION_ID when set; if both
+are given they must agree. Desk supplies the session's canonical link.
+--withdraw records failure instead. This prevents forgotten reviews, not forgery
+by someone with push access to the repository.
+"""
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+
+
+def run(*args, allowed=(0,)):
+    done = subprocess.run(args, capture_output=True, text=True)
+    if done.returncode not in allowed:
+        sys.exit(f"bin/sign-off: `{' '.join(args)}` failed: {done.stderr.strip()}")
+    return done.stdout.strip()
+
+
+def reviewer_session(session_id):
+    done = subprocess.run(["desk", "call", "session_get", "--json",
+                           json.dumps({"session_id": session_id}), "--scope", "view"],
+                          capture_output=True, text=True)
+    # Desk writes the whole frame even on a refusal (exit 1). Transport or
+    # startup errors have a different exit code and may have no frame at all.
+    if done.returncode not in (0, 1) or not done.stdout:
+        sys.exit(f"bin/sign-off: Desk lookup failed: {done.stderr.strip()}")
+    response = json.loads(done.stdout)["response"]
+    if response["type"] == "error":
+        sys.exit(f"bin/sign-off: Desk refused: {response['message']}")
+    if done.returncode != 0 or response["type"] != "session":
+        sys.exit(f"bin/sign-off: expected session response from Desk, got {response['type']}")
+    session = response["session"]
+    if session["id"] != session_id or not session.get("url"):
+        sys.exit("bin/sign-off: Desk returned no matching session link; restore it before signing")
+    return session
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("number", type=int)
+    parser.add_argument("kind", choices=("ui", "architecture"))
+    parser.add_argument("--sha", required=True, help="the full head SHA you reviewed")
+    parser.add_argument("--session", help="your reviewing Desk thread's id (defaults to DESK_SESSION_ID)")
+    parser.add_argument("--withdraw", action="store_true", help="withdraw this review")
+    args = parser.parse_args()
+    if len(args.sha) != 40:
+        sys.exit("bin/sign-off: expected the full 40-character sha")
+
+    environment_session = os.environ.get("DESK_SESSION_ID")
+    if args.session is not None and environment_session and args.session != environment_session:
+        sys.exit("bin/sign-off: --session and DESK_SESSION_ID differ; use your reviewing thread's id")
+    session_id = args.session or environment_session
+    if not session_id:
+        sys.exit("bin/sign-off: --session or DESK_SESSION_ID is required; name your reviewing Desk thread")
+    pr = json.loads(run("gh", "pr", "view", str(args.number), "--json",
+                        "headRefOid,headRefName"))
+    if pr["headRefOid"] != args.sha:
+        sys.exit(f"bin/sign-off: head moved to {pr['headRefOid']}; review that head before signing")
+    # Exit 1 means a detached HEAD, a normal checkout for a read-only reviewer.
+    branch = run("git", "symbolic-ref", "--quiet", "--short", "HEAD", allowed=(0, 1))
+    if branch == pr["headRefName"]:
+        sys.exit("bin/sign-off: cannot sign your own branch; ask another thread to review")
+    session = reviewer_session(session_id)
+    repo = run("gh", "repo", "view", "--json", "nameWithOwner", "--jq", ".nameWithOwner")
+    state = "failure" if args.withdraw else "success"
+    description = f"{session_id} at {args.sha[:9]}"
+    run("gh", "api", "--method", "POST", f"repos/{repo}/statuses/{args.sha}",
+        "-f", f"context=sign-off/{args.kind}", "-f", f"state={state}",
+        "-f", f"target_url={session['url']}", "-f", f"description={description}")
+    print(f"{args.kind} sign-off {state} on {args.sha}")
+
+
+if __name__ == "__main__":
+    main()

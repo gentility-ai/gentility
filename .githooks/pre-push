@@ -1,0 +1,22 @@
+#!/bin/sh
+# Before a push: the private deny check (bin/private-check) over each pushed
+# ref's tree and the commits the remote does not yet have. Enable it in a
+# clone with: git config core.hooksPath .githooks
+set -eu
+
+root=$(git rev-parse --show-toplevel)
+zero=0000000000000000000000000000000000000000
+while read -r local_ref local_sha remote_ref remote_sha; do
+	[ "$local_sha" = "$zero" ] && continue
+	if [ "$remote_sha" = "$zero" ]; then
+		# A new branch: the commits not yet on the remote's main.
+		base=$(git merge-base "$local_sha" "refs/remotes/origin/main" 2>/dev/null || true)
+	else
+		base=$remote_sha
+	fi
+	if [ -n "$base" ]; then
+		"$root/bin/private-check" "$root" "$local_sha" "$base" || exit 1
+	else
+		"$root/bin/private-check" "$root" "$local_sha" || exit 1
+	fi
+done

@@ -1,0 +1,14 @@
+{
+  "event": "desk_door",
+  "payload": {
+    "address": "<address>",
+    "port": 6447
+  },
+  "reply": {
+    "response": {
+      "approved": true
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

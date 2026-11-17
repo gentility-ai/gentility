@@ -1,0 +1,138 @@
+{
+  "event": "questions_list",
+  "payload": {
+    "section": "closed"
+  },
+  "reply": {
+    "response": {
+      "closed_count": 3,
+      "data": [
+        {
+          "answerable": true,
+          "asked_at": "2026-01-01T00:00:00.000000Z",
+          "ended_at": "2026-01-01T00:00:00.000000Z",
+          "ended_by": {
+            "display": "you",
+            "kind": "person"
+          },
+          "expires_at": "2026-01-01T00:00:00.000000Z",
+          "form": {
+            "properties": {
+              "ready": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "ready"
+            ],
+            "type": "object"
+          },
+          "holder_online": false,
+          "joined_count": 0,
+          "machine": {
+            "id": "00000000-0000-7000-8000-000000000001",
+            "label": "test-desktop"
+          },
+          "parked": true,
+          "project": {
+            "name": "acme/app"
+          },
+          "question_id": "00000000-0000-7000-8000-000000000002",
+          "session_id": "00000000-0000-7000-8000-000000000003",
+          "source": "agent",
+          "state": "declined",
+          "text": "Ready?",
+          "thread_title": "Fix the flaky test"
+        },
+        {
+          "answerable": true,
+          "asked_at": "2026-01-01T00:00:00.000000Z",
+          "ended_at": "2026-01-01T00:00:00.000000Z",
+          "ended_by": {
+            "display": "you",
+            "kind": "person"
+          },
+          "expires_at": "2026-01-01T00:00:00.000000Z",
+          "form": {
+            "properties": {
+              "ready": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "ready"
+            ],
+            "type": "object"
+          },
+          "holder_online": false,
+          "joined_count": 0,
+          "machine": {
+            "id": "00000000-0000-7000-8000-000000000001",
+            "label": "test-desktop"
+          },
+          "parked": true,
+          "project": {
+            "name": "acme/app"
+          },
+          "question_id": "00000000-0000-7000-8000-000000000004",
+          "session_id": "00000000-0000-7000-8000-000000000003",
+          "source": "agent",
+          "state": "declined",
+          "text": "Ready?",
+          "thread_title": "Fix the flaky test"
+        },
+        {
+          "answerable": true,
+          "asked_at": "2026-01-01T00:00:00.000000Z",
+          "ended_at": "2026-01-01T00:00:00.000000Z",
+          "ended_by": {
+            "display": "someone@example.com",
+            "kind": "person"
+          },
+          "expires_at": "2026-01-01T00:00:00.000000Z",
+          "form": {
+            "properties": {
+              "answer": {
+                "enum": [
+                  "Small",
+                  "Full"
+                ],
+                "title": "Choose one",
+                "type": "string"
+              }
+            },
+            "required": [
+              "answer"
+            ],
+            "type": "object"
+          },
+          "holder_online": false,
+          "joined_count": 0,
+          "machine": {
+            "id": "00000000-0000-7000-8000-000000000001",
+            "label": "test-desktop"
+          },
+          "parked": false,
+          "project": {
+            "name": "acme/app"
+          },
+          "question_id": "00000000-0000-7000-8000-000000000005",
+          "reason": "No longer needed",
+          "session_id": "00000000-0000-7000-8000-000000000003",
+          "source": "agent",
+          "state": "cancelled",
+          "text": "Which approach?",
+          "thread_title": "Fix the flaky test"
+        }
+      ],
+      "has_more": false,
+      "next_cursor": null,
+      "now": "2026-01-01T00:00:00.000000Z",
+      "open_count": 0,
+      "open_session_ids": [],
+      "starts_at": "2026-01-01T00:00:00.000000Z"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

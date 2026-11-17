@@ -1,0 +1,18 @@
+{
+  "event": "questions_list",
+  "payload": {},
+  "reply": {
+    "response": {
+      "closed_count": 0,
+      "data": [],
+      "has_more": false,
+      "next_cursor": null,
+      "now": "2026-01-01T00:00:00.000000Z",
+      "open_count": 0,
+      "open_session_ids": [],
+      "starts_at": "2026-01-01T00:00:00.000000Z"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

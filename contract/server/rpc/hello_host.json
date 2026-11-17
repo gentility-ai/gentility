@@ -1,0 +1,78 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "rpc.hello",
+    "params": {
+      "build": "nightly",
+      "features": [
+        "rpc_loopers",
+        "looper_feed"
+      ],
+      "generation": 1,
+      "incarnation": "box-1",
+      "protocol": {
+        "major": 1
+      },
+      "version": "0.1.700"
+    }
+  },
+  "response": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+      "features": [
+        "brief_body",
+        "thread_briefs",
+        "join_hello",
+        "fact_accepts",
+        "adapter_policy",
+        "asks",
+        "thread_policy",
+        "lease",
+        "message_limits",
+        "inbox",
+        "session_feed",
+        "lease_routing",
+        "lease_asks",
+        "subscriptions",
+        "facts_read",
+        "addressed_questions",
+        "questions_list",
+        "looper_feed",
+        "reach_hints",
+        "turn_bodies",
+        "rpc_loopers",
+        "claude_route",
+        "rpc_machine",
+        "rpc_session",
+        "rpc_sessions",
+        "rpc_inbox",
+        "rpc_grants",
+        "rpc_hosts",
+        "rpc_door",
+        "rpc_refusals",
+        "rpc_pulls",
+        "rpc_projects",
+        "rpc_questions",
+        "rpc_models",
+        "rpc_mcp",
+        "rpc_phone",
+        "transcript_copy",
+        "transcript_copy_paging",
+        "delegated_grants"
+      ],
+      "orgs": [
+        {
+          "id": "00000000-0000-7000-8000-000000000001",
+          "name": "<name>",
+          "slug": "<slug>"
+        }
+      ],
+      "principal": {
+        "kind": "desk_host",
+        "machine_id": "00000000-0000-7000-8000-000000000002"
+      }
+    }
+  }
+}

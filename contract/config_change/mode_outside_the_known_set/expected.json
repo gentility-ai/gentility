@@ -1,0 +1,9 @@
+[
+  {
+    "from": "supervised",
+    "kind": "mode",
+    "seq": 5,
+    "to": "auto",
+    "turn": 1
+  }
+]

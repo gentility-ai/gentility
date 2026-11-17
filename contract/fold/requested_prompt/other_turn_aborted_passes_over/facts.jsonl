@@ -1,0 +1,3 @@
+{"client_seq":1,"event_type":"prompt_requested","inserted_at":"2026-01-01T00:00:01.000000Z","internal":true,"payload":{"text":"fix the test"},"seq":1}
+{"client_seq":2,"event_type":"turn_started","inserted_at":"2026-01-01T00:00:02.000000Z","internal":false,"payload":{"started_by":"agent"},"seq":2}
+{"client_seq":3,"event_type":"turn_aborted","inserted_at":"2026-01-01T00:00:03.000000Z","internal":false,"payload":{"reason":"superseded"},"seq":3}

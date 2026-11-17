@@ -1,0 +1,32 @@
+{
+  "event": "append",
+  "payload": {
+    "epoch": 1,
+    "events": [
+      {
+        "client_seq": 4,
+        "event_type": "question_answered",
+        "payload": {
+          "action": "accept",
+          "question_id": "00000000-0000-7000-8000-000000000001",
+          "request_id": "harness-17"
+        }
+      },
+      {
+        "client_seq": 5,
+        "event_type": "question_answered",
+        "payload": {
+          "action": "accept",
+          "request_id": "harness-17"
+        }
+      }
+    ]
+  },
+  "reply": {
+    "response": {
+      "last_client_seq": 5
+    },
+    "status": "ok"
+  },
+  "topic": "work_session:<session>"
+}

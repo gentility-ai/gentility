@@ -1,0 +1,23 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "sessions.transcript",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001",
+      "request": {}
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32602,
+      "data": {
+        "message": "The server could not read this transcript request.",
+        "reason": "malformed_payload"
+      },
+      "message": "The server could not read this transcript request."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

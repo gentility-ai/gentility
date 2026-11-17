@@ -1,0 +1,8 @@
+connector 0.1.0 (node_capver 1)
+node       node-1  (relay-1)
+head       https://head.example
+config     revision 5, last applied
+
+the daemon has not written a status yet. On a server, start it:
+
+  connector serve

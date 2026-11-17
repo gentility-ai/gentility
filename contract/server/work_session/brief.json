@@ -1,0 +1,16 @@
+{
+  "event": "brief",
+  "payload": {},
+  "reply": {
+    "response": {
+      "body": "The pinned body.",
+      "brief_id": "00000000-0000-7000-8000-000000000001",
+      "bytes": 16,
+      "rendered_sha256": "b3dc35d52f863be6c68b58e89c991737f1494031068d29de6c8b08f704b64c63",
+      "revision_id": "00000000-0000-7000-8000-000000000002",
+      "slug": "body-contract"
+    },
+    "status": "ok"
+  },
+  "topic": "work_session:<session>"
+}

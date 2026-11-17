@@ -1,0 +1,22 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "models.omp_route",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32603,
+      "data": {
+        "message": "Desk could not confirm this thread's oh-my-pi route. Try again.",
+        "reason": "outcome_unknown"
+      },
+      "message": "Desk could not confirm this thread's oh-my-pi route. Try again."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

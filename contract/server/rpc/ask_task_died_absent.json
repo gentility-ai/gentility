@@ -1,0 +1,25 @@
+{
+  "request": {
+    "id": 41,
+    "jsonrpc": "2.0",
+    "method": "sessions.ask",
+    "params": {
+      "kind": "session_stop",
+      "org": "00000000-0000-7000-8000-000000000001",
+      "payload": {},
+      "session_id": "00000000-0000-7000-8000-000000000002"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32603,
+      "data": {
+        "message": "This request raised no ask.",
+        "reason": "task_died"
+      },
+      "message": "This request raised no ask."
+    },
+    "id": 41,
+    "jsonrpc": "2.0"
+  }
+}

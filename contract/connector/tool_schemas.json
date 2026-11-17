@@ -1,0 +1,353 @@
+{
+  "task_check": {
+    "type": "object",
+    "required": [
+      "task_id",
+      "organization"
+    ],
+    "properties": {
+      "cause": {
+        "type": "string",
+        "description": "Optional evidence or decision rationale"
+      },
+      "position": {
+        "type": "integer",
+        "description": "1-based checklist position",
+        "minimum": 1
+      },
+      "task_id": {
+        "type": "string",
+        "description": "Task reference (T-142) or UUID"
+      },
+      "item_id": {
+        "type": "string",
+        "description": "Stable checklist item UUID"
+      },
+      "organization": {
+        "type": "string",
+        "description": "The organization this call acts on — its slug or id. Use get_organization_info to list the organizations you can use."
+      }
+    },
+    "oneOf": [
+      {
+        "required": [
+          "item_id"
+        ]
+      },
+      {
+        "required": [
+          "position"
+        ]
+      }
+    ]
+  },
+  "task_close": {
+    "type": "object",
+    "required": [
+      "task_id",
+      "disposition",
+      "cause",
+      "organization"
+    ],
+    "properties": {
+      "cause": {
+        "type": "string",
+        "description": "Required explanation for closing the task"
+      },
+      "disposition": {
+        "type": "string",
+        "enum": [
+          "done",
+          "dismissed",
+          "superseded"
+        ]
+      },
+      "superseded_by": {
+        "type": "string",
+        "description": "Replacement task's reference (T-142) or UUID, when superseded"
+      },
+      "task_id": {
+        "type": "string",
+        "description": "Task reference (T-142) or UUID"
+      },
+      "organization": {
+        "type": "string",
+        "description": "The organization this call acts on — its slug or id. Use get_organization_info to list the organizations you can use."
+      }
+    }
+  },
+  "task_create": {
+    "type": "object",
+    "required": [
+      "kinds",
+      "organization"
+    ],
+    "properties": {
+      "context": {
+        "type": "object",
+        "description": "Structured correlation context. plan_id must be a non-empty string unique among the open and done tasks of the task's project, or of tasks with no project; dismissed and superseded tasks release theirs. Other keys are unvalidated."
+      },
+      "title": {
+        "type": "string",
+        "description": "Short outcome-oriented task title"
+      },
+      "text": {
+        "type": "string",
+        "description": "Freeform task text. Enough on its own: the first line becomes the title and the full text becomes the body. When body and text are both provided, body takes precedence over text."
+      },
+      "items": {
+        "type": "array",
+        "description": "Ordered checklist entries as strings or structured runbook steps",
+        "items": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "required": [
+                "text"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "description": "Step label"
+                },
+                "body": {
+                  "type": "string",
+                  "description": "Markdown instructions"
+                },
+                "checked": {
+                  "type": "boolean"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "for": {
+        "type": "string",
+        "description": "Optional assignment target: user:<email-or-membership-id>, group:<slug>, or looper:<slug>. When omitted, the task is unassigned."
+      },
+      "body": {
+        "type": "string",
+        "description": "Markdown context or runbook overview"
+      },
+      "project": {
+        "type": "string",
+        "description": "Project slug from project_list"
+      },
+      "tags": {
+        "type": "array",
+        "description": "Tag slugs in the project. A new slug is coined; one too close to an existing tag is refused with candidates.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "kinds": {
+        "type": "array",
+        "description": "Required. Slugs from task_kind_list or task_kind_search. Unknown slugs come back with suggestions; coin a new kind with task_kind_create only when no existing kind fits.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "resources": {
+        "type": "array",
+        "description": "Typed resources. Organization-local kinds require id; url requires url and forbids id; git_ref requires id and ref; attachment requires filename and exactly one of content or content_base64, and forbids id and url.",
+        "items": {
+          "type": "object",
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "filename": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "db_target",
+                "data_plan",
+                "saved_query",
+                "secret",
+                "egress",
+                "codebase",
+                "factory_case",
+                "git_ref",
+                "url",
+                "attachment",
+                "session"
+              ]
+            },
+            "ref": {
+              "type": "string",
+              "description": "git_ref only: branch name or 7-40 character commit sha"
+            },
+            "url": {
+              "type": "string",
+              "description": "Absolute external http(s) URL"
+            },
+            "mime": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string",
+              "description": "UTF-8"
+            },
+            "content_base64": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "waiting_on": {
+        "type": "string",
+        "description": "External dependency"
+      },
+      "due_at": {
+        "type": "string",
+        "description": "ISO8601 deadline"
+      },
+      "recurrence_period": {
+        "type": "string",
+        "enum": [
+          "day",
+          "week",
+          "month"
+        ],
+        "description": "Repeat period. Completing the task creates the next occurrence."
+      },
+      "confirm_new_tags": {
+        "type": "array",
+        "description": "New tag slugs to coin despite a near match",
+        "items": {
+          "type": "string"
+        }
+      },
+      "blocked_by": {
+        "type": "array",
+        "description": "References (T-142) or UUIDs of same-organization tasks blocking this one",
+        "items": {
+          "type": "string"
+        }
+      },
+      "dedup_key": {
+        "type": "string",
+        "description": "Stable caller-namespaced key used to make retries return the same task"
+      },
+      "organization": {
+        "type": "string",
+        "description": "The organization this call acts on — its slug or id. Use get_organization_info to list the organizations you can use."
+      }
+    }
+  },
+  "task_list": {
+    "type": "object",
+    "required": [
+      "organization"
+    ],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": [
+          "open",
+          "done",
+          "dismissed",
+          "superseded",
+          "all"
+        ]
+      },
+      "group": {
+        "type": "string",
+        "description": "Access-group id"
+      },
+      "q": {
+        "type": "string",
+        "description": "Case-insensitive title/body search"
+      },
+      "limit": {
+        "maximum": 100,
+        "type": "integer",
+        "minimum": 1
+      },
+      "for": {
+        "type": "string",
+        "enum": [
+          "me"
+        ]
+      },
+      "project": {
+        "type": "string",
+        "description": "Project slug, or none for tasks with no project"
+      },
+      "assignee": {
+        "type": "string",
+        "description": "Membership id"
+      },
+      "detail": {
+        "default": "lean",
+        "type": "string",
+        "enum": [
+          "lean",
+          "full"
+        ]
+      },
+      "tags": {
+        "type": "array",
+        "description": "Tag slugs; without project, the slug in any project",
+        "items": {
+          "type": "string"
+        }
+      },
+      "kinds": {
+        "type": "array",
+        "description": "Kind slugs to filter by",
+        "items": {
+          "type": "string"
+        }
+      },
+      "kinds_match": {
+        "type": "string",
+        "enum": [
+          "any",
+          "all"
+        ],
+        "description": "Whether a task must carry any of the kinds (default) or all of them"
+      },
+      "tags_match": {
+        "type": "string",
+        "enum": [
+          "any",
+          "all"
+        ],
+        "description": "Whether a task must carry any of the tags (default) or all of them"
+      },
+      "actionable": {
+        "type": "boolean"
+      },
+      "context_match": {
+        "type": "object",
+        "description": "JSON containment filter"
+      },
+      "unclaimed": {
+        "type": "boolean"
+      },
+      "events_limit": {
+        "maximum": 100,
+        "type": "integer",
+        "description": "Events per lean task (default 5); 0 omits events; ignored for full",
+        "minimum": 0
+      },
+      "organization": {
+        "type": "string",
+        "description": "The organization this call acts on — its slug or id. Use get_organization_info to list the organizations you can use."
+      }
+    }
+  }
+}

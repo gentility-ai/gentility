@@ -1,0 +1,41 @@
+#!/bin/sh
+# The phone reads every recorded answer to what it sends, as it reads them.
+#
+#     bin/phone-readers
+#
+# Compiles phone/ios/ContractReaders/main.swift with the phone's own
+# wire types (Kit/ServerWire.swift, Kit/JSONValue.swift, Foundation only) and
+# runs it over contract/server. The phone's XCTests need a Mac and
+# no CI job runs them; this is the half of its contract readers that runs on
+# Linux, in desk-test.yml's core job. A missing swiftc fails, never skips.
+set -eu
+
+root=$(cd "$(dirname "$0")/.." && pwd)
+ios="$root/phone/ios"
+
+command -v swiftc >/dev/null || {
+	echo "phone-readers: no swiftc on PATH" >&2
+	exit 1
+}
+
+out=$(mktemp -d)
+trap 'rm -rf "$out"' EXIT
+
+swiftc -o "$out/readers" \
+	"$ios/Kit/ServerWire.swift" \
+	"$ios/Kit/JSONValue.swift" \
+	"$ios/ContractReaders/main.swift"
+if [ -n "${CI:-}${GITHUB_ACTIONS:-}" ] && [ "${GENTILITY_CONTRACT_DIR+x}" = x ]; then
+    echo "phone-readers: local contract overrides are forbidden in CI" >&2
+    exit 1
+fi
+"$out/readers" "${GENTILITY_CONTRACT_DIR:-$root/contract}/server"
+
+# The pairing origin is a build-mode boundary. Exercise both versions even
+# where CI has no iOS simulator, compiling the production parser itself.
+swiftc -o "$out/pairing-release" \
+	"$ios/Kit/ClaimLink.swift" "$ios/ClaimOriginChecks/main.swift"
+"$out/pairing-release"
+swiftc -D DEBUG -o "$out/pairing-debug" \
+	"$ios/Kit/ClaimLink.swift" "$ios/ClaimOriginChecks/main.swift"
+"$out/pairing-debug"

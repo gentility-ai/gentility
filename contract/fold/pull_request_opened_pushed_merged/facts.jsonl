@@ -1,0 +1,10 @@
+{"client_seq":1,"event_type":"opened","inserted_at":"2026-01-01T00:00:01.000000Z","internal":false,"payload":{"branch":"fix-flaky","harness":"claude_code","mode":"supervised","model":"claude-sonnet-4-6","remote_url":"git@github.com:acme/app.git","title":"Fix the flaky test"},"seq":1}
+{"client_seq":2,"event_type":"agent_opened","inserted_at":"2026-01-01T00:00:02.000000Z","internal":true,"payload":{},"seq":2}
+{"client_seq":3,"event_type":"turn_started","inserted_at":"2026-01-01T00:00:03.000000Z","internal":false,"payload":{"prompt":"fix the flaky test"},"seq":3}
+{"client_seq":4,"event_type":"turn_completed","inserted_at":"2026-01-01T00:00:04.000000Z","internal":false,"payload":{"cost":"0.0123","input_tokens":1200,"output_tokens":300},"seq":4}
+{"client_seq":5,"event_type":"branch_pushed","inserted_at":"2026-01-01T00:00:05.000000Z","internal":false,"payload":{"branch":"fix-flaky","remote":"origin","sha":"0123456789abcdef0123456789abcdef01234567"},"seq":5}
+{"client_seq":null,"event_type":"pr_opened","inserted_at":"2026-01-01T00:00:06.000000Z","internal":false,"payload":{"base":"main","draft":false,"head":"fix-flaky","number":42,"repo_full_name":"acme/app","source":"matched","title":"Fix the flaky test","url":"https://github.com/acme/app/pull/42"},"seq":6}
+{"client_seq":6,"event_type":"turn_started","inserted_at":"2026-01-01T00:00:07.000000Z","internal":false,"payload":{"prompt":"address the review"},"seq":7}
+{"client_seq":7,"event_type":"turn_completed","inserted_at":"2026-01-01T00:00:08.000000Z","internal":false,"payload":{"cost":"0.0123","input_tokens":1200,"output_tokens":300},"seq":8}
+{"client_seq":8,"event_type":"branch_pushed","inserted_at":"2026-01-01T00:00:09.000000Z","internal":false,"payload":{"branch":"fix-flaky","remote":"origin","sha":"0123456789abcdef0123456789abcdef01234567"},"seq":9}
+{"client_seq":null,"event_type":"pr_merged","inserted_at":"2026-01-01T00:00:10.000000Z","internal":false,"payload":{"merge_commit_sha":"0123456789abcdef0123456789abcdef01234567","number":42,"repo_full_name":"acme/app"},"seq":10}

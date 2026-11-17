@@ -1,0 +1,16 @@
+[
+  {
+    "from": "supervised",
+    "kind": "mode",
+    "seq": 6,
+    "to": "auto",
+    "turn": 2
+  },
+  {
+    "from": "auto",
+    "kind": "mode",
+    "seq": 9,
+    "to": "full_access",
+    "turn": 3
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "event": "facts",
+  "payload": {
+    "after_seq": 1,
+    "session_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "facts": [
+        {
+          "at": "2026-01-01T00:00:00.000000Z",
+          "client_seq": null,
+          "event_type": "question_expired",
+          "internal": false,
+          "payload": {
+            "question_id": "00000000-0000-7000-8000-000000000002"
+          },
+          "seq": 2
+        }
+      ],
+      "more": false
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

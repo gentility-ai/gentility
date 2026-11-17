@@ -1,0 +1,27 @@
+{
+  "genscale_version": "v1.101.0-pre.6net.7",
+  "org_prefix_bits": 64,
+  "reserved": [
+    {
+      "index": 0,
+      "prefix": "fd06:6e7::/64",
+      "source": "TailscaleServiceIPv6String fd06:6e7::53"
+    },
+    {
+      "index": 2842,
+      "prefix": "fd06:6e7:0:b1a::/64",
+      "source": "TailscaleViaRange"
+    },
+    {
+      "index": 43794,
+      "prefix": "fd06:6e7:0:ab12::/64",
+      "source": "Tailscale4To6Range"
+    },
+    {
+      "index": 61411,
+      "prefix": "fd06:6e7:0:efe3::/64",
+      "source": "TailscaleEphemeral6Range"
+    }
+  ],
+  "ula_range": "fd06:6e7::/48"
+}

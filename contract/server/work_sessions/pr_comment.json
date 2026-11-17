@@ -1,0 +1,18 @@
+{
+  "event": "pr_comment",
+  "payload": {
+    "body": "Fixed in abc1234.",
+    "session_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "comment_id": 901,
+      "number": 12,
+      "repo": "acme/app",
+      "review_id": null,
+      "url": "https://github.com/acme/app/pull/12#issuecomment-901"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

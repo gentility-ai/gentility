@@ -1,0 +1,9 @@
+[
+  {
+    "from": "supervised",
+    "kind": "mode",
+    "seq": 4,
+    "to": "auto_accept_edits",
+    "turn": 1
+  }
+]

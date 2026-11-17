@@ -1,0 +1,32 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "rpc.hello",
+    "params": {
+      "build": "nightly",
+      "features": [
+        "rpc_loopers",
+        "looper_feed"
+      ],
+      "generation": 0,
+      "incarnation": "box-1",
+      "protocol": {
+        "major": 1
+      },
+      "version": "0.1.700"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32001,
+      "data": {
+        "message": "This host's binding has moved on; stop.",
+        "reason": "superseded"
+      },
+      "message": "This host's binding has moved on; stop."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

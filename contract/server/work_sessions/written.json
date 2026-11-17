@@ -1,0 +1,52 @@
+{
+  "event": "written",
+  "payload": {
+    "session_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "more": false,
+      "written": [
+        {
+          "at": "2026-01-01T00:00:00.000000Z",
+          "event_type": "question_asked",
+          "payload": {
+            "elicitation": {
+              "message": "Ship it, or wait for review?",
+              "requestedSchema": {
+                "properties": {
+                  "choice": {
+                    "enum": [
+                      "ship",
+                      "wait"
+                    ],
+                    "title": "What next?",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "choice"
+                ],
+                "type": "object"
+              }
+            },
+            "expires_at": "2026-01-01T00:00:00.000000Z",
+            "question_id": "00000000-0000-7000-8000-000000000002",
+            "run_id": "00000000-0000-7000-8000-000000000002"
+          },
+          "seq": 2
+        },
+        {
+          "at": "2026-01-01T00:00:00.000000Z",
+          "event_type": "question_expired",
+          "payload": {
+            "question_id": "00000000-0000-7000-8000-000000000002"
+          },
+          "seq": 3
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

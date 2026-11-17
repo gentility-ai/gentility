@@ -1,0 +1,35 @@
+#!/bin/sh
+# Gentility's private deny check, on the machines that have it.
+#
+#     bin/private-check <checkout> [<revision> [<base>]]
+#
+# Gentility keeps a list of private values that must never appear here, and
+# does not publish it. On Gentility's own machines, `git config
+# gentility.denyCheck` names the program that runs it; the pre-push hook
+# (.githooks/pre-push) and bin/merge-pr call this before anything is pushed
+# or merged. Elsewhere it has nothing to run and passes, and CI's general
+# rules (bin/contract-check) are the check.
+#
+# A machine that runs Desk (~/.gentility/desk), where Gentility's agents
+# work, with no check configured is refused rather than let through. Anyone
+# outside Gentility who runs Desk sets `git config gentility.denyCheck none`.
+set -eu
+
+checker=$(git config --get gentility.denyCheck || true)
+if [ "$checker" = none ]; then
+	exit 0
+fi
+if [ -z "$checker" ]; then
+	if [ -d "$HOME/.gentility/desk" ]; then
+		echo "private-check: this machine runs Desk and no deny check is configured." >&2
+		echo "  Gentility's machines: git config gentility.denyCheck <gentility-core>/bin/client-deny-check" >&2
+		echo "  Anyone else: git config gentility.denyCheck none" >&2
+		exit 1
+	fi
+	exit 0
+fi
+if [ ! -x "$checker" ]; then
+	echo "private-check: gentility.denyCheck names $checker, which is not an executable file" >&2
+	exit 1
+fi
+exec "$checker" "$@"

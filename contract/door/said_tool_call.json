@@ -1,0 +1,18 @@
+{
+  "event": {
+    "said": {
+      "call_id": "call_fake_1",
+      "kind": "tool_call",
+      "name": "Edit",
+      "parent_call_id": null,
+      "settled": false,
+      "status": "pending",
+      "title": "Edit README.md",
+      "tool_kind": "edit"
+    },
+    "seq": 3,
+    "session_id": "00000000-0000-7000-8000-000000000001",
+    "turn": 1,
+    "type": "said"
+  }
+}

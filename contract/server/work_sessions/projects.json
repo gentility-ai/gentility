@@ -1,0 +1,20 @@
+{
+  "event": "projects",
+  "payload": {},
+  "reply": {
+    "response": {
+      "projects": [
+        {
+          "name": "App",
+          "repositories": [
+            "acme/app",
+            "acme/web"
+          ],
+          "slug": "app"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

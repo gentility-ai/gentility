@@ -1,0 +1,15 @@
+{
+  "event": "omp_access",
+  "payload": {},
+  "reply": {
+    "response": {
+      "models": [
+        "glm-5.3-flash",
+        "mimo-v2.6-pro",
+        "deepseek-v4-pro"
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

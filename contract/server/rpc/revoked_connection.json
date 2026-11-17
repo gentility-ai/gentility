@@ -1,0 +1,10 @@
+{
+  "notification": {
+    "jsonrpc": "2.0",
+    "method": "rpc.revoked",
+    "params": {
+      "reason": "credential_revoked",
+      "scope": "connection"
+    }
+  }
+}

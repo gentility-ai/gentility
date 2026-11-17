@@ -1,0 +1,14 @@
+{
+  "event": "ask_read",
+  "payload": {
+    "ask_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "ask_id": "00000000-0000-7000-8000-000000000001",
+      "status": "expired"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

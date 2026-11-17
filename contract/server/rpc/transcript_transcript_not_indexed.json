@@ -1,0 +1,26 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "sessions.transcript",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001",
+      "request": {
+        "session_id": "00000000-0000-7000-8000-000000000002",
+        "type": "session_transcript"
+      }
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32001,
+      "data": {
+        "message": "The server's copy of this thread is not ready yet. Open it when its machine is back.",
+        "reason": "transcript_not_indexed"
+      },
+      "message": "The server's copy of this thread is not ready yet. Open it when its machine is back."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

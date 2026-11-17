@@ -1,0 +1,17 @@
+[
+  {"name":"offer","frame":{"type":"pairing_offer","pairing_id":"fixture-pairing","renewal_secret":"fixture-secret"}},
+  {"name":"offer_matched_secret","frame":{"type":"pairing_offer","pairing_id":"fixture-pairing","renewal_secret":"fixture-secret","matched":"secret"}},
+  {"name":"offer_matched_pending","frame":{"type":"pairing_offer","pairing_id":"fixture-pairing","renewal_secret":"fixture-secret","matched":"pending"}},
+  {"name":"offer_unpresented_pending","frame":{"type":"pairing_offer","pairing_id":"fixture-pairing","renewal_secret":"fixture-secret","matched":"pending"}},
+  {"name":"accept","frame":{"type":"pairing_accept","secret":"fixture-secret"}},
+  {"name":"ready","frame":{"type":"pairing_ready","pairing_id":"fixture-pairing"}},
+  {"name":"renew","frame":{"type":"pairing_renew","secret":"fixture-current","pending":null}},
+  {"name":"pending_committed","frame":{"type":"pairing_renew","secret":"fixture-old","pending":"fixture-current"}},
+  {"name":"pending_never_committed","frame":{"type":"pairing_renew","secret":"fixture-current","pending":"fixture-uncommitted"}},
+  {"name":"spent_pending","frame":{"type":"pairing_renew","secret":null,"pending":"fixture-spent"}},
+  {"name":"spent_current_unknown_pending","frame":{"type":"pairing_renew","secret":"fixture-spent","pending":"fixture-unknown"}},
+  {"name":"superseded_accept","frame":{"type":"pairing_refused","reason":"invalid"}},
+  {"name":"revoked","frame":{"type":"pairing_refused","reason":"revoked"}},
+  {"name":"reuse","frame":{"type":"pairing_refused","reason":"renewal_reused"}},
+  {"name":"store_unavailable","frame":{"type":"pairing_refused","reason":"unavailable"}}
+]

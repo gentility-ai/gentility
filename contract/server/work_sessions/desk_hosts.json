@@ -1,0 +1,64 @@
+{
+  "event": "desk_hosts",
+  "payload": {},
+  "reply": {
+    "response": {
+      "hosts": [
+        {
+          "desk": null,
+          "holders": [
+            {
+              "id": "00000000-0000-7000-8000-000000000001",
+              "kind": "user",
+              "name": "admin@example.com",
+              "role": "admin"
+            }
+          ],
+          "kind": "organization",
+          "label": "studio",
+          "machine_id": "00000000-0000-7000-8000-000000000002",
+          "node": null,
+          "reachable": null,
+          "role": "admin",
+          "slug": "studio"
+        },
+        {
+          "desk": {
+            "account": "deploy",
+            "arch": "x86_64",
+            "generation": 1,
+            "incarnation": null,
+            "last_seen_at": "2026-01-01T00:00:00.000000Z",
+            "live": false,
+            "os": "linux",
+            "registered_at": "2026-01-01T00:00:00.000000Z",
+            "store_id": "00000000-0000-7000-8000-000000000003"
+          },
+          "holders": [
+            {
+              "id": "00000000-0000-7000-8000-000000000001",
+              "kind": "user",
+              "name": "admin@example.com",
+              "role": "admin"
+            }
+          ],
+          "kind": "organization",
+          "label": "test-machine",
+          "machine_id": "00000000-0000-7000-8000-000000000004",
+          "node": {
+            "address": "<address>",
+            "door_port": null,
+            "last_seen_at": null,
+            "name": "<node>",
+            "presence": "offline"
+          },
+          "reachable": null,
+          "role": "admin",
+          "slug": "test-machine"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

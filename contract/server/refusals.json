@@ -1,0 +1,557 @@
+{
+  "desk": {
+    "*": [
+      "malformed_payload",
+      "unknown_event"
+    ],
+    "answer": [
+      "desk_login_required",
+      "expired",
+      "not_asking",
+      "not_this_machine",
+      "not_your_machine",
+      "person_required",
+      "unknown",
+      "wrong_number"
+    ],
+    "ask_answered": [
+      "already_decided",
+      "expired",
+      "feed_unreachable",
+      "malformed",
+      "management_grant_required",
+      "no_feed",
+      "no_handover",
+      "no_launcher",
+      "not_a_checkout",
+      "not_a_host",
+      "not_latest",
+      "not_this_operation",
+      "nothing_running",
+      "option_unknown",
+      "self_answer",
+      "self_management_off",
+      "stale_epoch",
+      "too_late",
+      "unknown_organization",
+      "unknown_repository",
+      "unsupported",
+      "verify_failed",
+      "wrong_channel"
+    ],
+    "fact": [
+      "forbidden",
+      "invalid",
+      "malformed_batch",
+      "not_found"
+    ],
+    "heartbeat": [],
+    "join": [
+      "unauthorized"
+    ],
+    "phone_claim_mint": [
+      "desk_login_required",
+      "not_your_machine",
+      "person_required"
+    ],
+    "presence": [
+      "desk_login_required",
+      "person_required"
+    ]
+  },
+  "looper_threads": {
+    "*": [
+      "malformed_payload",
+      "unknown_event"
+    ],
+    "feed": [],
+    "history": [],
+    "join": [
+      "superseded",
+      "unauthorized"
+    ],
+    "list": [],
+    "looper_run": [
+      "blank_message",
+      "failed",
+      "not_found",
+      "not_funded",
+      "paused",
+      "run_in_flight"
+    ],
+    "looper_update": [
+      "invalid",
+      "not_editable",
+      "not_found"
+    ],
+    "loopers": [],
+    "read": [
+      "not_found"
+    ],
+    "resolve": [
+      "answer_required",
+      "failed",
+      "invalid",
+      "invalid_status",
+      "looper_unowned",
+      "not_a_document_connection",
+      "not_a_question",
+      "not_found",
+      "not_grantable",
+      "not_open",
+      "personal_credential",
+      "reason_required",
+      "refused",
+      "slug_taken",
+      "unauthorized",
+      "unknown_decision_key",
+      "widened"
+    ]
+  },
+  "phone": {
+    "*": [
+      "malformed_payload",
+      "unknown_event"
+    ],
+    "devices": [
+      "forbidden"
+    ],
+    "join": [
+      "unauthorized"
+    ],
+    "mute": [
+      "forbidden"
+    ],
+    "mutes": [
+      "forbidden"
+    ],
+    "register": [
+      "forbidden"
+    ],
+    "revoke": [
+      "forbidden",
+      "unknown"
+    ]
+  },
+  "rpc": {
+    "*": [
+      "forbidden",
+      "hello_required",
+      "malformed_payload",
+      "unknown_event"
+    ],
+    "hello": [
+      "malformed_payload",
+      "superseded"
+    ],
+    "unwatch": [],
+    "watch": [
+      "forbidden",
+      "superseded"
+    ]
+  },
+  "work_session": {
+    "*": [
+      "malformed_payload",
+      "unknown_event"
+    ],
+    "append": [
+      "duplicate_client_seq",
+      "event_emit_failed",
+      "forbidden",
+      "invalid",
+      "malformed_batch",
+      "not_a_holder",
+      "not_found",
+      "replay_mismatch",
+      "sequence_gap",
+      "server_only_event",
+      "session_archived",
+      "session_closed",
+      "stale_epoch",
+      "superseded",
+      "unavailable",
+      "unknown_actor"
+    ],
+    "brief": [
+      "forbidden",
+      "not_bound",
+      "pin_mismatch",
+      "superseded",
+      "too_large"
+    ],
+    "join": [
+      "forbidden",
+      "superseded",
+      "unauthorized"
+    ]
+  },
+  "work_sessions": {
+    "*": [
+      "malformed_payload",
+      "unknown_event"
+    ],
+    "about": [
+      "forbidden"
+    ],
+    "archive": [
+      "event_emit_failed",
+      "forbidden",
+      "not_found",
+      "session_running"
+    ],
+    "ask": [
+      "bad_kind",
+      "desk_update_required",
+      "event_emit_failed",
+      "forbidden",
+      "management_grant_required",
+      "no_host",
+      "not_found",
+      "unavailable"
+    ],
+    "ask_read": [
+      "not_found"
+    ],
+    "brief_bind": [
+      "archived",
+      "forbidden",
+      "invalid",
+      "malformed_payload",
+      "management_grant_required",
+      "no_revision",
+      "not_a_holder",
+      "not_found",
+      "not_owner",
+      "project_not_found",
+      "session_archived",
+      "session_closed",
+      "stale_brief",
+      "too_large",
+      "unbound",
+      "unknown_actor",
+      "wrong_surface"
+    ],
+    "claude_route": [
+      "no_gateway",
+      "route_unavailable"
+    ],
+    "codex_route": [
+      "route_unavailable"
+    ],
+    "desk_bind_code": [
+      "forbidden",
+      "tenant_mismatch"
+    ],
+    "desk_door": [
+      "forbidden",
+      "invalid",
+      "invalid_peer",
+      "no_node",
+      "node_not_active",
+      "node_not_found",
+      "node_not_granted",
+      "not_your_machine",
+      "person_required",
+      "port_taken",
+      "unknown_peer"
+    ],
+    "desk_door_withdraw": [
+      "forbidden",
+      "invalid",
+      "invalid_peer",
+      "kind_mismatch",
+      "not_your_machine",
+      "unknown_peer"
+    ],
+    "desk_hosts": [
+      "forbidden"
+    ],
+    "desk_models": [
+      "forbidden"
+    ],
+    "desk_peer": [
+      "forbidden",
+      "invalid_peer",
+      "unknown_peer"
+    ],
+    "desk_token": [
+      "forbidden",
+      "not_bound",
+      "tenant_mismatch"
+    ],
+    "facts": [
+      "forbidden",
+      "malformed_payload",
+      "not_found"
+    ],
+    "feed": [
+      "forbidden",
+      "malformed_payload",
+      "unavailable"
+    ],
+    "find": [
+      "bad_branch",
+      "bad_machine",
+      "bad_path",
+      "bad_pull_request",
+      "bad_query",
+      "bad_repository",
+      "bad_time",
+      "bad_worktree_path",
+      "forbidden",
+      "no_breadcrumb",
+      "sha_too_short"
+    ],
+    "grant_delegate": [
+      "already_granted",
+      "delegation_refused",
+      "forbidden",
+      "management_grant_required",
+      "not_delegated_by_you",
+      "not_found",
+      "not_your_child",
+      "session_archived",
+      "session_closed",
+      "superseded"
+    ],
+    "grant_set": [
+      "forbidden",
+      "not_found",
+      "session_archived",
+      "session_closed",
+      "superseded"
+    ],
+    "heard": [
+      "forbidden",
+      "not_found"
+    ],
+    "inbox": [
+      "attention_pending",
+      "forbidden",
+      "malformed_payload",
+      "management_grant_required",
+      "not_found",
+      "session_running"
+    ],
+    "join": [
+      "superseded",
+      "unauthorized"
+    ],
+    "lease_take": [
+      "event_emit_failed",
+      "forbidden",
+      "management_grant_required",
+      "not_a_holder",
+      "not_a_machine",
+      "not_found",
+      "stale_epoch",
+      "superseded",
+      "unknown_actor"
+    ],
+    "list": [
+      "forbidden"
+    ],
+    "locate": [
+      "bad_query",
+      "failed",
+      "forbidden",
+      "no_model",
+      "unavailable",
+      "unfunded"
+    ],
+    "machines": [
+      "forbidden"
+    ],
+    "mcp_server_switch": [
+      "deleted",
+      "forbidden",
+      "invalid_project",
+      "invalid_switch",
+      "no_membership",
+      "not_found",
+      "project_mismatch"
+    ],
+    "mcp_servers": [
+      "forbidden",
+      "invalid_project"
+    ],
+    "models_seen": [
+      "forbidden",
+      "invalid",
+      "unavailable"
+    ],
+    "omp_access": [
+      "no_credit",
+      "no_gateway",
+      "route_unavailable"
+    ],
+    "omp_route": [
+      "no_credit",
+      "no_gateway",
+      "route_unavailable"
+    ],
+    "open": [
+      "brief_not_found",
+      "brief_too_large",
+      "brief_wrong_surface",
+      "forbidden",
+      "held_elsewhere",
+      "invalid",
+      "invalid_id",
+      "not_a_holder",
+      "not_found",
+      "project_not_found",
+      "unknown_actor"
+    ],
+    "open_pr": [
+      "ambiguous_repository",
+      "forbidden",
+      "github",
+      "internal",
+      "no_remote",
+      "not_github",
+      "repository_unknown",
+      "session_closed",
+      "unknown_session"
+    ],
+    "pr_comment": [
+      "ambiguous_pull_request",
+      "blank_body",
+      "body_too_long",
+      "forbidden",
+      "github",
+      "internal",
+      "no_pull_request",
+      "no_such_link",
+      "repository_unknown",
+      "session_closed",
+      "unknown_session",
+      "unrecorded"
+    ],
+    "pr_reply": [
+      "ambiguous_pull_request",
+      "blank_body",
+      "body_too_long",
+      "forbidden",
+      "github",
+      "internal",
+      "no_pull_request",
+      "no_such_link",
+      "repository_unknown",
+      "session_closed",
+      "unknown_session",
+      "unrecorded"
+    ],
+    "pr_review": [
+      "ambiguous_pull_request",
+      "blank_body",
+      "body_too_long",
+      "forbidden",
+      "github",
+      "internal",
+      "no_pull_request",
+      "no_such_link",
+      "repository_unknown",
+      "session_closed",
+      "unknown_session",
+      "unrecorded"
+    ],
+    "projects": [
+      "forbidden"
+    ],
+    "pull_requests": [
+      "forbidden",
+      "not_connected",
+      "unavailable"
+    ],
+    "question_answer": [
+      "already_decided",
+      "desk_update_required",
+      "forbidden",
+      "no_host",
+      "not_found",
+      "unavailable"
+    ],
+    "question_dismiss": [
+      "already_decided",
+      "desk_update_required",
+      "forbidden",
+      "no_host",
+      "not_found",
+      "unavailable"
+    ],
+    "questions_list": [
+      "forbidden",
+      "unavailable"
+    ],
+    "refusal_allow": [
+      "forbidden",
+      "invalid_choice",
+      "kind_mismatch",
+      "kind_not_allowed",
+      "machine_gone",
+      "node_not_active",
+      "not_allowable",
+      "not_allowed",
+      "not_for_gateway",
+      "not_found",
+      "not_same_owner",
+      "person_required",
+      "port_taken"
+    ],
+    "refusal_mute": [
+      "forbidden",
+      "machine_gone",
+      "not_found",
+      "person_required"
+    ],
+    "refusal_review": [
+      "forbidden",
+      "machine_gone",
+      "not_found",
+      "person_required"
+    ],
+    "refusal_unmute": [
+      "forbidden",
+      "machine_gone",
+      "not_found",
+      "person_required"
+    ],
+    "refusals": [
+      "forbidden",
+      "person_required"
+    ],
+    "repositories": [
+      "forbidden"
+    ],
+    "transcript": [
+      "forbidden",
+      "malformed_payload",
+      "not_found",
+      "transcript_not_indexed",
+      "unavailable"
+    ],
+    "unarchive": [
+      "forbidden",
+      "not_found"
+    ],
+    "unlink_pr": [
+      "forbidden",
+      "internal",
+      "no_such_link",
+      "session_closed",
+      "unknown_session"
+    ],
+    "write": [
+      "not_allowed",
+      "too_large",
+      "unavailable",
+      "unknown_kind"
+    ],
+    "written": [
+      "forbidden",
+      "not_found"
+    ]
+  }
+}

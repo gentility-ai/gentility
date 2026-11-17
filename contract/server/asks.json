@@ -1,0 +1,317 @@
+{
+  "host_upgrade": {
+    "decisions": [
+      "current",
+      "refused",
+      "upgrading"
+    ],
+    "payload": [
+      "by",
+      "channel",
+      "version"
+    ],
+    "refusals": [
+      "expired",
+      "feed_unreachable",
+      "malformed",
+      "no_feed",
+      "no_handover",
+      "not_a_host",
+      "not_latest",
+      "store",
+      "unsupported",
+      "verify_failed",
+      "wrong_channel"
+    ]
+  },
+  "host_upgrade_cancel": {
+    "decisions": [
+      "cancelled",
+      "refused"
+    ],
+    "payload": [
+      "by",
+      "operation_id"
+    ],
+    "refusals": [
+      "expired",
+      "malformed",
+      "not_this_operation",
+      "store",
+      "too_late",
+      "unsupported"
+    ]
+  },
+  "session_answer": {
+    "decisions": [
+      "answered",
+      "refused"
+    ],
+    "payload": [
+      "action",
+      "by",
+      "epoch",
+      "option_id",
+      "question_id",
+      "request_id",
+      "session_id",
+      "value"
+    ],
+    "refusals": [
+      "already_decided",
+      "archived",
+      "deferred",
+      "expired",
+      "forbidden",
+      "harness",
+      "internal",
+      "malformed",
+      "management_grant_required",
+      "option_unknown",
+      "self_answer",
+      "session_closed",
+      "stale_epoch",
+      "store",
+      "unknown_request",
+      "unknown_session",
+      "unsupported",
+      "upgrading"
+    ]
+  },
+  "session_fork": {
+    "decisions": [
+      "opened",
+      "refused"
+    ],
+    "payload": [
+      "forked_from",
+      "harness",
+      "looper_id",
+      "mode",
+      "organization_id",
+      "prompt",
+      "reason",
+      "repository",
+      "session_id",
+      "user_id"
+    ],
+    "refusals": [
+      "expired",
+      "malformed",
+      "no_launcher",
+      "not_a_checkout",
+      "unknown_organization",
+      "unknown_repository",
+      "unsupported"
+    ]
+  },
+  "session_manage": {
+    "decisions": [
+      "archive",
+      "bind_brief",
+      "close",
+      "refused",
+      "reopen",
+      "settle",
+      "snooze",
+      "unsettle",
+      "upgrade_brief",
+      "wake"
+    ],
+    "payload": [
+      "action",
+      "brief",
+      "by",
+      "epoch",
+      "expected_revision_id",
+      "expected_version",
+      "force",
+      "project",
+      "reason",
+      "session_id",
+      "until",
+      "version"
+    ],
+    "refusals": [
+      "archived",
+      "attention_pending",
+      "deferred",
+      "expired",
+      "forbidden",
+      "harness",
+      "internal",
+      "malformed",
+      "malformed_payload",
+      "management_grant_required",
+      "no_revision",
+      "not_found",
+      "not_owner",
+      "project_not_found",
+      "self_management_off",
+      "session_closed",
+      "session_running",
+      "stale_brief",
+      "stale_epoch",
+      "stale_thread",
+      "store",
+      "too_large",
+      "unbound",
+      "unknown_session",
+      "unsupported",
+      "upgrading",
+      "wrong_surface"
+    ]
+  },
+  "session_message": {
+    "decisions": [
+      "held",
+      "queued",
+      "refused"
+    ],
+    "payload": [
+      "by",
+      "caused_by",
+      "epoch",
+      "from_mode",
+      "fyi",
+      "hop_chain",
+      "id",
+      "sender",
+      "session_id",
+      "text"
+    ],
+    "refusals": [
+      "deferred",
+      "expired",
+      "harness",
+      "internal",
+      "malformed",
+      "management_grant_required",
+      "stale_epoch",
+      "store",
+      "unknown_session",
+      "unsupported",
+      "upgrading"
+    ]
+  },
+  "session_resume": {
+    "decisions": [
+      "prompted",
+      "refused",
+      "resumed"
+    ],
+    "payload": [
+      "by",
+      "epoch",
+      "prompt",
+      "session_id"
+    ],
+    "refusals": [
+      "archived",
+      "deferred",
+      "expired",
+      "harness",
+      "internal",
+      "malformed",
+      "management_grant_required",
+      "no_launcher",
+      "not_a_checkout",
+      "not_resumable",
+      "not_signed_in",
+      "organization_needed",
+      "session_closed",
+      "session_running",
+      "stale_epoch",
+      "steering",
+      "store",
+      "turn_in_progress",
+      "unknown_session",
+      "unsupported",
+      "upgrading"
+    ]
+  },
+  "session_start": {
+    "decisions": [
+      "opened",
+      "refused"
+    ],
+    "payload": [
+      "brief",
+      "cwd",
+      "effort",
+      "harness",
+      "mode",
+      "model",
+      "organization_id",
+      "project",
+      "prompt",
+      "repository",
+      "session_id",
+      "title",
+      "user_id"
+    ],
+    "refusals": [
+      "expired",
+      "malformed",
+      "no_launcher",
+      "not_a_checkout",
+      "unknown_organization",
+      "unknown_repository",
+      "unsupported"
+    ]
+  },
+  "session_stop": {
+    "decisions": [
+      "refused",
+      "stopped"
+    ],
+    "payload": [
+      "by",
+      "epoch",
+      "session_id"
+    ],
+    "refusals": [
+      "deferred",
+      "expired",
+      "harness",
+      "internal",
+      "malformed",
+      "management_grant_required",
+      "nothing_running",
+      "stale_epoch",
+      "store",
+      "unknown_session",
+      "unsupported",
+      "upgrading"
+    ]
+  },
+  "session_tags": {
+    "decisions": [
+      "refused",
+      "set",
+      "unchanged"
+    ],
+    "payload": [
+      "by",
+      "epoch",
+      "manager",
+      "manager_id",
+      "opened_ask",
+      "role",
+      "session_id"
+    ],
+    "refusals": [
+      "deferred",
+      "expired",
+      "harness",
+      "internal",
+      "malformed",
+      "management_grant_required",
+      "stale_epoch",
+      "store",
+      "unknown_session",
+      "unsupported",
+      "upgrading"
+    ]
+  }
+}

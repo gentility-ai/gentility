@@ -1,0 +1,31 @@
+{
+  "files": {
+    "cli.json": {
+      "executable": false,
+      "owner": "client",
+      "sha256": "21b5b37e3450242223dcbb56a6cc0e8df037afbc98175e0d8cef2fab51c657eb"
+    },
+    "status/interface.json": {
+      "executable": false,
+      "owner": "client",
+      "sha256": "c5ddcd67dfbcfb62b50f0cf3e8aaae591cedf48bad841a9e3f4e133bdb82cee0"
+    },
+    "status/joined.json": {
+      "executable": false,
+      "owner": "client",
+      "sha256": "268368f7c2a6793ba508fc9fbc1343a29e27a397550dc3ee510235f68956e80a"
+    },
+    "status/zero.json": {
+      "executable": false,
+      "owner": "client",
+      "sha256": "60f7194dbb6c829ca76f883fa1ba1418975da2483afaa4afda3912af8107be62"
+    },
+    "tsaddr_reserved.json": {
+      "executable": false,
+      "owner": "client",
+      "sha256": "507efb6907e144fa4b493116de39dc0facf561827d2f514e9a1d05e41cc5047d"
+    }
+  },
+  "format": 1,
+  "manifest_owner": "client"
+}

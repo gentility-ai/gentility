@@ -1,0 +1,30 @@
+{
+  "event": "question_answer",
+  "payload": {
+    "action": "accept",
+    "question_id": "00000000-0000-7000-8000-000000000001",
+    "session_id": "00000000-0000-7000-8000-000000000002",
+    "value": {
+      "answer": "Small"
+    }
+  },
+  "reply": {
+    "response": {
+      "answer": {
+        "action": "accept",
+        "answered_at": "2026-01-01T00:00:00.000000Z",
+        "answered_by": "someone@example.com",
+        "question_id": "00000000-0000-7000-8000-000000000001",
+        "session_id": "00000000-0000-7000-8000-000000000002",
+        "state": "answered",
+        "value": {
+          "answer": "Small"
+        }
+      },
+      "question_id": "00000000-0000-7000-8000-000000000001",
+      "status": "answered"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

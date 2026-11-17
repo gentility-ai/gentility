@@ -1,0 +1,13 @@
+# The Connector binary `go build ./cmd/connector` leaves, and release builds.
+/connector/connector
+/dist/
+
+# The phone: the Xcode project XcodeGen generates, the Info.plists it writes,
+# a developer's own signing team, and the framework and tools
+# build-phonenode.sh makes.
+/phone/ios/*.xcodeproj
+/phone/ios/Signing.local.xcconfig
+/phone/ios/*/Info.plist
+/phone/build/
+
+.DS_Store

@@ -1,0 +1,8 @@
+{
+  "event": "changed",
+  "payload": {
+    "cursor": 7,
+    "scope": "sessions"
+  },
+  "topic": "work_sessions:<org>"
+}

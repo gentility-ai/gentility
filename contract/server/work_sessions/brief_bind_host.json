@@ -1,0 +1,19 @@
+{
+  "event": "brief_bind",
+  "payload": {
+    "action": "bind_brief",
+    "actor": "00000000-0000-7000-8000-000000000001",
+    "brief": "host-worker",
+    "expected_revision_id": null,
+    "session_id": "00000000-0000-7000-8000-000000000002"
+  },
+  "reply": {
+    "response": {
+      "revision_id": "00000000-0000-7000-8000-000000000003",
+      "session_id": "00000000-0000-7000-8000-000000000002",
+      "version": 1
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

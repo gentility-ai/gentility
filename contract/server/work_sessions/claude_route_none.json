@@ -1,0 +1,13 @@
+{
+  "event": "claude_route",
+  "payload": {
+    "session_id": "<session>"
+  },
+  "reply": {
+    "response": {
+      "route": null
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

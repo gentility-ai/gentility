@@ -1,0 +1,36 @@
+{
+  "event": "feed",
+  "payload": {
+    "generation": 4000000000000001,
+    "since": 6
+  },
+  "reply": {
+    "response": {
+      "cursor": 7,
+      "generation": 4000000000000001,
+      "gone": [],
+      "grants": [],
+      "holders": [],
+      "more": false,
+      "reads": [],
+      "reset": false,
+      "rows": [
+        {
+          "$row": "feed",
+          "holder": {
+            "epoch": 1,
+            "kind": "desk",
+            "machine": "00000000-0000-7000-8000-000000000001"
+          },
+          "organization_id": "00000000-0000-7000-8000-000000000002",
+          "owner_id": "00000000-0000-7000-8000-000000000003",
+          "rank": "b",
+          "row_seq": 7,
+          "session_id": "00000000-0000-7000-8000-000000000004"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

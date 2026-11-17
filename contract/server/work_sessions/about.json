@@ -1,0 +1,23 @@
+{
+  "event": "about",
+  "payload": {
+    "ids": [
+      "00000000-0000-7000-8000-000000000001",
+      "00000000-0000-7000-8000-000000000002"
+    ]
+  },
+  "reply": {
+    "response": {
+      "sessions": [
+        {
+          "archived_at": null,
+          "id": "00000000-0000-7000-8000-000000000001",
+          "last_server_seq": 0,
+          "status": "open"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

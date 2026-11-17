@@ -1,0 +1,37 @@
+# Tags each published contract contract-v<n> once it reaches main. The
+# publishing pull request changes contract/VERSION; nothing else does.
+name: contract tag
+
+on:
+  push:
+    branches: [main]
+    paths: ["contract/VERSION"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: contract-tag
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Tag contract-v<n>
+        run: |
+          number=$(cat contract/VERSION)
+          case "$number" in '' | *[!0-9]*) echo "contract/VERSION is not a number" >&2; exit 1 ;; esac
+          tag="contract-v$number"
+          existing=$(git ls-remote --tags origin "refs/tags/$tag" | cut -f1)
+          if [ -n "$existing" ]; then
+            # A tag is never moved: the same number on another commit is a fault.
+            [ "$existing" = "$GITHUB_SHA" ] || { echo "$tag already names $existing" >&2; exit 1; }
+            echo "$tag already names $GITHUB_SHA"
+            exit 0
+          fi
+          git tag "$tag" "$GITHUB_SHA"
+          git push origin "refs/tags/$tag"

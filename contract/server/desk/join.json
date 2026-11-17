@@ -1,0 +1,21 @@
+{
+  "join": {
+    "desk": {
+      "build": "0.1.200-abc1234",
+      "features": [
+        "fact_accepts"
+      ],
+      "protocol": {
+        "major": 1
+      },
+      "version": "0.1.200"
+    }
+  },
+  "reply": {
+    "response": {
+      "user_id": "00000000-0000-7000-8000-000000000001"
+    },
+    "status": "ok"
+  },
+  "topic": "desk:<org>:<machine>"
+}

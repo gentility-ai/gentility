@@ -1,0 +1,9 @@
+{
+  "event": "changed",
+  "payload": {
+    "cursor": 6,
+    "scope": "grants",
+    "scope_changed": true
+  },
+  "topic": "work_sessions:<org>"
+}

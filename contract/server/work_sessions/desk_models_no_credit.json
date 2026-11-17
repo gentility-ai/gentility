@@ -1,0 +1,64 @@
+{
+  "event": "desk_models",
+  "payload": {},
+  "reply": {
+    "response": {
+      "harnesses": {
+        "claude": {
+          "models": [
+            {
+              "legacy": false,
+              "name": "claude-fable-5-1",
+              "new": false,
+              "priced": true,
+              "spec_id": "anthropic:claude-fable-5-1"
+            },
+            {
+              "legacy": false,
+              "name": "claude-fable-5-2",
+              "new": false,
+              "priced": true,
+              "spec_id": "anthropic:claude-fable-5-2"
+            },
+            {
+              "legacy": false,
+              "name": "claude-opus-5-5",
+              "new": false,
+              "priced": true,
+              "spec_id": "anthropic:claude-opus-5-5"
+            },
+            {
+              "legacy": false,
+              "name": "fable",
+              "new": false,
+              "priced": true,
+              "spec_id": "anthropic:claude-fable-5-2"
+            },
+            {
+              "legacy": false,
+              "name": "opus",
+              "new": false,
+              "priced": true
+            }
+          ]
+        },
+        "codex": {
+          "models": [
+            {
+              "legacy": false,
+              "name": "gpt-6-astra",
+              "new": false,
+              "priced": true,
+              "spec_id": "openai_codex:gpt-6-astra"
+            }
+          ]
+        },
+        "omp": {
+          "refused": "no_credit"
+        }
+      }
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

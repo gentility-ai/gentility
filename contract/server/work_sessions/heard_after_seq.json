@@ -1,0 +1,33 @@
+{
+  "event": "heard",
+  "payload": {
+    "after": null,
+    "after_seq": 4,
+    "session_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "heard": [
+        {
+          "actor": null,
+          "at": "2026-01-01T00:00:00.000000Z",
+          "comment_id": null,
+          "delivery_id": null,
+          "excerpt": null,
+          "head": "1a2b3c4d5e6f",
+          "key": "acme/app#12:conflicting:1a2b3c4d5e6f",
+          "kind": "conflicting",
+          "number": 12,
+          "repo_full_name": "acme/app",
+          "review_id": null,
+          "seq": 5,
+          "url": "https://github.com/acme/app/pull/12",
+          "workflow": null
+        }
+      ],
+      "more": false
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

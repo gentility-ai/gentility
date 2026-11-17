@@ -1,0 +1,17 @@
+{
+  "event": "answer",
+  "payload": {
+    "decision": "allow",
+    "id": "00000000-0000-7000-8000-000000000001",
+    "match": "17"
+  },
+  "reply": {
+    "response": {
+      "id": "00000000-0000-7000-8000-000000000001",
+      "reason": "wrong_number",
+      "status": "denied"
+    },
+    "status": "ok"
+  },
+  "topic": "desk:<org>:<machine>"
+}

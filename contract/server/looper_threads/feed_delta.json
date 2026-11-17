@@ -1,0 +1,95 @@
+{
+  "event": "feed",
+  "payload": {
+    "generation": 4000000000000002,
+    "since": 2
+  },
+  "reply": {
+    "response": {
+      "cursor": 4,
+      "generation": 4000000000000002,
+      "gone_loopers": [],
+      "gone_runs": [],
+      "loopers": [
+        {
+          "id": "00000000-0000-7000-8000-000000000001",
+          "model": {
+            "display_name": "Claude Sonnet 4.6",
+            "id": "00000000-0000-7000-8000-000000000002",
+            "slug": "claude-sonnet-4-6"
+          },
+          "name": "Issue steward",
+          "net_access": false,
+          "next_run_at": null,
+          "notify_handle": null,
+          "responder": false,
+          "schedule": {
+            "cron": null,
+            "enabled": false,
+            "timezone": "UTC"
+          },
+          "slug": "steward",
+          "system_prompt": "Label every open issue.",
+          "tasks_enabled": false,
+          "visibility": "private"
+        }
+      ],
+      "more": false,
+      "reset": false,
+      "runs": [
+        {
+          "ended_at": null,
+          "id": "00000000-0000-7000-8000-000000000003",
+          "last_activity_at": "2026-01-01T00:00:00.000000Z",
+          "looper": {
+            "id": "00000000-0000-7000-8000-000000000001",
+            "name": "Issue steward",
+            "responder": false,
+            "slug": "steward"
+          },
+          "model": {
+            "display_name": "Claude Sonnet 4.6",
+            "id": "00000000-0000-7000-8000-000000000002",
+            "slug": "claude-sonnet-4-6"
+          },
+          "number": 1,
+          "requests": [
+            {
+              "answer": null,
+              "body": "Which repository first?",
+              "can_resolve": true,
+              "expired": false,
+              "expires_at": "2026-01-01T00:00:00.000000Z",
+              "id": "00000000-0000-7000-8000-000000000004",
+              "kind": "question",
+              "kind_label": "Question",
+              "narrowing": [],
+              "raised_at": "2026-01-01T00:00:00.000000Z",
+              "reason": null,
+              "rendered": "Which repository first?",
+              "requested": {},
+              "resolved_at": null,
+              "resolved_by": null,
+              "status": "open",
+              "subject": null,
+              "summary": null,
+              "supply": []
+            }
+          ],
+          "started_at": "2026-01-01T00:00:00.000000Z",
+          "status": "running",
+          "title": "Issue steward #1",
+          "wake": {
+            "by": null,
+            "causation_id": null,
+            "hop": null,
+            "source": null,
+            "task": null
+          }
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "looper_threads:<org>"
+}

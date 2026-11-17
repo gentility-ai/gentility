@@ -1,0 +1,77 @@
+{
+  "event": {
+    "said": {
+      "kind": "elicited",
+      "request": {
+        "call_id": null,
+        "message": "Where should the report go?\nDesk sends it once a day.",
+        "mode": {
+          "fields": [
+            {
+              "description": null,
+              "kind": {
+                "default": 1.0,
+                "integer": true,
+                "max": 5.0,
+                "min": 1.0,
+                "type": "number"
+              },
+              "name": "count",
+              "required": true,
+              "secret": false,
+              "title": "Copies"
+            },
+            {
+              "description": null,
+              "kind": {
+                "default": null,
+                "format": "email",
+                "max_len": 120,
+                "min_len": null,
+                "pattern": null,
+                "type": "text"
+              },
+              "name": "email",
+              "required": true,
+              "secret": false,
+              "title": "Email"
+            },
+            {
+              "description": "Anything else",
+              "kind": {
+                "default": null,
+                "format": null,
+                "max_len": null,
+                "min_len": null,
+                "pattern": null,
+                "type": "text"
+              },
+              "name": "note",
+              "required": false,
+              "secret": false,
+              "title": "Note"
+            },
+            {
+              "description": null,
+              "kind": {
+                "default": false,
+                "type": "boolean"
+              },
+              "name": "notify",
+              "required": false,
+              "secret": false,
+              "title": "Notify me"
+            }
+          ],
+          "title": "Report settings",
+          "type": "form"
+        },
+        "request_id": "elicitation#0"
+      }
+    },
+    "seq": 1,
+    "session_id": "00000000-0000-7000-8000-000000000014",
+    "turn": 1,
+    "type": "said"
+  }
+}

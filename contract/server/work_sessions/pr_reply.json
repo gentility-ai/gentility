@@ -1,0 +1,20 @@
+{
+  "event": "pr_reply",
+  "payload": {
+    "body": "Done in abc1234.",
+    "comment_id": 501,
+    "number": null,
+    "session_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "comment_id": 902,
+      "number": 12,
+      "repo": "acme/app",
+      "review_id": 801,
+      "url": "https://github.com/acme/app/pull/12#discussion_r902"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

@@ -1,0 +1,26 @@
+{
+  "request": {
+    "id": 42,
+    "jsonrpc": "2.0",
+    "method": "sessions.ask",
+    "params": {
+      "kind": "session_stop",
+      "org": "00000000-0000-7000-8000-000000000001",
+      "payload": {},
+      "session_id": "00000000-0000-7000-8000-000000000002"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32603,
+      "data": {
+        "ask_id": "00000000-0000-7000-8000-000000000003",
+        "message": "The ask did not answer; read its outcome with sessions.ask_read.",
+        "reason": "task_died"
+      },
+      "message": "The ask did not answer; read its outcome with sessions.ask_read."
+    },
+    "id": 42,
+    "jsonrpc": "2.0"
+  }
+}

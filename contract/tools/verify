@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+"""Verify exact artifact contents against their manifest without network access."""
+
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path, PurePosixPath
+
+
+def check_local(root):
+    if root.is_symlink() or not root.is_dir():
+        raise ValueError("artifact must be a real directory")
+    manifest_path = root / "manifest.json"
+    if manifest_path.is_symlink():
+        raise ValueError("manifest must not be a symbolic link")
+    manifest = json.loads(manifest_path.read_bytes())
+    if manifest["format"] != 1 or not manifest["files"]:
+        raise ValueError("unsupported or empty manifest")
+    client_only = manifest["manifest_owner"] == "client"
+    if manifest["manifest_owner"] not in {"client", "publisher"}:
+        raise ValueError("unknown manifest owner")
+    if any(name == "client" or name.startswith("client/") for name in manifest["files"]):
+        raise ValueError("publisher manifest must not cover client paths")
+    entries = dict(manifest["files"])
+    expected = set(entries) | {"manifest.json"}
+    client_root = root / "client"
+    client_manifest_path = client_root / "manifest.json"
+    if client_root.is_symlink() or client_manifest_path.is_symlink():
+        raise ValueError("client manifest must not be a symbolic link")
+    if client_root.exists() and not client_only:
+        client = json.loads(client_manifest_path.read_bytes())
+        if client["format"] != 1 or client["manifest_owner"] != "client" or not client["files"]:
+            raise ValueError("unsupported or empty client manifest")
+        for name, entry in client["files"].items():
+            path = PurePosixPath(name)
+            if (path.is_absolute() or ".." in path.parts or str(path) != name
+                    or name in {"", ".", "manifest.json"}):
+                raise ValueError("unsafe client manifest path")
+            if entry["owner"] != "client":
+                raise ValueError("client manifest must contain only client-owned files")
+            entries["client/" + name] = entry
+        expected.update("client/" + name for name in client["files"])
+        expected.add("client/manifest.json")
+    actual = set()
+    def walk_error(error):
+        raise error
+    for parent, dirs, files in os.walk(root, onerror=walk_error):
+        for name in dirs + files:
+            path = Path(parent) / name
+            if path.is_symlink():
+                raise ValueError("artifact contains a symbolic link")
+            if not path.is_dir():
+                if not path.is_file():
+                    raise ValueError("artifact contains a non-regular file")
+                actual.add(path.relative_to(root).as_posix())
+    if actual != expected:
+        raise ValueError("artifact file inventory differs from manifest")
+    for name, entry in entries.items():
+        path = PurePosixPath(name)
+        if path.is_absolute() or ".." in path.parts or str(path) != name:
+            raise ValueError("unsafe manifest path")
+        data = root / name
+        if hashlib.sha256(data.read_bytes()).hexdigest() != entry["sha256"]:
+            raise ValueError("artifact hash mismatch: " + name)
+        if bool(data.stat().st_mode & 0o111) != entry["executable"]:
+            raise ValueError("artifact executable mode mismatch: " + name)
+        allowed_owners = {"client"} if client_only or name.startswith("client/") else {"core", "server", "publisher"}
+        if entry["owner"] not in allowed_owners:
+            raise ValueError("unknown artifact owner")
+    if not client_only and (root / "VERSION").read_text() != f"{manifest['number']}\n":
+        raise ValueError("VERSION differs from manifest")
+    return manifest
+
+
+def verify(root):
+    if os.environ.get("CI") or os.environ.get("GITHUB_ACTIONS"):
+        if "GENTILITY_CONTRACT_DIR" in os.environ:
+            raise ValueError("local contract overrides are forbidden in CI")
+    return check_local(root)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("directory", nargs="?", type=Path,
+                        default=Path(os.environ.get("GENTILITY_CONTRACT_DIR", Path(__file__).resolve().parent.parent)))
+    args = parser.parse_args()
+    result = verify(args.directory)
+    label = "client" if result["manifest_owner"] == "client" else f"v{result['number']}"
+    print(f"contract-verify: {label} passed")

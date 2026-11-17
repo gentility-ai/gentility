@@ -1,0 +1,216 @@
+#!/usr/bin/env python3
+"""Check publication inputs without including their values in diagnostics."""
+
+import argparse
+import hashlib
+import html
+import json
+import os
+from pathlib import Path
+import re
+import sys
+import subprocess
+from urllib.parse import unquote, urlsplit
+
+
+ROOT = Path(__file__).resolve().parent.parent
+ALLOWED_DOMAINS = (
+    "example.com", "example.org", "example.net", "example.test", "example",
+    "gentility.test", "desk.test", "gentility.ai", "github.com", "gitlab.com",
+    "localhost",
+)
+URL = re.compile(r"\b(?:https?|wss?|ssh)://[^\s<>\"`]+")
+# Bare domain-shaped text must be distinguished from protocol words such as
+# session.append. URLs and email addresses above accept any suffix.
+HOST = re.compile(r"\b(?:[A-Za-z0-9-]+\.)+(?:com|org|net|io|ai|dev|app|co|uk|edu|gov|biz|info|xyz|cloud|test|local|internal|invalid)\b", re.IGNORECASE)
+EMAIL = re.compile(r"[\w.%+-]+@([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+)")
+HOME = re.compile(r"(?:/(?:Users|home)/|[A-Za-z]:[/\\]Users[/\\])([^/\\\s\"`]+)")
+LINK = re.compile(r"\]\(<?([^\s)>]+)|^\s*\[[^\]]+\]:\s*<?([^\s>]+)|(?:href|src)=[\"']([^\"']+)")
+IPV4 = re.compile(r"(?<![\w.])(?:\d{1,3}\.){3}\d{1,3}(?![\w.])")
+UDID = re.compile(r"\b[0-9a-f]{8}-[0-9a-f]{16}\b", re.IGNORECASE)
+TEAM = re.compile(r"\bDEVELOPMENT_TEAM\s*[:=]\s*([^\s\"'`]+)")
+
+
+def allowed_host(host):
+    # The login-origin contract includes the literal IPv6 loopback address.
+    if host == "::1":
+        return True
+    return host is not None and any(
+        host.lower() == domain or host.lower().endswith("." + domain)
+        for domain in ALLOWED_DOMAINS
+    )
+
+
+def safe_name(name, denied):
+    for value in denied:
+        name = re.sub(re.escape(value), "[redacted]", name, flags=re.IGNORECASE)
+    return name.encode("unicode_escape").decode("ascii")
+
+
+def source_host(url):
+    # Source includes deliberately malformed URL fixtures. Inspect their
+    # authority as text instead of asking a URL parser to validate IPv6.
+    authority = re.split(r"[/?#]", url.split("://", 1)[1], maxsplit=1)[0]
+    authority = authority.rsplit("@", 1)[-1]
+    if authority.startswith("["):
+        return authority[1:].split("]", 1)[0].lower()
+    return authority.split(":", 1)[0].lower()
+
+
+def check(directory, denied, *, source=False, policy=None, exclude=(), policy_file=None):
+    errors = []
+
+    def fail(path, number, rule):
+        errors.append(f"{safe_name(str(path), denied)}:{number}: {rule}")
+
+    if directory.is_symlink() or not directory.is_dir():
+        fail("<input>", 0, "expected-directory")
+        return errors
+    root = directory.resolve()
+    policy = policy or {"hosts": {}, "identifiers": {}, "assets": {}}
+    def accepted_host(host):
+        return allowed_host(host) or (source and host is not None and host.lower() in policy["hosts"])
+
+    count = 0
+    # os.walk's default ignores traversal failures, which must never pass here.
+    def walk_error(error):
+        raise error
+
+    if source:
+        # Include new source files too, but never a developer's ignored signing
+        # configuration or build products. A Git failure is an inspection failure.
+        listing = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "--cached", "--others", "--exclude-standard", "-z", "--", ".",
+             *(":(exclude)" + path for path in exclude)],
+            check=True, capture_output=True,
+        ).stdout.decode("utf-8")
+        entries = [(root, [], sorted(set(listing.rstrip("\0").split("\0"))) if listing else [])]
+    else:
+        entries = os.walk(root, onerror=walk_error)
+    for parent, dirs, files in entries:
+        for name in sorted(dirs + files):
+            path = Path(parent) / name
+            relative = path.relative_to(root)
+            if path.is_symlink() or any(p.is_symlink() for p in path.parents if p != root and p.is_relative_to(root)):
+                fail(relative, 0, "symbolic-link")
+                continue
+            if any(value in str(relative).lower() for value in denied):
+                fail(relative, 0, "denied-path")
+            if path.is_dir():
+                continue
+            if not path.is_file():
+                fail(relative, 0, "non-regular-file")
+                continue
+            count += 1
+            data = path.read_bytes()
+            # Images cannot be meaningfully inspected as text. Only the exact
+            # bytes of an individually reviewed asset may bypass text parsing.
+            # They still must be readable and pass the raw deny-list scan.
+            asset = policy["assets"].get(str(relative)) if source else None
+            if asset is not None:
+                if any(value.encode("utf-8") in data.lower() for value in denied):
+                    fail(relative, 0, "denied-value")
+                if not asset["reason"] or hashlib.sha256(data).hexdigest() != asset["sha256"]:
+                    fail(relative, 0, "unreviewed-asset")
+                continue
+            content = data.decode("utf-8", errors="surrogateescape")
+            if any(0xDC80 <= ord(char) <= 0xDCFF for char in content):
+                fail(relative, 0, "binary-file")
+                continue
+            # The reviewed exceptions name what the other rules refuse; within
+            # the tree, they are read only for denied values.
+            if source and str(relative) == policy_file:
+                for number, line in enumerate(content.splitlines(), 1):
+                    if any(value in line.lower() for value in denied):
+                        fail(relative, number, "denied-value")
+                continue
+            for number, line in enumerate(content.splitlines(), 1):
+                # Also inspect JSON escapes and percent/HTML encoding; do not
+                # print source lines, URL values, or exception messages.
+                decoded = re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m[1], 16)), line)
+                decoded = html.unescape(unquote(decoded.replace("\\/", "/")))
+                decoded = decoded.replace("[<address>]", "localhost")
+                if any(value in decoded.lower() for value in denied):
+                    fail(relative, number, "denied-value")
+                if source:
+                    for match in IPV4.finditer(decoded):
+                        a, b, c, d = map(int, match[0].split("."))
+                        private = max(a, b, c, d) <= 255 and (
+                            a == 10 or (a == 172 and 16 <= b <= 31) or (a == 192 and b == 168))
+                        if private and match[0] not in policy.get("private_ipv4", {}).get(str(relative), {}):
+                            fail(relative, number, "private-ipv4")
+                    if UDID.search(decoded):
+                        fail(relative, number, "device-identifier")
+                    for match in TEAM.finditer(decoded):
+                        if match[1] != "YOUR_TEAM_ID":
+                            fail(relative, number, "signing-team")
+                for match in HOME.finditer(decoded):
+                    if match[0] != "/Users/someone" and not (source and match[0] in ("/home/someone", r"C:\Users\someone")):
+                        fail(relative, number, "home-directory")
+                for match in EMAIL.finditer(decoded):
+                    # Build identifiers such as core@0.1.200 are not emails.
+                    if re.search(r"[A-Za-z]", match[1]) and not accepted_host(match[1]):
+                        fail(relative, number, "email-domain")
+                for match in URL.finditer(decoded):
+                    target = match[0].rstrip(".,;)")
+                    host = source_host(target) if source else urlsplit(target).hostname
+                    if not accepted_host(host):
+                        fail(relative, number, "host-domain")
+                # Dotted type/property keys in released.json are identifiers.
+                host_text = re.sub(r'"[^"\n]+"\s*:', '', decoded)
+                addressed = URL.sub('', EMAIL.sub('', host_text))
+                for match in HOST.finditer(addressed):
+                    if not accepted_host(match[0]) and not (source and match[0] in policy["identifiers"]):
+                        fail(relative, number, "host-domain")
+                if path.suffix == ".md":
+                    for match in LINK.finditer(decoded):
+                        target = next(value for value in match.groups() if value is not None)
+                        parsed = urlsplit(target)
+                        if parsed.scheme or parsed.netloc:
+                            fail(relative, number, "external-link")
+                        elif not (path.parent / parsed.path).resolve().is_relative_to(root):
+                            fail(relative, number, "escaping-link")
+    if count == 0:
+        fail("<input>", 0, "empty-directory")
+    return errors
+
+
+def load_denied(source=False):
+    # The private deny-list is not published. The contract's publisher runs it
+    # over this tree on every publish; here only the general rules run.
+    return []
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("directory", type=Path)
+    parser.add_argument("--source", action="store_true", help="check Git publication inputs, with reviewed source exceptions")
+    parser.add_argument("--policy", type=Path, default=ROOT / "bin/contract-check-allow.json",
+                        help="the reviewed source exceptions, keyed by path within the directory")
+    parser.add_argument("--exclude", action="append", default=[],
+                        help="with --source, a path within the directory that another check covers")
+    args = parser.parse_args()
+    if args.exclude and not args.source:
+        parser.error("--exclude needs --source")
+    denied = load_denied(args.source)
+    policy = json.loads(args.policy.read_text()) if args.source else None
+    inside = args.policy.resolve().is_relative_to(args.directory.resolve())
+    policy_file = str(args.policy.resolve().relative_to(args.directory.resolve())) if inside else None
+    errors = check(args.directory, denied, source=args.source, policy=policy, exclude=args.exclude,
+                   policy_file=policy_file)
+    for error in errors:
+        print(error, file=sys.stderr)
+    if errors:
+        return 1
+    print("contract-check: passed")
+    return 0
+
+
+def inspection_error(_kind, _value, _traceback):
+    # Filesystem and parser exceptions can contain the private source value.
+    print("<input>:0: inspection-failed", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    sys.excepthook = inspection_error
+    sys.exit(main())

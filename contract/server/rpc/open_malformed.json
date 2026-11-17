@@ -1,0 +1,20 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "sessions.open",
+    "params": "not a map"
+  },
+  "response": {
+    "error": {
+      "code": -32602,
+      "data": {
+        "message": "sessions.open takes the \"org\" it acts in.",
+        "reason": "malformed_payload"
+      },
+      "message": "sessions.open takes the \"org\" it acts in."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

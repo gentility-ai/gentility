@@ -1,0 +1,31 @@
+package auth
+
+import (
+	"context"
+	"net/http"
+	"net/http/httptest"
+	"sync/atomic"
+	"testing"
+)
+
+func TestEnrollmentNeverFollowsRedirect(t *testing.T) {
+	var calls atomic.Int32
+	target := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls.Add(1)
+		w.WriteHeader(http.StatusUnauthorized)
+	}))
+	defer target.Close()
+	for _, status := range []int{301, 302, 303, 307, 308} {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Location", target.URL)
+			w.WriteHeader(status)
+		}))
+		if _, err := FetchEnrollment(context.Background(), nil, server.URL, "test-bearer", "test-machine"); err == nil {
+			t.Errorf("redirect %d was accepted", status)
+		}
+		server.Close()
+	}
+	if calls.Load() != 0 {
+		t.Fatalf("redirect target received %d requests", calls.Load())
+	}
+}

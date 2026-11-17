@@ -1,0 +1,14 @@
+[
+  {"direction":"incoming","frame":{"type":"shell_attach","build":"fixture-build","bundle_path":"/fixture/bundle"}},
+  {"direction":"outgoing","frame":{"type":"shell_attached","attachment_id":"fixture-attachment"}},
+  {"direction":"outgoing","frame":{"type":"confirmation_prompt","confirmation_id":"fixture-prompt","title":"Allow this request?","message":"Pairing \"Kitchen\" wants to pair a phone."}},
+  {"direction":"incoming","frame":{"type":"confirmation_answer","confirmation_id":"fixture-prompt","allow":true}},
+  {"direction":"incoming","frame":{"type":"confirmation_answer","confirmation_id":"fixture-prompt","allow":false}},
+  {"direction":"outgoing","frame":{"type":"confirmation_cancel","confirmation_id":"fixture-prompt"}},
+  {"direction":"incoming","frame":{"type":"confirmation_closed","confirmation_id":"fixture-prompt"}},
+  {"direction":"incoming","frame":{"type":"confirmation_unavailable","confirmation_id":"fixture-prompt","reason":"no_screen_session"}},
+  {"direction":"incoming","frame":{"type":"confirmation_unavailable","confirmation_id":"fixture-prompt","reason":"internal"}},
+  {"direction":"outgoing","frame":{"type":"shell_refused","reason":"busy"}},
+  {"direction":"outgoing","frame":{"type":"shell_refused","reason":"malformed"}},
+  {"direction":"outgoing","frame":{"type":"shell_refused","reason":"unsupported"}}
+]

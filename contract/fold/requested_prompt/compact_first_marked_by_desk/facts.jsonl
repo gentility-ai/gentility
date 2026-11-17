@@ -1,0 +1,2 @@
+{"client_seq":1,"event_type":"prompt_requested","inserted_at":"2026-01-01T00:00:01.000000Z","internal":true,"payload":{"compact_first":true,"text":"go on"},"seq":1}
+{"client_seq":2,"event_type":"turn_started","inserted_at":"2026-01-01T00:00:02.000000Z","internal":false,"payload":{"origin":"prompt","prompt":"/compact","started_by":"desk","turn":1},"seq":2}

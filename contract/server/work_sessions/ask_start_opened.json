@@ -1,0 +1,37 @@
+{
+  "event": "ask",
+  "payload": {
+    "host": "00000000-0000-7000-8000-000000000001",
+    "kind": "session_start",
+    "payload": {
+      "cwd": "/code/app",
+      "harness": "claude",
+      "mode": "supervised"
+    },
+    "session_id": "00000000-0000-7000-8000-000000000002"
+  },
+  "reply": {
+    "response": {
+      "session": {
+        "$row": "feed",
+        "branch": null,
+        "harness": null,
+        "holder": {
+          "epoch": 1,
+          "kind": "desk",
+          "machine": "00000000-0000-7000-8000-000000000001"
+        },
+        "last_server_seq": 0,
+        "manage_grant": false,
+        "manage_grant_expires_at": null,
+        "repository": null,
+        "row_seq": 4,
+        "session_id": "00000000-0000-7000-8000-000000000002",
+        "title": "New thread"
+      },
+      "status": "opened"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

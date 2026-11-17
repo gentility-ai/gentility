@@ -1,0 +1,98 @@
+{
+  "event": {
+    "session": {
+      "archived_at": null,
+      "attention": {
+        "expires_at": "2099-01-01T00:00:00.000000Z",
+        "question_id": "00000000-0000-7000-8000-000000000016",
+        "request": {
+          "call_id": null,
+          "message": "Ship it, or wait for review?",
+          "mode": {
+            "fields": [
+              {
+                "description": null,
+                "kind": {
+                  "default": null,
+                  "options": [
+                    {
+                      "description": null,
+                      "title": "ship",
+                      "value": "ship"
+                    },
+                    {
+                      "description": null,
+                      "title": "wait",
+                      "value": "wait"
+                    }
+                  ],
+                  "type": "choice"
+                },
+                "name": "choice",
+                "required": true,
+                "secret": false,
+                "title": "What next?"
+              }
+            ],
+            "title": null,
+            "type": "form"
+          },
+          "request_id": "00000000-0000-7000-8000-000000000016"
+        },
+        "type": "question"
+      },
+      "availability": "accept",
+      "branch": "main",
+      "checkout_gone": false,
+      "context": null,
+      "effort": null,
+      "elsewhere_working": false,
+      "environment_id": "00000000-0000-7000-8000-000000000006",
+      "harness": "fake",
+      "held": false,
+      "here": true,
+      "id": "00000000-0000-7000-8000-000000000017",
+      "inbox_address": null,
+      "last_event_at": "2026-01-01T00:00:00.000000Z",
+      "last_outcome": null,
+      "mode": "supervised",
+      "mode_pending": null,
+      "model": null,
+      "organization_id": "00000000-0000-7000-8000-000000000008",
+      "organization_slug": "cool-corp",
+      "project": null,
+      "project_path": null,
+      "pull_request": null,
+      "pull_requests": [],
+      "rank": null,
+      "recap_away": false,
+      "settled_at": null,
+      "snoozed_until": null,
+      "spent": {
+        "cached_read_tokens": 0,
+        "cached_write_tokens": 0,
+        "cost": null,
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "starting": null,
+      "status": "open",
+      "tags": {
+        "can_manage": false,
+        "manager": null,
+        "role": null,
+        "started_by": null
+      },
+      "title": "Asked after the turn",
+      "turn_started_at": null,
+      "turns": 0,
+      "unread": true,
+      "url": "https://desk.test/cool-corp/sessions/00000000-0000-7000-8000-000000000017",
+      "waiting": 1,
+      "woke": false,
+      "working": false,
+      "worktree_path": "/tmp/recorded"
+    },
+    "type": "session"
+  }
+}

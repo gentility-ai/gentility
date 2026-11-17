@@ -1,0 +1,28 @@
+[
+  {
+    "request": {
+      "type": "pairings_list"
+    },
+    "frame": {
+      "id": 2,
+      "response": {
+        "type": "error",
+        "code": "scope",
+        "message": "only the Desk app may log out, change the mothership, forget a deployment, look at a path on this Mac, pair a phone, or update or restart the Desk core"
+      }
+    }
+  },
+  {
+    "request": {
+      "type": "phone_claim_mint"
+    },
+    "frame": {
+      "id": 3,
+      "response": {
+        "type": "error",
+        "code": "scope",
+        "message": "only the Desk app may log out, change the mothership, forget a deployment, look at a path on this Mac, pair a phone, or update or restart the Desk core"
+      }
+    }
+  }
+]

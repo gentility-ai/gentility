@@ -1,0 +1,26 @@
+{
+  "event": "fact",
+  "payload": {
+    "events": [
+      {
+        "client_seq": 1,
+        "event_type": "ask_answered",
+        "node": "test-desktop.00000000-0000-7000-8000-000000000001/core@0.1.200",
+        "payload": {
+          "ask_id": "00000000-0000-7000-8000-000000000002",
+          "decision": "refused",
+          "reason": "stale_epoch",
+          "session_id": "00000000-0000-7000-8000-000000000003"
+        }
+      }
+    ]
+  },
+  "reply": {
+    "response": {
+      "last_client_seq": null,
+      "seq": null
+    },
+    "status": "ok"
+  },
+  "topic": "desk:<org>:<machine>"
+}

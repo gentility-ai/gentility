@@ -1,0 +1,16 @@
+{
+  "event": "mutes",
+  "payload": {},
+  "reply": {
+    "response": {
+      "mutes": {
+        "loopers": [],
+        "sessions": [
+          "00000000-0000-7000-8000-000000000001"
+        ]
+      }
+    },
+    "status": "ok"
+  },
+  "topic": "phone:<user>"
+}

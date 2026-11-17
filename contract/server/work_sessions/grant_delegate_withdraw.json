@@ -1,0 +1,20 @@
+{
+  "event": "grant_delegate",
+  "payload": {
+    "delegator_session_id": "00000000-0000-7000-8000-000000000001",
+    "expires_at": "2026-01-01T00:00:00.000000Z",
+    "grantee_session_id": "00000000-0000-7000-8000-000000000002",
+    "on": false,
+    "op_id": "00000000-0000-7000-8000-000000000003",
+    "reason": "The proof is done",
+    "target_session_id": "00000000-0000-7000-8000-000000000004"
+  },
+  "reply": {
+    "response": {
+      "expires_at": null,
+      "row_seq": 20
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

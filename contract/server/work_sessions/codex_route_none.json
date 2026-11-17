@@ -1,0 +1,11 @@
+{
+  "event": "codex_route",
+  "payload": {},
+  "reply": {
+    "response": {
+      "route": null
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

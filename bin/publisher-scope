@@ -1,0 +1,45 @@
+#!/bin/sh
+# The server-owned contract paths change only through the publishing pull
+# request, and that pull request changes nothing else.
+#
+#     bin/publisher-scope <base-sha> <head-sha> <head-ref> <author-login>
+#
+# The publisher is the contract's GitHub App, pushing a contract-publish/
+# branch. Everything under contract/ is the server's except contract/client/,
+# which is this repository's. Exits 1 naming each path out of place.
+set -eu
+
+base=${1:?usage: publisher-scope <base-sha> <head-sha> <head-ref> <author-login>}
+head=${2:?head sha required}
+ref=${3:?head ref required}
+author=${4:?author login required}
+publisher="gentility-contract-publisher[bot]"
+
+case "$ref" in
+contract-publish/*)
+	if [ "$author" != "$publisher" ]; then
+		echo "publisher-scope: contract-publish/ branches are the publisher's; rename the branch" >&2
+		exit 1
+	fi
+	publishing=yes
+	;;
+*) publishing=no ;;
+esac
+
+bad=$(git diff --name-only --no-renames "$base...$head" | while IFS= read -r path; do
+	case "$path" in
+	(contract/client/*) server=no ;;
+	(contract/*) server=yes ;;
+	(*) server=no ;;
+	esac
+	if [ "$publishing" = yes ] && [ "$server" = no ]; then
+		echo "$path: the publishing pull request changes only the server's contract paths"
+	elif [ "$publishing" = no ] && [ "$server" = yes ]; then
+		echo "$path: the server publishes this path; change it at its source"
+	fi
+done)
+if [ -n "$bad" ]; then
+	echo "$bad" >&2
+	exit 1
+fi
+echo "publisher-scope: passed"

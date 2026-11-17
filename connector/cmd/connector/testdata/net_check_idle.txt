@@ -1,0 +1,8 @@
+Daemon observations written: 2026-11-14T08:59:55Z (5s ago)
+Daemon UDP probe: 2026-11-14T08:55:00Z (5m0s ago)
+This is the last probe, not a current connectivity check. Probes pause while idle or without peers; the daemon probes again when it has traffic. Send traffic to a peer and run net check again.
+UDP: a STUN round trip completed.
+Peer paths (one per overlay address):
+  fd06:6e7:0:1::b  direct
+  fd06:6e7:0:1::c  relay (test)
+Peer endpoints: run with sudo and --endpoints to include them.

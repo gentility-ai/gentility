@@ -1,0 +1,83 @@
+{
+  "event": "feed",
+  "payload": {
+    "since": 0
+  },
+  "reply": {
+    "response": {
+      "cursor": 17,
+      "generation": 4000000000000001,
+      "gone": [],
+      "grants": [
+        {
+          "basis_granted_at": null,
+          "basis_scope": null,
+          "by_session_id": null,
+          "expires_at": "2026-01-01T00:00:00.000000Z",
+          "granted_at": "2026-01-01T00:00:00.000000Z",
+          "grantee_session_id": "00000000-0000-7000-8000-000000000001",
+          "id": "00000000-0000-7000-8000-000000000002",
+          "organization_id": "00000000-0000-7000-8000-000000000003",
+          "reason": "chosen by the person",
+          "revoked_at": null,
+          "row_seq": 16,
+          "scope": "organization:00000000-0000-7000-8000-000000000003",
+          "user_id": "00000000-0000-7000-8000-000000000004"
+        }
+      ],
+      "holders": [
+        {
+          "kind": "desk",
+          "label": "test-desktop",
+          "machine": "00000000-0000-7000-8000-000000000005",
+          "presence": "offline",
+          "row_seq": 1,
+          "seen_at": null
+        }
+      ],
+      "more": false,
+      "reads": [],
+      "reset": false,
+      "rows": [
+        {
+          "$row": "feed",
+          "last_server_seq": 0,
+          "manage_grant": false,
+          "manage_grant_expires_at": null,
+          "row_seq": 10,
+          "session_id": "00000000-0000-7000-8000-000000000006",
+          "title": "Target"
+        },
+        {
+          "$row": "feed",
+          "last_client_seq": 2,
+          "last_server_seq": 0,
+          "manage_grant": false,
+          "manage_grant_expires_at": null,
+          "manager_id": "00000000-0000-7000-8000-000000000001",
+          "row_seq": 14,
+          "session_id": "00000000-0000-7000-8000-000000000007",
+          "title": "Child"
+        },
+        {
+          "$row": "feed",
+          "last_client_seq": 2,
+          "last_server_seq": 0,
+          "manage_grant": false,
+          "manage_grant_expires_at": null,
+          "manager_id": "00000000-0000-7000-8000-000000000007",
+          "row_seq": 15,
+          "session_id": "00000000-0000-7000-8000-000000000008",
+          "title": "Stranger"
+        },
+        {
+          "$row": "feed",
+          "row_seq": 17,
+          "title": "Coordinator"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

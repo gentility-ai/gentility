@@ -1,0 +1,22 @@
+{
+  "event": {
+    "said": {
+      "kind": "elicited",
+      "request": {
+        "call_id": null,
+        "message": "Approve the deploy key\nGitHub asks you to confirm it.",
+        "mode": {
+          "elicitation_id": "mcp-fake-1",
+          "sign_in": null,
+          "type": "url",
+          "url": "https://github.com/settings/keys/new?title=fake"
+        },
+        "request_id": "elicitation-mcp-fake-1#0"
+      }
+    },
+    "seq": 1,
+    "session_id": "00000000-0000-7000-8000-000000000015",
+    "turn": 1,
+    "type": "said"
+  }
+}

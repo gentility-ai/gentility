@@ -1,0 +1,16 @@
+{
+  "event": "answer",
+  "payload": {
+    "decision": "allow",
+    "id": "00000000-0000-7000-8000-000000000001",
+    "match": "42"
+  },
+  "reply": {
+    "response": {
+      "id": "00000000-0000-7000-8000-000000000001",
+      "status": "allowed"
+    },
+    "status": "ok"
+  },
+  "topic": "desk:<org>:<machine>"
+}

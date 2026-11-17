@@ -1,0 +1,22 @@
+{
+  "event": "append",
+  "payload": {
+    "events": [
+      {
+        "client_seq": 4,
+        "event_type": "message_held",
+        "payload": {
+          "id": "m1",
+          "reason": "word_from_a_newer_core"
+        }
+      }
+    ]
+  },
+  "reply": {
+    "response": {
+      "last_client_seq": 4
+    },
+    "status": "ok"
+  },
+  "topic": "work_session:<session>"
+}

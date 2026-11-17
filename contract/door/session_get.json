@@ -1,0 +1,76 @@
+{
+  "id": 14,
+  "response": {
+    "session": {
+      "archived_at": null,
+      "attention": null,
+      "availability": "accept",
+      "branch": "main",
+      "checkout_gone": false,
+      "context": {
+        "size": 200000,
+        "used": 16321
+      },
+      "effort": null,
+      "elsewhere_working": false,
+      "environment_id": "00000000-0000-7000-8000-000000000006",
+      "harness": "fake",
+      "harness_capabilities": {
+        "driver": "acp",
+        "fork": true,
+        "load": true,
+        "steer": false,
+        "subagent_lineage": true
+      },
+      "held": false,
+      "here": true,
+      "holder": {
+        "epoch": 1,
+        "kind": "desk",
+        "machine": "00000000-0000-7000-8000-000000000007"
+      },
+      "id": "00000000-0000-7000-8000-000000000001",
+      "inbox_address": null,
+      "last_event_at": "2026-01-01T00:00:00.000000Z",
+      "last_outcome": "end_turn",
+      "mode": "full_access",
+      "mode_pending": null,
+      "model": "fake-large",
+      "organization_id": "00000000-0000-7000-8000-000000000008",
+      "organization_slug": "cool-corp",
+      "project": "checkout",
+      "project_path": "/tmp/recorded",
+      "pull_request": null,
+      "pull_requests": [],
+      "rank": null,
+      "recap_away": false,
+      "settled_at": null,
+      "snoozed_until": null,
+      "spent": {
+        "cached_read_tokens": 9000,
+        "cached_write_tokens": 400,
+        "cost": "0.25",
+        "input_tokens": 1200,
+        "output_tokens": 100
+      },
+      "starting": null,
+      "status": "closed",
+      "tags": {
+        "can_manage": false,
+        "manager": null,
+        "role": null,
+        "started_by": null
+      },
+      "title": "Recorded for the phone",
+      "turn_started_at": null,
+      "turns": 1,
+      "unread": true,
+      "url": "https://desk.test/cool-corp/sessions/00000000-0000-7000-8000-000000000001",
+      "waiting": 0,
+      "woke": false,
+      "working": false,
+      "worktree_path": "/tmp/recorded"
+    },
+    "type": "session"
+  }
+}

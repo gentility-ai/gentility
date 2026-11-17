@@ -1,0 +1,26 @@
+{
+  "about": "Kept by hand, never written by a test. Each input and what Gentility.Projects.repository/1 makes of it (null: no repository). The Elixir suite asserts repository/1 against every pair; the Desk core asserts its normaliser does the same. Change both sides and this file together.",
+  "forms": [
+    { "input": "acme/gentility-core", "expected": "acme/gentility-core" },
+    { "input": "Acme/Gentility-Core", "expected": "acme/gentility-core" },
+    { "input": "  acme/gentility-core  ", "expected": "acme/gentility-core" },
+    { "input": "github.com/acme/gentility-core", "expected": "acme/gentility-core" },
+    { "input": "GitHub.com/Acme/Gentility-Core", "expected": "acme/gentility-core" },
+    { "input": "ssh.github.com/acme/gentility-core", "expected": "acme/gentility-core" },
+    { "input": "acme/gentility-core.git", "expected": "acme/gentility-core" },
+    { "input": "github.com/acme/gentility-core.git", "expected": "acme/gentility-core" },
+    { "input": "acme/app.git.git", "expected": "acme/app" },
+    { "input": "acme/gentility.core", "expected": "acme/gentility.core" },
+    { "input": "acme/my_app-2", "expected": "acme/my_app-2" },
+    { "input": "acme/gentility-core/", "expected": null },
+    { "input": "https://github.com/acme/gentility-core", "expected": null },
+    { "input": "git@github.com:acme/gentility-core.git", "expected": null },
+    { "input": "ssh://git@ssh.github.com:443/acme/gentility-core.git", "expected": null },
+    { "input": "gitlab.com/acme/gentility-core", "expected": null },
+    { "input": "example.org/app", "expected": null },
+    { "input": "acme/.git", "expected": null },
+    { "input": "acme/bad name", "expected": null },
+    { "input": "acme", "expected": null },
+    { "input": "", "expected": null }
+  ]
+}

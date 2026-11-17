@@ -1,0 +1,39 @@
+{
+  "event": "resolve",
+  "payload": {
+    "decision": {
+      "answer": "acme/billing",
+      "status": "answered"
+    },
+    "request_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "request": {
+        "answer": "acme/billing",
+        "body": "Which repository owns billing?",
+        "can_grant": false,
+        "can_resolve": true,
+        "expired": false,
+        "expires_at": "2026-01-01T00:00:00.000000Z",
+        "id": "00000000-0000-7000-8000-000000000001",
+        "kind": "question",
+        "kind_label": "Question",
+        "missing": null,
+        "narrowing": [],
+        "raised_at": "2026-01-01T00:00:00.000000Z",
+        "reason": null,
+        "rendered": "Which repository owns billing?",
+        "requested": {},
+        "resolved_at": "2026-01-01T00:00:00.000000Z",
+        "resolved_by": "someone@example.com",
+        "status": "answered",
+        "subject": null,
+        "summary": null,
+        "supply": []
+      }
+    },
+    "status": "ok"
+  },
+  "topic": "looper_threads:<org>"
+}

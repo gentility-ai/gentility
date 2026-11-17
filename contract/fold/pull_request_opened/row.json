@@ -1,0 +1,9 @@
+{
+  "branch": "fix-flaky",
+  "last_event_at": "2026-01-01T00:00:06.000000Z",
+  "pr_head": "fix-flaky",
+  "pr_number": 42,
+  "pr_state": "open",
+  "pr_url": "https://github.com/acme/app/pull/42",
+  "turns": 1
+}

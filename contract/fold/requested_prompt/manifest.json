@@ -1,0 +1,22 @@
+{
+  "cases": [
+    "direct_send",
+    "direct_send_taken",
+    "dequeued",
+    "compact_first_compacting",
+    "compact_first_marked_by_desk",
+    "compact_first_between_turns",
+    "compact_first_taken",
+    "compact_typed_compact_first",
+    "compact_typed_compact_first_taken",
+    "agent_turn_passes_over",
+    "peer_turn_passes_over",
+    "other_turn_aborted_passes_over",
+    "compaction_stopped_refused",
+    "compaction_aborted",
+    "refused",
+    "agent_gone",
+    "closed",
+    "newer_request_wins"
+  ]
+}

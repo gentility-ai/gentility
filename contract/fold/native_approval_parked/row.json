@@ -1,0 +1,9 @@
+{
+  "attention": "approval",
+  "attention_line": "Wants to execute",
+  "branch": "main",
+  "last_event_at": "2026-01-01T00:00:14.000000Z",
+  "mode": "auto_accept_edits",
+  "turns": 1,
+  "working": true
+}

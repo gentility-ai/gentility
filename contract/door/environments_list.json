@@ -1,0 +1,42 @@
+{
+  "id": 12,
+  "response": {
+    "environments": [
+      {
+        "created_at": "2026-01-01T00:00:00.000000Z",
+        "discovered": true,
+        "id": "00000000-0000-7000-8000-000000000006",
+        "label": "ideal-thorn",
+        "mcp_url": "https://mcp.desk.test",
+        "mode": null,
+        "mothership": false,
+        "organizations": [
+          {
+            "id": "00000000-0000-7000-8000-000000000008",
+            "name": "cool-corp",
+            "slug": "cool-corp"
+          }
+        ],
+        "person_email": null,
+        "person_name": null,
+        "signed_in": true,
+        "web_url": "https://desk.test"
+      },
+      {
+        "created_at": "2026-01-01T00:00:00.000000Z",
+        "discovered": false,
+        "id": "00000000-0000-7000-8000-000000000010",
+        "label": "Gentility",
+        "mcp_url": "https://mcp.gentility.ai",
+        "mode": "production",
+        "mothership": true,
+        "organizations": [],
+        "person_email": null,
+        "person_name": null,
+        "signed_in": false,
+        "web_url": "https://core.gentility.ai"
+      }
+    ],
+    "type": "environments"
+  }
+}

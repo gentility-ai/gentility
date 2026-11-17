@@ -1,0 +1,10 @@
+[
+  {
+    "from": "claude-opus-4-6",
+    "harness": "claude_code",
+    "kind": "model",
+    "seq": 5,
+    "to": "claude-sonnet-4-6",
+    "turn": 1
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "event": "pull_requests",
+  "payload": {
+    "full_name": "acme/app"
+  },
+  "reply": {
+    "response": {
+      "more": false,
+      "pull_requests": [
+        {
+          "author": "octocat",
+          "checks": "failing",
+          "draft": false,
+          "head": "fix-flaky",
+          "number": 12,
+          "review": "changes_requested",
+          "title": "Fix the flaky test",
+          "updated_at": "2026-01-01T00:00:00.000000Z",
+          "url": "https://github.com/acme/app/pull/12"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

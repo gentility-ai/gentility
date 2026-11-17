@@ -1,0 +1,19 @@
+{
+  "event": "lease_take",
+  "payload": {
+    "from_epoch": 1,
+    "session_id": "00000000-0000-7000-8000-000000000001",
+    "to": "00000000-0000-7000-8000-000000000002"
+  },
+  "reply": {
+    "response": {
+      "epoch": 2,
+      "holder": {
+        "kind": "desk",
+        "machine": "00000000-0000-7000-8000-000000000002"
+      }
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

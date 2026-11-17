@@ -1,0 +1,11 @@
+{
+  "id": 17,
+  "response": {
+    "earlier": 0,
+    "from_turn": null,
+    "items": [],
+    "reset": false,
+    "through_seq": 8,
+    "type": "transcript"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "event": {
+    "said": {
+      "kind": "turn_ended",
+      "outcome": "end_turn",
+      "spent": {
+        "cached_read_tokens": 9000,
+        "cached_write_tokens": 400,
+        "cost": "0.25",
+        "input_tokens": 1200,
+        "output_tokens": 100
+      }
+    },
+    "seq": 6,
+    "session_id": "00000000-0000-7000-8000-000000000001",
+    "turn": 1,
+    "type": "said"
+  }
+}

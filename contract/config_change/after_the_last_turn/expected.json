@@ -1,0 +1,17 @@
+[
+  {
+    "from": "supervised",
+    "kind": "mode",
+    "seq": 6,
+    "to": "auto",
+    "turn": 2
+  },
+  {
+    "from": "claude-sonnet-4-6",
+    "harness": "claude_code",
+    "kind": "model",
+    "seq": 7,
+    "to": "claude-opus-4-6",
+    "turn": 2
+  }
+]

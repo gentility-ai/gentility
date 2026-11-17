@@ -1,0 +1,49 @@
+{
+  "event": {
+    "said": {
+      "kind": "asked",
+      "request": {
+        "call_id": "call_fake_1",
+        "changes": [
+          {
+            "patch": "diff --git a/README.md b/README.md\n--- a/README.md\n+++ b/README.md\n@@ -1 +1 @@\n-old\n+new\n",
+            "path": "README.md",
+            "unshown": null
+          }
+        ],
+        "changes_dropped": false,
+        "input": {
+          "file_path": "README.md",
+          "new_string": "disposable",
+          "old_string": "throwaway"
+        },
+        "input_dropped": false,
+        "kind": "edit",
+        "options": [
+          {
+            "id": "allow-once",
+            "kind": "allow_once",
+            "name": "Yes"
+          },
+          {
+            "id": "allow-always",
+            "kind": "allow_always",
+            "name": "Yes, and don't ask again"
+          },
+          {
+            "id": "reject",
+            "kind": "reject_once",
+            "name": "No"
+          }
+        ],
+        "request_id": "call_fake_1#0",
+        "server": null,
+        "tool": "Edit README.md"
+      }
+    },
+    "seq": 1,
+    "session_id": "00000000-0000-7000-8000-000000000009",
+    "turn": 1,
+    "type": "said"
+  }
+}

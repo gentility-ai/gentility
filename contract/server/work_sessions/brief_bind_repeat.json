@@ -1,0 +1,18 @@
+{
+  "event": "brief_bind",
+  "payload": {
+    "action": "bind_brief",
+    "brief": "contract-worker",
+    "expected_revision_id": null,
+    "session_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "revision_id": "00000000-0000-7000-8000-000000000002",
+      "session_id": "00000000-0000-7000-8000-000000000001",
+      "version": 1
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

@@ -1,0 +1,25 @@
+{
+  "event": "models_seen",
+  "payload": {
+    "harness": "claude",
+    "models": [
+      {
+        "label": "Default (recommended)",
+        "value": "default"
+      },
+      {
+        "label": "Opus",
+        "value": "opus"
+      },
+      {
+        "label": "Sonnet (1M context)",
+        "value": "claude-sonnet-5-5[1m]"
+      }
+    ]
+  },
+  "reply": {
+    "response": {},
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

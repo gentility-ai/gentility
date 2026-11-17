@@ -1,0 +1,5 @@
+[
+  {"id":"fixture-legacy","label":"Browser","scope":"operate","minted_at":"2026-11-11T00:00:00Z","expires_at":"2026-11-11T00:15:00Z","spent_at":null,"revoked_at":null},
+  {"id":"fixture-renewable","label":"Browser","scope":"operate","minted_at":"2026-11-11T00:00:00Z","expires_at":"2026-11-11T00:15:00Z","spent_at":"2026-11-11T00:01:00Z","revoked_at":null,"renewable":true},
+  {"id":"fixture-revoked","label":"Browser","scope":"operate","minted_at":"2026-11-11T00:00:00Z","expires_at":"2026-11-11T00:15:00Z","spent_at":"2026-11-11T00:01:00Z","revoked_at":"2026-11-11T00:02:00Z","renewable":false,"revocation_reason":"renewal_reused"}
+]

@@ -1,0 +1,29 @@
+{
+  "event": "desk_hosts",
+  "payload": {},
+  "reply": {
+    "response": {
+      "hosts": [
+        {
+          "desk": null,
+          "holders": [],
+          "kind": "organization",
+          "label": "routing-holder",
+          "machine_id": "00000000-0000-7000-8000-000000000001",
+          "node": {
+            "address": "<address>",
+            "door_port": 6446,
+            "last_seen_at": null,
+            "name": "<node>",
+            "presence": "offline"
+          },
+          "reachable": null,
+          "role": null,
+          "slug": "routing-holder"
+        }
+      ]
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

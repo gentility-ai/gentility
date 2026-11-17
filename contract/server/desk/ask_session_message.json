@@ -1,0 +1,31 @@
+{
+  "event": "ask",
+  "payload": {
+    "expires_at": "2026-01-01T00:00:00.000000Z",
+    "id": "00000000-0000-7000-8000-000000000001",
+    "kind": "session_message",
+    "payload": {
+      "by": {
+        "id": "00000000-0000-7000-8000-000000000002",
+        "name": "Someone",
+        "session_id": "00000000-0000-7000-8000-000000000003"
+      },
+      "caused_by": null,
+      "epoch": 1,
+      "from_mode": "auto",
+      "fyi": false,
+      "hop_chain": [
+        "00000000-0000-7000-8000-000000000003"
+      ],
+      "id": "00000000-0000-7000-8000-000000000004",
+      "sender": {
+        "id": "00000000-0000-7000-8000-000000000003",
+        "organization_id": "00000000-0000-7000-8000-000000000005",
+        "title": "Coordinator: gentility"
+      },
+      "session_id": "00000000-0000-7000-8000-000000000006",
+      "text": "REPORT 1: plan at docs/plans/x.md, sha abc123"
+    }
+  },
+  "topic": "desk:<org>:<machine>"
+}

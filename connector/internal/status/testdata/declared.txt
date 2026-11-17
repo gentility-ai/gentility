@@ -1,0 +1,19 @@
+connector 0.1.0 (node_capver 1)
+name       cedar.morgan.acme.6net.io
+node       node-1  (relay-1)
+head       https://head.example
+config     revision 5, as of 12s ago
+peers      1 direct
+
+peer paths
+  fd06:6e7:0:1::b  direct
+
+organizations
+  acme     fd06:6e7:0:1::a  n1
+  widgets  fd06:6e7:0:2::a  n1
+
+services
+  egress  :8443  declared  acme
+
+egress
+  no relay selected

@@ -1,0 +1,5 @@
+{"client_seq":1,"event_type":"opened","inserted_at":"2026-01-01T00:00:01.000000Z","internal":false,"payload":{"harness":"claude_code","mode":"supervised","model":"claude-sonnet-4-6","title":"Fix the flaky test"},"seq":1}
+{"client_seq":2,"event_type":"turn_started","inserted_at":"2026-01-01T00:00:02.000000Z","internal":false,"payload":{"prompt":"go on"},"seq":2}
+{"client_seq":3,"event_type":"turn_completed","inserted_at":"2026-01-01T00:00:03.000000Z","internal":false,"payload":{},"seq":3}
+{"client_seq":4,"event_type":"mode_changed","inserted_at":"2026-01-01T00:00:04.000000Z","internal":false,"payload":{"mode":"auto_accept_edits"},"seq":4}
+{"client_seq":5,"event_type":"turn_started","inserted_at":"2026-01-01T00:00:05.000000Z","internal":false,"payload":{"prompt":"go on"},"seq":5}

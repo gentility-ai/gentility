@@ -1,0 +1,72 @@
+{
+  "event": "machines",
+  "payload": {},
+  "reply": {
+    "response": {
+      "machines": [
+        {
+          "address": "<address>",
+          "capver": null,
+          "desk_installs": [
+            {
+              "desk_machine_id": "00000000-0000-7000-8000-000000000001",
+              "desk_presence": "offline",
+              "door_port": 6446
+            }
+          ],
+          "desk_machine_id": "00000000-0000-7000-8000-000000000001",
+          "desk_presence": "offline",
+          "dns_label": "test-desktop",
+          "ipv4": [],
+          "name": "test-desktop",
+          "node_id": "00000000-0000-7000-8000-000000000002",
+          "owner": {
+            "id": "00000000-0000-7000-8000-000000000003",
+            "kind": "user",
+            "name": "admin@example.com"
+          },
+          "presence": {
+            "last_seen_at": null,
+            "path": "offline"
+          },
+          "services": [
+            {
+              "id": "00000000-0000-7000-8000-000000000004",
+              "kind": "desk",
+              "port": 6446,
+              "state": "approved"
+            }
+          ],
+          "status": "active",
+          "version": null
+        },
+        {
+          "address": "<address>",
+          "capver": null,
+          "desk_installs": [],
+          "desk_machine_id": null,
+          "desk_presence": null,
+          "dns_label": "white-heron",
+          "ipv4": [],
+          "name": "white-heron",
+          "node_id": "00000000-0000-7000-8000-000000000005",
+          "owner": {
+            "id": "00000000-0000-7000-8000-000000000003",
+            "kind": "user",
+            "name": "admin@example.com"
+          },
+          "presence": {
+            "last_seen_at": null,
+            "path": "offline"
+          },
+          "services": [],
+          "status": "active",
+          "version": null
+        }
+      ],
+      "now": "2026-01-01T00:00:00.000000Z"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

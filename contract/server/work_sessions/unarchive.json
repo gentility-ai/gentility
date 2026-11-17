@@ -1,0 +1,14 @@
+{
+  "event": "unarchive",
+  "payload": {
+    "session_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "archived_at": null,
+      "session_id": "00000000-0000-7000-8000-000000000001"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

@@ -1,0 +1,7 @@
+Daemon observations written: 2026-11-14T08:59:55Z (5s ago)
+Daemon UDP probe: 2026-11-14T08:59:40Z (20s ago)
+UDP: no STUN round trip completed. This alone does not establish that UDP is blocked.
+Peer paths (one per overlay address):
+  fd06:6e7:0:1::b  direct
+  fd06:6e7:0:1::c  relay (test)
+Peer endpoints: run with sudo and --endpoints to include them.

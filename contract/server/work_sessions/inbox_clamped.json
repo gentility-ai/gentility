@@ -1,0 +1,22 @@
+{
+  "event": "inbox",
+  "payload": {
+    "at": "2026-01-01T00:00:00.000000Z",
+    "changes": {
+      "rank": "b"
+    },
+    "op_id": "00000000-0000-7000-8000-000000000001",
+    "session_id": "00000000-0000-7000-8000-000000000002"
+  },
+  "reply": {
+    "response": {
+      "applied": [
+        "rank"
+      ],
+      "row_seq": 5,
+      "stale": []
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

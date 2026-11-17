@@ -1,0 +1,25 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "sessions.transcript",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001",
+      "request": {
+        "session_id": "00000000-0000-7000-8000-000000000002",
+        "type": "session_inherited"
+      }
+    }
+  },
+  "response": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+      "as_of": null,
+      "earlier": 0,
+      "items": [],
+      "source": "copy",
+      "type": "inherited"
+    }
+  }
+}

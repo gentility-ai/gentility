@@ -1,0 +1,22 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "questions.list",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32001,
+      "data": {
+        "message": "This connection may not act in that organization.",
+        "reason": "forbidden"
+      },
+      "message": "This connection may not act in that organization."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

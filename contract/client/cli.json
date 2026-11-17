@@ -1,0 +1,22 @@
+{
+  "commands": {
+    "install": [
+      "install",
+      "--interface",
+      "--source-state-dir",
+      "{staging}",
+      "--place-binary",
+      "{placed}"
+    ],
+    "leave": [
+      "leave"
+    ],
+    "update": [
+      "install",
+      "--interface",
+      "--place-binary",
+      "{placed}"
+    ]
+  },
+  "success_exit": 0
+}

@@ -1,0 +1,13 @@
+{
+  "event": "phone_claim_mint",
+  "payload": {},
+  "reply": {
+    "response": {
+      "claim_id": "00000000-0000-7000-8000-000000000001",
+      "expires_at": "2026-01-01T00:00:00.000000Z",
+      "url": "https://mcp.gentility.test/phone/claim#<code>"
+    },
+    "status": "ok"
+  },
+  "topic": "desk:<org>:<machine>"
+}

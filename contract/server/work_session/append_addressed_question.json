@@ -1,0 +1,57 @@
+{
+  "event": "append",
+  "payload": {
+    "epoch": 1,
+    "events": [
+      {
+        "client_seq": 2,
+        "event_type": "question_asked",
+        "payload": {
+          "expires_at": "2026-01-01T00:00:00.000000Z",
+          "form": {
+            "properties": {
+              "approach": {
+                "oneOf": [
+                  {
+                    "const": "small",
+                    "title": "Small change"
+                  },
+                  {
+                    "const": "full",
+                    "title": "Full replacement"
+                  }
+                ],
+                "title": "Choose one",
+                "type": "string"
+              }
+            },
+            "required": [
+              "approach"
+            ],
+            "type": "object"
+          },
+          "question_id": "00000000-0000-7000-8000-000000000001",
+          "request_id": "harness-17",
+          "source": "agent",
+          "text": "Which approach?",
+          "to": "person"
+        }
+      },
+      {
+        "client_seq": 3,
+        "event_type": "question_asked",
+        "payload": {
+          "message": "Which approach?",
+          "request_id": "harness-17"
+        }
+      }
+    ]
+  },
+  "reply": {
+    "response": {
+      "last_client_seq": 3
+    },
+    "status": "ok"
+  },
+  "topic": "work_session:<session>"
+}

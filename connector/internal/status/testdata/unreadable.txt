@@ -1,0 +1,7 @@
+connector 0.1.0 (node_capver 1)
+note       the daemon's status could not be read
+
+this machine holds an identity this account may not open, and the daemon has
+written no status it can read. Ask as root:
+
+  sudo gentility status

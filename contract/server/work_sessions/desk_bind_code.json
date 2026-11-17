@@ -1,0 +1,14 @@
+{
+  "event": "desk_bind_code",
+  "payload": {
+    "machine_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "code": "<code>",
+      "expires_at": "2026-01-01T00:00:00.000000Z"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

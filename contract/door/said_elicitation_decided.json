@@ -1,0 +1,20 @@
+{
+  "event": {
+    "said": {
+      "decision": {
+        "content": {
+          "count": 3.0,
+          "email": "ada@example.test",
+          "notify": false
+        },
+        "outcome": "accepted"
+      },
+      "kind": "elicitation_decided",
+      "request_id": "elicitation#0"
+    },
+    "seq": 2,
+    "session_id": "00000000-0000-7000-8000-000000000014",
+    "turn": 1,
+    "type": "said"
+  }
+}

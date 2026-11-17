@@ -1,0 +1,31 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "sessions.transcript",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001",
+      "request": {
+        "before_turn": 3,
+        "from_turn": 1,
+        "last_turns": 1,
+        "session_id": "00000000-0000-7000-8000-000000000002",
+        "type": "session_transcript"
+      }
+    }
+  },
+  "response": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+      "as_of": null,
+      "earlier": 0,
+      "from_turn": 1,
+      "items": [],
+      "reset": true,
+      "source": "copy",
+      "through_seq": 1,
+      "type": "transcript"
+    }
+  }
+}

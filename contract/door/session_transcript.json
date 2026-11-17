@@ -1,0 +1,89 @@
+{
+  "id": 2,
+  "response": {
+    "earlier": 0,
+    "from_turn": 1,
+    "items": [
+      {
+        "content": "{\"sha\":\"0000000000000000000000000000000000000000\",\"branch\":\"main\",\"paths\":[],\"more\":0}",
+        "created_at": "2026-01-01T00:00:00.000000Z",
+        "id": "head_moved-00000000-0000-7000-8000-000000000001-0",
+        "kind": "head_moved",
+        "message_item_id": null,
+        "ordinal": 1,
+        "parent_call_id": null,
+        "remote_id": "ledger",
+        "role": null,
+        "seq": 1,
+        "session_id": "00000000-0000-7000-8000-000000000001",
+        "turn": 0
+      },
+      {
+        "content": "Rename the throwaway.",
+        "created_at": "2026-01-01T00:00:00.000000Z",
+        "id": "00000000-0000-7000-8000-000000000002",
+        "kind": "message",
+        "message_item_id": null,
+        "ordinal": 2,
+        "parent_call_id": null,
+        "remote_id": "ledger",
+        "role": "user",
+        "seq": 2,
+        "session_id": "00000000-0000-7000-8000-000000000001",
+        "turn": 1
+      },
+      {
+        "content": "Editing the README.",
+        "created_at": "2026-01-01T00:00:00.000000Z",
+        "id": "00000000-0000-7000-8000-000000000003",
+        "kind": "message",
+        "message_item_id": null,
+        "ordinal": 3,
+        "parent_call_id": null,
+        "remote_id": "ledger",
+        "role": "assistant",
+        "seq": 4,
+        "session_id": "00000000-0000-7000-8000-000000000001",
+        "turn": 1
+      },
+      {
+        "changes": [
+          {
+            "patch": "diff --git a/README.md b/README.md\n--- a/README.md\n+++ b/README.md\n@@ -1 +1 @@\n-A throwaway repository.\n+A disposable repository.\n",
+            "path": "README.md",
+            "unshown": null
+          }
+        ],
+        "content": "{\"provider_tool_call_id\":\"call_fake_1\",\"name\":\"Edit\",\"kind\":\"edit\",\"title\":\"Edit README.md\",\"arguments\":{\"file_path\":\"README.md\",\"old_string\":\"throwaway\",\"new_string\":\"disposable\"},\"result\":{\"text\":\"Edited README.md\"},\"status\":\"executed\",\"parent_call_id\":null,\"started_at\":\"2026-01-01T00:00:00Z\",\"ended_at\":\"2026-01-01T00:00:00Z\"}",
+        "created_at": "2026-01-01T00:00:00.000000Z",
+        "id": "00000000-0000-7000-8000-000000000004",
+        "kind": "tool_call",
+        "message_item_id": "00000000-0000-7000-8000-000000000003",
+        "ordinal": 4,
+        "parent_call_id": null,
+        "remote_id": "ledger",
+        "role": null,
+        "seq": 5,
+        "session_id": "00000000-0000-7000-8000-000000000001",
+        "turn": 1
+      },
+      {
+        "content": "{\"input_tokens\":1200,\"output_tokens\":100,\"cached_read_tokens\":9000,\"cached_write_tokens\":400,\"thought_tokens\":60,\"cost\":\"0.25\",\"model\":\"fake-large\",\"started_at\":\"2026-01-01T00:00:00Z\",\"ended_at\":\"2026-01-01T00:00:00Z\",\"context_used\":16321,\"context_size\":200000,\"desk_build\":\"0.0.0\",\"adapter_version\":\"0.0.1\",\"first_update_at\":\"2026-01-01T00:00:00Z\",\"updates\":10,\"tool_calls\":1,\"approvals\":1,\"approval_wait_ms\":0,\"missed\":0}",
+        "created_at": "2026-01-01T00:00:00.000000Z",
+        "id": "turn_ended-00000000-0000-7000-8000-000000000001-0",
+        "kind": "turn_ended",
+        "message_item_id": null,
+        "ordinal": 5,
+        "parent_call_id": null,
+        "remote_id": "ledger",
+        "role": null,
+        "seq": 6,
+        "session_id": "00000000-0000-7000-8000-000000000001",
+        "turn": 1
+      }
+    ],
+    "reset": false,
+    "through_seq": 7,
+    "type": "transcript"
+  }
+}

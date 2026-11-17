@@ -1,0 +1,9 @@
+{
+  "event": "heartbeat",
+  "payload": {},
+  "reply": {
+    "response": {},
+    "status": "ok"
+  },
+  "topic": "desk:<org>:<machine>"
+}

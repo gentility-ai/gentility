@@ -1,0 +1,26 @@
+{
+  "type": "harness_config",
+  "options": [
+    {
+      "id": "model",
+      "name": "Model",
+      "category": "model",
+      "current": "fable",
+      "choices": [
+        {
+          "value": "fable",
+          "name": "Fable 5.2",
+          "description": null,
+          "new": true,
+          "spec_id": "anthropic:claude-fable-5-2"
+        },
+        {
+          "value": "uncoded",
+          "name": "Uncoded",
+          "description": null
+        }
+      ]
+    }
+  ],
+  "commands": []
+}

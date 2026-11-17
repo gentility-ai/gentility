@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+"""Every String enum the phone decodes reads a word it does not know.
+
+    bin/phone-unknown-words [DIR]
+
+T-161: a protocol word the phone has not seen decodes to an unknown case. It
+never crashes, never fails the frame, and is never read as a known value. A
+Swift `enum X: String, Decodable` (or `Codable`) left to its synthesized
+`init(from:)` throws on an unseen word, and the whole frame fails with it. So
+each such enum under DIR (default phone/ios/Kit), conforming in its
+declaration or in an extension, must write its own `init(from:)`, in its body
+or in an `extension X`, that falls back to its unknown case.
+
+The phone's XCTests (KitTests/UnknownWordsTests.swift) need a Mac and no CI job
+runs them; this is the half that runs on Linux, in desk-test.yml's core job.
+It reads declarations, not types: comments and string literals are blanked
+first, so neither can satisfy it or hide an enum from it. Exits 1 naming each
+enum without one, and 2 when DIR holds no Swift at all.
+"""
+
+from pathlib import Path
+import re
+import sys
+
+ROOT = Path(__file__).resolve().parent.parent
+DEFAULT = ROOT / "phone/ios/Kit"
+
+# A type's declaration up to its opening brace; a member's `init(from`; a brace.
+TOKEN = re.compile(
+    r"\b(?P<kw>enum|struct|class|actor|extension|protocol)\s+"
+    r"(?!(?:func|var|let|subscript|init)\b)(?P<name>[A-Za-z_][\w.]*)(?P<clause>[^{}]*?)\{"
+    r"|(?P<init>\binit\s*\(\s*from\b)|(?P<open>\{)|(?P<close>\})"
+)
+STRING_START = re.compile(r'(#*)("""|")')
+DECODES = {"Decodable", "Codable"}
+
+
+def blank(text):
+    """`text` with comments and string contents spaced out, newlines kept, and
+    an interpolation's code kept as code."""
+    out = list(text)
+    stack = [["code", 0]]  # a code frame counts its open parens
+    i, n = 0, len(text)
+
+    def wipe(a, b):
+        for k in range(a, b):
+            if out[k] != "\n":
+                out[k] = " "
+
+    while i < n:
+        top = stack[-1]
+        if top[0] == "code":
+            if text.startswith("//", i):
+                j = text.find("\n", i)
+                j = n if j < 0 else j
+                wipe(i, j)
+                i = j
+            elif text.startswith("/*", i):
+                depth, j = 1, i + 2
+                while j < n and depth:  # Swift's block comments nest
+                    pair = text[j:j + 2]
+                    depth += {"/*": 1, "*/": -1}.get(pair, 0)
+                    j += 2 if pair in ("/*", "*/") else 1
+                wipe(i, j)
+                i = j
+            elif m := STRING_START.match(text, i):
+                stack.append(["string", m.group(2) + m.group(1), "\\" + m.group(1)])
+                i = m.end()
+            else:
+                if text[i] == "(":
+                    top[1] += 1
+                elif text[i] == ")":
+                    if len(stack) > 1 and top[1] == 0:
+                        stack.pop()  # an interpolation ends: back in its string
+                    else:
+                        top[1] -= 1
+                i += 1
+        else:
+            _, close, escape = top
+            if text.startswith(close, i):
+                stack.pop()
+                i += len(close)
+            elif text.startswith(escape + "(", i):
+                stack.append(["code", 0])
+                i += len(escape) + 1
+            elif text.startswith(escape, i):
+                wipe(i, min(i + len(escape) + 1, n))
+                i += len(escape) + 1
+            else:
+                wipe(i, i + 1)
+                i += 1
+    return "".join(out)
+
+
+def conformances(clause):
+    head = clause.split(" where ")[0]
+    return {word.strip() for word in head.partition(":")[2].split(",")} if ":" in head else set()
+
+
+def scan(files):
+    """(enums, decoded_by_extension, with_init): each String enum as
+    {qualified: (path, line, conforms)}, the names extensions make decodable,
+    and every type or extension with an `init(from:)` of its own."""
+    enums, extended, with_init = {}, set(), set()
+    for path in files:
+        text = blank(path.read_text())
+        stack = []  # (qualified name or None for a plain brace)
+        for m in TOKEN.finditer(text):
+            if m.group("kw"):
+                kw, name, clause = m.group("kw"), m.group("name"), m.group("clause")
+                parent = next((q for q in reversed(stack) if q), None)
+                qualified = name if kw == "extension" or not parent else f"{parent}.{name}"
+                said = conformances(clause)
+                if kw == "enum" and "String" in said:
+                    line = text.count("\n", 0, m.start()) + 1
+                    enums[qualified] = (path, line, bool(said & DECODES))
+                if kw == "extension" and said & DECODES:
+                    extended.add(qualified)
+                stack.append(qualified)
+            elif m.group("init"):
+                if stack and stack[-1]:
+                    with_init.add(stack[-1])
+            elif m.group("open"):
+                stack.append(None)
+            elif stack:
+                stack.pop()
+    return enums, extended, with_init
+
+
+def main(argv):
+    root = Path(argv[1]) if len(argv) > 1 else DEFAULT
+    files = sorted(root.rglob("*.swift"))
+    if not files:
+        print(f"bin/phone-unknown-words: no Swift under {root}", file=sys.stderr)
+        return 2
+    enums, extended, with_init = scan(files)
+    decoded = {q: at for q, at in enums.items() if at[2] or q in extended}
+    missing = sorted(q for q in decoded if q not in with_init)
+    for q in missing:
+        path, line, _ = decoded[q]
+        where = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
+        print(
+            f"{where}:{line}: enum {q} is a String word decoded by its synthesized "
+            f"init(from:), which throws on a word this build does not know and fails "
+            f"the whole frame (T-161). Give it an `unknown` case and an init(from:) "
+            f"that falls back to it, in its body or in `extension {q}`:\n"
+            f"    public init(from decoder: Decoder) throws {{\n"
+            f"        self = Self(rawValue: try decoder.singleValueContainer().decode(String.self)) ?? .unknown\n"
+            f"    }}",
+            file=sys.stderr,
+        )
+    if missing:
+        return 1
+    print(f"{len(decoded)} decoded String enum(s) in {len(files)} Swift files, each with its own init(from:)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

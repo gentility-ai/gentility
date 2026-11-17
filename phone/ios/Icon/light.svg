@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!--
+    GenDesk's iPhone icon: the Gentility bond mark on Desk's terracotta tile
+    (desk/app/icons/desk.svg), cut for iOS. The tile fills the canvas — iOS
+    masks the corners itself, so there is no rounding, margin, shadow or
+    transparency here — and the mark sits at 66 % of it, a little more air
+    than the Mac's 70 % because a home-screen tile has no margin of its own.
+    The grid is the Mac's 100-unit, four-row bond with the mortar widened
+    from 2 to 3 (bricks 22.75): iOS cuts every size from this one PNG, and at
+    the 60 and 40 px it draws for notifications the narrower mortar goes grey.
+    Regenerate with Icon/render.sh; never edit the PNGs.
+  -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C66A4E"/>
+      <stop offset="1" stop-color="#AD523A"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#tile)"/>
+  <rect width="1024" height="1024" fill="url(#sheen)"/>
+  <g fill="#FAFAFA" transform="translate(174.08 174.08) scale(6.7584)">
+    <rect x="0" y="0" width="100" height="22.75" rx="3"/>
+    <rect x="0" y="25.75" width="22.75" height="22.75" rx="3"/>
+    <rect x="0" y="51.5" width="22.75" height="22.75" rx="3"/>
+    <rect x="51.5" y="51.5" width="48.5" height="22.75" rx="3"/>
+    <rect x="0" y="77.25" width="74.25" height="22.75" rx="3"/>
+    <rect x="77.25" y="77.25" width="22.75" height="22.75" rx="3"/>
+  </g>
+</svg>

@@ -1,0 +1,16 @@
+{
+  "event": "desk_token",
+  "payload": {
+    "client": "desk-client",
+    "machine_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "expires_at": "2026-01-01T00:00:00.000000Z",
+      "scope": "operate",
+      "token": "<token>"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

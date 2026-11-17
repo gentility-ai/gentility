@@ -1,0 +1,29 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "session.append",
+    "params": {
+      "events": [
+        {
+          "client_seq": 2,
+          "event_type": "turn_started",
+          "payload": {}
+        },
+        {
+          "client_seq": 3,
+          "event_type": "turn_completed",
+          "payload": {}
+        }
+      ],
+      "session": "00000000-0000-7000-8000-000000000001"
+    }
+  },
+  "response": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+      "last_client_seq": 3
+    }
+  }
+}

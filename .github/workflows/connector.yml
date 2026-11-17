@@ -1,0 +1,78 @@
+# The Connector, vetted and tested on every pull request and every push to main.
+#
+# The interface test needs root, and skips without it. GitHub's Ubuntu runners
+# have passwordless sudo, /dev/net/tun, ip and iptables.
+name: connector
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: connector
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: connector/go.mod
+          cache-dependency-path: connector/go.sum
+      - run: test -z "$(gofmt -l .)"
+      # The client-owned contract files are this build's own output: a change
+      # to what they describe must regenerate them in the same pull request.
+      - name: The contract, verified, and its client files current
+        run: |
+          ../contract/tools/verify ../contract
+          go run ./cmd/clientcontract --out "$RUNNER_TEMP/client"
+          diff -r "$RUNNER_TEMP/client" ../contract/client
+      - run: go vet ./...
+      - run: go test ./...
+      # The phone links phonenode through gomobile (phone/build-phonenode.sh,
+      # macOS only). This catches a change that stops it compiling for the
+      # phone without needing Xcode.
+      - run: CGO_ENABLED=0 GOOS=ios GOARCH=arm64 go build ./phonenode/
+      # sudo resets the environment: secure_path replaces PATH and HOME becomes
+      # root's. Hand root the toolchain and the runner's caches by name.
+      # -count=1 because a cached pass would prove nothing; -v so the log says
+      # whether the test ran as root or skipped.
+      - name: The interface glue, as root
+        run: |
+          sudo env "PATH=$PATH" \
+            "GOPATH=$(go env GOPATH)" \
+            "GOMODCACHE=$(go env GOMODCACHE)" \
+            "GOCACHE=$(go env GOCACHE)" \
+            go test -tags interface_root -count=1 -v ./internal/tsnode/
+
+  # A release is trusted because anyone can rebuild its bytes from its commit.
+  # Build each release target twice, from two copies of the tree with separate
+  # caches, and require the same bytes. release-connector.yml builds the same way.
+  reproducible:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: first
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: first/connector/go.mod
+          cache: false
+      - name: Two builds, one set of bytes
+        run: |
+          cp -R first second
+          for copy in first second; do
+            for target in linux/amd64 darwin/arm64; do
+              GOCACHE="$RUNNER_TEMP/cache-$copy" first/bin/connector-build \
+                "$target" 0.0.0-check "$GITHUB_SHA" "$RUNNER_TEMP/$copy" "$copy/connector"
+            done
+          done
+          (cd "$RUNNER_TEMP/first" && sha256sum connector-*) > "$RUNNER_TEMP/first.sums"
+          (cd "$RUNNER_TEMP/second" && sha256sum connector-*) > "$RUNNER_TEMP/second.sums"
+          cat "$RUNNER_TEMP/first.sums"
+          diff "$RUNNER_TEMP/first.sums" "$RUNNER_TEMP/second.sums"

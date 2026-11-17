@@ -1,0 +1,17 @@
+{
+  "event": "brief_bind",
+  "payload": {
+    "action": "upgrade_brief",
+    "expected_revision_id": "00000000-0000-7000-8000-000000000001",
+    "session_id": "00000000-0000-7000-8000-000000000002"
+  },
+  "reply": {
+    "response": {
+      "revision_id": "00000000-0000-7000-8000-000000000003",
+      "session_id": "00000000-0000-7000-8000-000000000002",
+      "version": 2
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

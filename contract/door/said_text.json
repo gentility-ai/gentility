@@ -1,0 +1,15 @@
+{
+  "event": {
+    "said": {
+      "kind": "text",
+      "message_id": "00000000-0000-7000-8000-000000000003",
+      "parent_call_id": null,
+      "tail": "Editing ",
+      "whole": "Editing "
+    },
+    "seq": 2,
+    "session_id": "00000000-0000-7000-8000-000000000001",
+    "turn": 1,
+    "type": "said"
+  }
+}

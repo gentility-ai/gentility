@@ -1,0 +1,434 @@
+{
+  "permits": [
+    {
+      "note": "an exact host",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "registry.example.org",
+      "permitted": true
+    },
+    {
+      "note": "one label under a wildcard",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "api.code.example.com",
+      "permitted": true
+    },
+    {
+      "note": "an internal hyphen is a legal label",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "ap-i.code.example.com",
+      "permitted": true
+    },
+    {
+      "note": "the apex is not what a wildcard said",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "a wildcard does not walk down the tree",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "deep.api.code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "a suffix is not a substring",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "evil-code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "nor a prefix",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "notcode.example.com",
+      "permitted": false
+    },
+    {
+      "note": "ASCII case is spelling",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "REGISTRY.EXAMPLE.ORG",
+      "permitted": true
+    },
+    {
+      "note": "an allowlisted IP literal",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "203.0.113.7",
+      "permitted": true
+    },
+    {
+      "note": "an IP literal that is not allowlisted",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "203.0.113.8",
+      "permitted": false
+    },
+    {
+      "note": "the empty host",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "",
+      "permitted": false
+    },
+    {
+      "note": "one root dot on an exact host",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "registry.example.org.",
+      "permitted": true
+    },
+    {
+      "note": "one root dot under a wildcard",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "api.code.example.com.",
+      "permitted": true
+    },
+    {
+      "note": "two trailing dots are an empty label",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "api.code.example.com..",
+      "permitted": false
+    },
+    {
+      "note": "a leading dot is an empty label",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": ".code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "the root alone",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": ".",
+      "permitted": false
+    },
+    {
+      "note": "a leading space",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": " api.code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "a trailing space",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "api.code.example.com ",
+      "permitted": false
+    },
+    {
+      "note": "an embedded newline",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "api\n.code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "an embedded NUL (getaddrinfo truncates there)",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "api\u0000.code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "a percent-encoded dot",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "%2e.code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "an underscore",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "api_1.code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "a leading hyphen",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "-api.code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "a trailing hyphen",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "api-.code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "a Unicode fold of an allowlisted host (KELVIN SIGN)",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "\u212aelvin.example",
+      "permitted": false
+    },
+    {
+      "note": "a fullwidth letter under a wildcard",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "\uff41pi.code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "the literal it would have folded to",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "kelvin.example",
+      "permitted": true
+    },
+    {
+      "note": "a 63-byte label",
+      "patterns": [
+        "*.code.example.com"
+      ],
+      "host": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.code.example.com",
+      "permitted": true
+    },
+    {
+      "note": "a 64-byte label",
+      "patterns": [
+        "*.code.example.com"
+      ],
+      "host": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.code.example.com",
+      "permitted": false
+    },
+    {
+      "note": "a 253-byte name",
+      "patterns": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ],
+      "host": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "permitted": true
+    },
+    {
+      "note": "a 254-byte name, allowlisted or not",
+      "patterns": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ],
+      "host": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "permitted": false
+    },
+    {
+      "note": "a wildcard whose own suffix is not a hostname",
+      "patterns": [
+        "registry.example.org",
+        "*.code.example.com",
+        "203.0.113.7",
+        "kelvin.example",
+        "*.bad_suffix.example.com"
+      ],
+      "host": "api.bad_suffix.example.com",
+      "permitted": false
+    },
+    {
+      "note": "an empty allowlist permits nothing",
+      "patterns": [],
+      "host": "registry.example.org",
+      "permitted": false
+    }
+  ],
+  "literal": [
+    {
+      "note": "a dotted-quad IPv4 literal",
+      "pattern": "203.0.113.7",
+      "elixir": true,
+      "go": true
+    },
+    {
+      "note": "an IPv6 literal",
+      "pattern": "2001:db8::1",
+      "elixir": true,
+      "go": true
+    },
+    {
+      "note": "a wildcard is not a literal",
+      "pattern": "*.code.example.com",
+      "elixir": false,
+      "go": false
+    },
+    {
+      "note": "a hostname is not a literal",
+      "pattern": "example.com",
+      "elixir": false,
+      "go": false
+    },
+    {
+      "note": "brackets are the URL-authority form; neither side parses them raw",
+      "pattern": "[::1]",
+      "elixir": false,
+      "go": false
+    },
+    {
+      "note": "hex inet form: Erlang accepts, netip refuses",
+      "pattern": "0x7f.0.0.1",
+      "elixir": true,
+      "go": false
+    },
+    {
+      "note": "abbreviated inet form: Erlang accepts, netip refuses",
+      "pattern": "127.1",
+      "elixir": true,
+      "go": false
+    },
+    {
+      "note": "octal inet form: Erlang accepts, netip refuses",
+      "pattern": "010.0.0.1",
+      "elixir": true,
+      "go": false
+    },
+    {
+      "note": "bare 32-bit integer: Erlang accepts, netip refuses",
+      "pattern": "2130706433",
+      "elixir": true,
+      "go": false
+    }
+  ]
+}

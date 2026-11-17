@@ -1,0 +1,4 @@
+{"client_seq":1,"event_type":"opened","inserted_at":"2026-01-01T00:00:01.000000Z","internal":false,"payload":{"branch":"fix-flaky","harness":"claude_code","mode":"supervised","model":"claude-sonnet-4-6","remote_url":"git@github.com:acme/app.git","title":"Fix the flaky test"},"seq":1}
+{"client_seq":2,"event_type":"agent_opened","inserted_at":"2026-01-01T00:00:02.000000Z","internal":true,"payload":{},"seq":2}
+{"client_seq":3,"event_type":"turn_started","inserted_at":"2026-01-01T00:00:03.000000Z","internal":false,"payload":{"prompt":"fix the flaky test"},"seq":3}
+{"client_seq":4,"event_type":"question_asked","inserted_at":"2026-01-01T00:00:04.000000Z","internal":false,"payload":{"message":"Which runner?","request_id":"req-9"},"seq":4}

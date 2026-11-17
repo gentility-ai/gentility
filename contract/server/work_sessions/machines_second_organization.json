@@ -1,0 +1,60 @@
+{
+  "event": "machines",
+  "payload": {},
+  "reply": {
+    "response": {
+      "machines": [
+        {
+          "address": "<address>",
+          "capver": null,
+          "desk_installs": [
+            {
+              "desk_machine_id": "00000000-0000-7000-8000-000000000001",
+              "desk_presence": "online",
+              "door_port": 6448
+            },
+            {
+              "desk_machine_id": "00000000-0000-7000-8000-000000000002",
+              "desk_presence": "offline",
+              "door_port": 6449
+            }
+          ],
+          "desk_machine_id": "00000000-0000-7000-8000-000000000001",
+          "desk_presence": "online",
+          "dns_label": "test-desktop",
+          "ipv4": [],
+          "name": "test-desktop",
+          "node_id": "00000000-0000-7000-8000-000000000003",
+          "owner": {
+            "id": "00000000-0000-7000-8000-000000000004",
+            "kind": "user",
+            "name": "admin@example.com"
+          },
+          "presence": {
+            "last_seen_at": null,
+            "path": "offline"
+          },
+          "services": [
+            {
+              "id": "00000000-0000-7000-8000-000000000005",
+              "kind": "desk",
+              "port": 6448,
+              "state": "approved"
+            },
+            {
+              "id": "00000000-0000-7000-8000-000000000006",
+              "kind": "desk",
+              "port": 6449,
+              "state": "approved"
+            }
+          ],
+          "status": "active",
+          "version": null
+        }
+      ],
+      "now": "2026-01-01T00:00:00.000000Z"
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}

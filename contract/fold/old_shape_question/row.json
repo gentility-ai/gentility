@@ -1,0 +1,11 @@
+{
+  "attention": {
+    "pending": "R3: Rust reads a question only off the server's question_asked with an elicitation, or a local elicitation_parked; the server folds any question_asked. Ruled: a guess about history, not a contract; stays pending",
+    "server": "question"
+  },
+  "attention_line": "Which runner?",
+  "branch": "fix-flaky",
+  "last_event_at": "2026-01-01T00:00:04.000000Z",
+  "turns": 1,
+  "working": true
+}

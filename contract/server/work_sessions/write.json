@@ -1,0 +1,20 @@
+{
+  "event": "write",
+  "payload": {
+    "inputs": {
+      "prompt": "Can we evaluate DuckLake for storing session transcripts?"
+    },
+    "kind": "session_name",
+    "session_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "object": {
+        "branch": "research/ducklake",
+        "title": "Evaluate DuckLake"
+      }
+    },
+    "status": "ok"
+  },
+  "topic": "work_sessions:<org>"
+}
