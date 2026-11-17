@@ -1,26 +1,27 @@
 #!/usr/bin/env python3
-"""Put a proven pull request into master's merge queue, or merge it where there is none.
+"""Land a proven pull request by pushing its head to its base.
 
     bin/merge-pr <number> [--dry-run] [--stacked]
 
-When the base's rules require a merge queue (master's ruleset, from
-2026-11-02), it enqueues with GitHub's `enqueuePullRequest`, and GitHub merges
-the pull request once its group, built on top of master, passes. Not `gh pr
-merge`: on a queue branch it goes through auto-merge, which this repository
-leaves off, and it refuses a merge method, which the queue sets. Otherwise, as
-before the queue and for a rollback that disables it, it merges with a merge
-commit itself. Either way it acts only when all of these hold; otherwise it
-refuses, says why and what fixes it, and exits 1:
+This history is public, and carries no identity but its authors' own. Every
+way GitHub merges writes a commit of its own under the account that lands it:
+a merge or squash commit is authored by that account, and a rebase makes it
+each commit's committer and drops the signature. So nothing here lands
+through GitHub's merge. The head already contains its base's tip and holds no
+merge commit, so it is a fast-forward of the base: pushing it lands exactly
+the signed, reviewed commits, and GitHub marks the pull request merged. A
+merge queue would merge through GitHub, so a base whose rules require one is
+refused.
+
+It acts only when all of these hold; otherwise it refuses, says why and what
+fixes it, and exits 1:
 
 1. The pull request is open, is not a draft, and its base is the default
    branch. Another base is refused unless `--stacked` says it is meant: a
    stacked pull request once merged into a base that had gone stale, and its
    change never reached master (#196).
-2. Without a queue, its head contains its base's current tip, so the checks
-   ran on what master would become. With one, this is not asked: the queue
-   tests the pull request on top of master itself, and asking would bring
-   back the catch-up merge each pull request once paid. Instead its head must
-   carry the queue's REQUIRED_CHECKS, which a head older than them lacks.
+2. Its head contains its base's current tip, so the checks ran on what the
+   base becomes, and the push is a fast-forward.
 3. GitHub says it merges cleanly.
 4. Its head has checks, and every one finished as passed, skipped or neutral.
    No checks at all is a refusal: a conflicting pull request gets no CI.
@@ -32,10 +33,17 @@ refuses, says why and what fixes it, and exits 1:
    workflow that is queued or missing is a wait, never a pass.
 6. Each review the diff requires has a successful sign-off on the head, or
    inherited only through verified clean update merges from master.
+7. Its commits are none of them merges, and GitHub verifies every one's
+   signature: bring a branch up to date by rebasing it, not by merging its
+   base in.
+8. The private deny check (bin/private-check) passes over its commits and
+   its tree.
 
-The merge or enqueue names the head it judged (`--match-head-commit`), so a
-push landing in between is refused by GitHub rather than taken unchecked. `--dry-run`
-judges and merges nothing. Needs `gh`, logged in, and `git`, run in a checkout.
+The push is plain, never forced, so a base that moved since it was judged
+refuses it, and the pre-push hook checks it again. Once pushed, the pull
+request must read as merged and the base's tip must be the head. `--dry-run`
+judges and pushes nothing. Needs `gh`, logged in, and `git`, run in a checkout
+whose `origin` is this repository.
 """
 
 import argparse
@@ -44,11 +52,9 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import time
 
 FIELDS = "id,number,url,state,isDraft,baseRefName,headRefOid,mergeable,statusCheckRollup"
-# Joins the queue only if the head is still the one judged, as --match-head-commit does for a merge.
-ENQUEUE = ("mutation($id:ID!,$head:GitObjectID!){enqueuePullRequest(input:{pullRequestId:$id,"
-           "expectedHeadOid:$head}){mergeQueueEntry{position state}}}")
 PASSED = {"SUCCESS", "SKIPPED", "NEUTRAL"}
 # The workflows every pull request runs, by their `name:`.
 REQUIRED_WORKFLOWS = ("connector", "checks")
@@ -110,6 +116,30 @@ def private_refusals(head, merge_base):
         return []
     detail = '; '.join(done.stderr.strip().splitlines()) or 'no detail'
     return [f"the private deny check refused its head: {detail}"]
+
+
+def merge_commits(merge_base, head):
+    """The pull request's own merge commits: a branch is brought up to date by rebasing."""
+    return run("git", "rev-list", "--merges", f"{merge_base}..{head}").split()
+
+
+def unverified(repo, merge_base, head):
+    """Its commits whose signature GitHub does not verify."""
+    return [commit for commit in run("git", "rev-list", f"{merge_base}..{head}").split()
+            if run("gh", "api", f"repos/{repo}/commits/{commit}", "--jq", ".commit.verification.verified") != "true"]
+
+
+def landed(number, base, head, wait=time.sleep):
+    """Why the pushed pull request has not landed as its head; empty when it has."""
+    run("git", "fetch", "--quiet", "origin", f"+refs/heads/{base}:refs/remotes/origin/{base}")
+    tip = run("git", "rev-parse", f"origin/{base}")
+    if tip != head:
+        return [f"{base}'s tip is {tip[:9]}, not the head {head[:9]}"]
+    for _ in range(12):
+        if run("gh", "pr", "view", str(number), "--json", "state", "--jq", ".state") == "MERGED":
+            return []
+        wait(5)
+    return ["GitHub has not marked it merged after a minute"]
 
 
 def branch_rules(repo, base):
@@ -300,6 +330,17 @@ def main():
     said = refusals(pr, default_branch, has_base_tip, args.stacked, queue, required_checks(rules)) + \
         run_refusals(head_runs(head)) + sign_off_refusals(needed, found, args.number, head) + \
         private_refusals(head, merge_base)
+    if queue:
+        said.append(f"{base}'s rules require a merge queue, which lands through GitHub's merge: "
+                    "remove the queue; pull requests here land by push")
+    merges = merge_commits(merge_base, head)
+    if merges:
+        said.append(f"it holds merge commits ({', '.join(sha[:9] for sha in merges)}): "
+                    f"rebase it onto {base} instead, and push")
+    unsigned = unverified(repo, merge_base, head)
+    if unsigned:
+        said.append(f"GitHub does not verify the signature of {', '.join(sha[:9] for sha in unsigned)}: "
+                    "sign every commit, and push")
     print(f"#{pr['number']} {pr['url']}\n  head {head[:9]} into {base}{' (merge queue)' if queue else ''}")
     if said:
         print("refused:")
@@ -307,18 +348,13 @@ def main():
             print(f"  - {reason}")
         sys.exit(1)
     if args.dry_run:
-        print(f"would {'enqueue' if queue else 'merge'}: every condition holds (--dry-run)")
+        print(f"would push {head[:9]} to {base}: every condition holds (--dry-run)")
         return
-    if queue:
-        entry = json.loads(run("gh", "api", "graphql", "-f", f"query={ENQUEUE}",
-                               "-f", f"id={pr['id']}", "-f", f"head={head}"))
-        place = (((entry.get("data") or {}).get("enqueuePullRequest") or {}).get("mergeQueueEntry") or {})
-        print(f"queued: #{args.number} is in {base}'s merge queue at position {place.get('position', '?')}; "
-              "GitHub merges it once its group passes")
-        return
-    run("gh", "pr", "merge", str(args.number), "--merge", "--match-head-commit", head)
-    merged = run("gh", "pr", "view", str(args.number), "--json", "mergeCommit", "--jq", ".mergeCommit.oid")
-    print(f"merged: {merged}")
+    run("git", "push", "--quiet", "origin", f"{head}:refs/heads/{base}")
+    wrong = landed(args.number, base, head)
+    if wrong:
+        sys.exit("bin/merge-pr: pushed, but " + "; ".join(wrong))
+    print(f"merged: {head}")
 
 
 if __name__ == "__main__":
