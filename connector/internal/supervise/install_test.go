@@ -1994,13 +1994,15 @@ func TestInstallAsRootReportsAMissingBinaryAsMissing(t *testing.T) {
 // server's daemon (which runs as the service user, not root), and an install
 // that is not root's (a test's).
 func TestInstallRunsTheBinaryWhereItIsWhenRootHasNothingToFear(t *testing.T) {
+	env := rootsEnv(t)
 	for _, tc := range []struct {
 		name   string
 		adjust func(*Options)
 	}{
-		// /usr/bin/env is a regular file root owns under root-owned, real
-		// directories on macOS and on Linux alike.
-		{"a binary root owns", func(o *Options) { o.BinaryPath = "/usr/bin/env" }},
+		// /usr/bin/env resolves to a regular file root owns under root-owned,
+		// real directories on macOS and on Linux alike. On Ubuntu 26.04 it is
+		// a symlink into coreutils, so the test passes the path it resolves to.
+		{"a binary root owns", func(o *Options) { o.BinaryPath = env }},
 		{"a server's daemon", func(o *Options) { o.Interface = false }},
 		{"an install that is not root's", func(o *Options) { o.Euid = func() int { return 1000 } }},
 	} {
@@ -2181,4 +2183,14 @@ func TestCheckPlacementRefusesADirectoryAnotherAccountOwns(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "refusing to place the binary under") {
 		t.Fatalf("CheckPlacement under the test's directory = %v, want a refusal", err)
 	}
+}
+
+// rootsEnv is the regular file /usr/bin/env resolves to.
+func rootsEnv(t *testing.T) string {
+	t.Helper()
+	path, err := filepath.EvalSymlinks("/usr/bin/env")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return path
 }
