@@ -7,6 +7,7 @@ struct HomeView: View {
     @ObservedObject var app: AppModel
     @ObservedObject var home: HomeModel
     @State private var composing = false
+    @State private var settings = false
 
     var body: some View {
         NavigationStack(path: $app.path) {
@@ -15,7 +16,8 @@ struct HomeView: View {
                 notificationsOff: app.notificationsOff,
                 undo: home.undo,
                 onAct: { action, row in Task { await home.act(action, on: row) } },
-                onUndo: { Task { await home.undoLast() } }
+                onUndo: { Task { await home.undoLast() } },
+                onSettings: { settings = true }
             )
                 .navigationTitle("Home")
                 .navigationDestination(for: HomeRow.self) { row in
@@ -23,6 +25,7 @@ struct HomeView: View {
                         ConversationView(app: app, conversation: conversation)
                     }
                 }
+                .navigationDestination(isPresented: $settings) { SettingsView(app: app) }
                 .refreshable { await home.refresh() }
                 .task { await app.homeAppeared() }
                 .overlay(alignment: .bottomTrailing) {
@@ -53,6 +56,8 @@ struct HomeList: View {
     let undo: Undo?
     let onAct: (HomeAction, HomeRow) -> Void
     let onUndo: () -> Void
+    /// Nil where there is no Settings page to open.
+    let onSettings: (() -> Void)?
     /// Set by Showcase: the filter to draw with, in place of the remembered one.
     private let preset: HomeListPreset?
     private let tip = HomeActionsTip()
@@ -68,7 +73,7 @@ struct HomeList: View {
     /// The row whose snooze times are being offered.
     @State private var snoozing: HomeRow?
 
-    init(rows: [HomeRow], line: String?, empty: Bool, joining: Bool, notificationsOff: Bool, undo: Undo? = nil, onAct: @escaping (HomeAction, HomeRow) -> Void = { _, _ in }, onUndo: @escaping () -> Void = {}, query: String = "", open: Set<Shelf> = [], snoozing: HomeRow? = nil, preset: HomeListPreset? = nil) {
+    init(rows: [HomeRow], line: String?, empty: Bool, joining: Bool, notificationsOff: Bool, undo: Undo? = nil, onAct: @escaping (HomeAction, HomeRow) -> Void = { _, _ in }, onUndo: @escaping () -> Void = {}, onSettings: (() -> Void)? = nil, query: String = "", open: Set<Shelf> = [], snoozing: HomeRow? = nil, preset: HomeListPreset? = nil) {
         self.rows = rows
         self.line = line
         self.empty = empty
@@ -77,6 +82,7 @@ struct HomeList: View {
         self.undo = undo
         self.onAct = onAct
         self.onUndo = onUndo
+        self.onSettings = onSettings
         self.preset = preset
         _snoozing = State(initialValue: snoozing)
         _query = State(initialValue: query)
@@ -242,6 +248,10 @@ struct HomeList: View {
                     Toggle("Show looper runs", isOn: $showLoopers)
                     Toggle(isOn: $waitingOnly) {
                         Label("Waiting on you", systemImage: "hand.raised")
+                    }
+                    if let onSettings {
+                        Divider()
+                        Button(action: onSettings) { Label("Settings", systemImage: "gearshape") }
                     }
                 } label: {
                     Label(

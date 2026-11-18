@@ -838,6 +838,39 @@ final class AppModelTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: directory.path))
     }
 
+    func testPairAgainFromSettingsForgetsWithNoFailureAndOpensTheScanner() async throws {
+        try store.save(credential())
+        try directory.prepare()
+        let app = app()
+        await app.launch()
+        try await until { app.nodeState == .up(address: "fd06:6e7:0:2::9") }
+        let down = node.hold("down")
+        let asked = Task { await app.pairAgain() }
+        try await until { down.entered }
+        XCTAssertEqual(app.route, .launching, "nothing failed, so no failure is said while the node goes down")
+        await app.launch()
+        XCTAssertEqual(app.route, .launching, "a launch while forgetting reads nothing")
+        down.release()
+        await asked.value
+        XCTAssertEqual(app.route, .pairing)
+        XCTAssertNil(app.settings)
+        XCTAssertNil(try store.credential())
+        XCTAssertFalse(FileManager.default.fileExists(atPath: directory.path))
+    }
+
+    func testSettingsSayThePhoneItsServerAndHowTheNodeStands() async throws {
+        try store.save(credential())
+        let app = app()
+        XCTAssertNil(app.settings)
+        await app.launch()
+        try await until { app.nodeState == .up(address: "fd06:6e7:0:2::9") }
+        let settings = try XCTUnwrap(app.settings)
+        XCTAssertEqual(settings.name, "Morgan's iPhone")
+        XCTAssertEqual(settings.server, "mcp.gentility.test")
+        XCTAssertEqual(settings.connection, .connected)
+        XCTAssertEqual(settings.left(now: WireDate.parse("2026-06-01T00:00:00Z")!), "29 days left")
+    }
+
     // MARK: push
 
     private func payload(_ session: String = "s-1", organization: String = "o-1") -> PushPayload {

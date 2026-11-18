@@ -127,7 +127,7 @@ public final class AppModel: ObservableObject {
     /// Once per process. A claim left waiting by a kill is resumed before
     /// anything can begin another.
     public func launch() async {
-        guard route == .launching else { return }
+        guard route == .launching, !forgetting else { return }
         Log.app.info("launch: waiting for protected data")
         await protectedData()
         // A wait cut short says nothing about the keychain: the next launch
@@ -225,6 +225,7 @@ public final class AppModel: ObservableObject {
             Log.app.info("the kept bearer ran out at \(credential.expiresAt, privacy: .public)")
             return await forget(.lapsed)
         }
+        self.credential = credential
         showHome(credential)
         if nodeState == .down, bringingUp == nil {
             Task { await self.bringNodeUp(credential) }
@@ -429,7 +430,8 @@ public final class AppModel: ObservableObject {
         pendingOpen = nil
         readAgainFor = nil
         path = []
-        route = .failure(why)
+        // Asked for from Settings (`pairAgain`), there is no failure to say.
+        route = againWhenForgotten ? .launching : .failure(why)
         do {
             try store.wipe()
         } catch {
@@ -461,6 +463,32 @@ public final class AppModel: ObservableObject {
         pairing.reset()
         scanner.reset()
         route = .pairing
+    }
+
+    /// Settings' "Pair again": this phone forgets its pairing and opens the
+    /// scanner once the old node is down. The Mac still lists the phone
+    /// until it is removed there.
+    public func pairAgain() async {
+        guard route == .home, !forgetting else { return }
+        Log.app.info("pair again, asked for in Settings")
+        againWhenForgotten = true
+        await forget(.removed)
+    }
+
+    /// What Settings shows; nil with no pairing kept.
+    public var settings: PhoneSettings? {
+        guard let credential else { return nil }
+        let connection: PhoneSettings.Connection
+        switch nodeState {
+        case .up: connection = .connected
+        case .joining: connection = .connecting
+        case .down: connection = .off
+        case .failed: connection = .failed
+        }
+        return PhoneSettings(
+            name: credential.phoneName, server: credential.origin.host ?? "", expires: credential.expiresAt,
+            connection: connection, notificationsOff: notificationsOff
+        )
     }
 
     /// B5: the last `keeps` conversations by session id, oldest first.

@@ -85,7 +85,7 @@ struct Showcase: View {
         "tools", "tools-running", "strip-working", "strip-scrolled", "strip-reconnecting", "strip-reconnecting-tools", "strip-tall", "strip-compacting",
         "attach-menu", "attach-tray", "attach-failed", "attach-old-mac",
         "transcript-images", "transcript-markdown", "transcript-streaming", "transcript-long", "transcript-remote-image", "image-viewer",
-        "f1", "f2", "f3", "f5", "lapsed", "unjoined", "new-thread", "new-thread-refused",
+        "f1", "f2", "f3", "f5", "lapsed", "unjoined", "new-thread", "new-thread-refused", "settings", "settings-off",
     ]
 
     let screen: String
@@ -189,6 +189,17 @@ struct Showcase: View {
         case "f3": FailureView(failure: .cannotJoin("no_gateway"), onAction: {})
         case "f5": FailureView(failure: .removed, onAction: {})
         case "new-thread", "new-thread-refused": NewThreadShowcase(refused: screen == "new-thread-refused")
+        case "settings", "settings-off":
+            NavigationStack {
+                SettingsPage(
+                    settings: PhoneSettings(
+                        name: "Morgan's iPhone", server: "mcp.gentility.ai",
+                        expires: Date(timeIntervalSinceNow: (screen == "settings" ? 26 : 5) * 86_400),
+                        connection: screen == "settings" ? .connected : .connecting, notificationsOff: screen == "settings-off"
+                    ),
+                    version: "1.4 (212)", now: Date(), onPairAgain: {}
+                )
+            }
         case "lapsed": FailureView(failure: .lapsed, onAction: {})
         case "unjoined": FailureView(failure: .notJoined, onAction: {})
         default: Text("No showcase named \(screen)")
