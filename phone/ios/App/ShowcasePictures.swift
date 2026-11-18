@@ -64,8 +64,7 @@ struct PictureShowcase: View {
                 .navigationTitle("Home")
                 .navigationDestination(for: String.self) { _ in
                     TranscriptScreen(turns: turns, phase: .open, asleepLines: [], acting: acting, strip: strip, onRetry: {}, atEnd: atEnd)
-                        .navigationTitle("Fix the login layout")
-                        .navigationBarTitleDisplayMode(.inline)
+                        .threadChrome(title: "Fix the login layout", branch: "fix-login-layout", machine: nil, menu: HomeModel.menu(for: Showcase.rows[2]), onAct: { _ in })
                 }
         }
     }

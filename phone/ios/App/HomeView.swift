@@ -120,6 +120,7 @@ struct HomeList: View {
                     }
                 }
                 .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
             } else if shelves.isEmpty {
                 Section {
                     if query.trimmingCharacters(in: .whitespaces).isEmpty {
@@ -129,6 +130,7 @@ struct HomeList: View {
                     }
                 }
                 .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
             }
             if let needs {
                 Section {
@@ -141,8 +143,7 @@ struct HomeList: View {
                 Section {
                     rows(live.rows, now: now, showsMac: showsMac, tipOnFirst: true)
                 } header: {
-                    Text("Threads").font(.headline).foregroundStyle(.primary).textCase(nil)
-                        .accessibilityAddTraits(.isHeader)
+                    ShelfHeader(title: "Threads", count: nil)
                 }
             }
             if !later.isEmpty {
@@ -156,15 +157,17 @@ struct HomeList: View {
                         } label: {
                             HStack {
                                 Label(group.title, systemImage: group.shelf == .snoozed ? "moon.zzz" : "checkmark.circle")
-                                    .foregroundStyle(.primary)
+                                    .foregroundStyle(Theme.ink)
                                 Spacer()
-                                Text("\(group.rows.count)").foregroundStyle(.secondary).monospacedDigit()
+                                Text("\(group.rows.count)").font(.footnote).foregroundStyle(Theme.inkFaint).monospacedDigit()
                             }
+                            .frame(minHeight: 32)
                         }
+                        .listRowBackground(Theme.ground)
+                        .listRowSeparatorTint(Theme.hairline)
                     }
                 } header: {
-                    Text("Later").font(.subheadline).foregroundStyle(.secondary).textCase(nil)
-                        .accessibilityAddTraits(.isHeader)
+                    ShelfHeader(title: "Later", count: nil)
                 }
             }
             if let shown = filter.project {
@@ -178,9 +181,12 @@ struct HomeList: View {
                     .frame(maxWidth: .infinity)
                 }
                 .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
             }
         }
-        .listStyle(.insetGrouped)
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Theme.ground)
         .task {
             if let preset {
                 project = preset.project
@@ -200,14 +206,16 @@ struct HomeList: View {
                     Spacer()
                     Button("Undo", action: onUndo).fontWeight(.semibold)
                 }
-                .padding(.horizontal, 16).padding(.vertical, 12)
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-                .padding(.horizontal, 12).padding(.bottom, 4)
+                .padding(.horizontal, Theme.Space.l).padding(.vertical, Theme.Space.m)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: Theme.Corner.large, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: Theme.Corner.large, style: .continuous).strokeBorder(Theme.hairline))
+                .shadow(color: .black.opacity(0.18), radius: 10, y: 3)
+                .padding(.horizontal, Theme.Space.m).padding(.bottom, 4)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
         .animation(.default, value: undo)
-        .searchable(text: $query, prompt: "Title, branch or project")
+        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Title, branch or project")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
@@ -242,11 +250,16 @@ struct HomeList: View {
             let actions = HomeModel.actions(for: row, now: now)
             let menu = HomeModel.menu(for: row, now: now)
             let face = RowFace(row, now: now, showsMacName: showsMac)
-            NavigationLink(value: row) {
+            // The link under the row, unseen: the row draws no chevron.
+            ZStack(alignment: .leading) {
+                NavigationLink(value: row) { EmptyView() }.opacity(0)
                 HomeRowView(row: row, face: face)
             }
             .accessibilityIdentifier("home.row.\(row.title)")
-            .listRowBackground(face.needsYou ? AnyView(NeedsYouGround()) : AnyView(Color(.secondarySystemGroupedBackground)))
+            .listRowBackground(Theme.ground)
+            .listRowSeparatorTint(Theme.hairline)
+            .listRowInsets(EdgeInsets(top: 10, leading: Theme.Space.l, bottom: 10, trailing: Theme.Space.l))
+            .alignmentGuide(.listRowSeparatorLeading) { _ in 32 }
             .modifier(TipAnchor(tip: tipOnFirst && row.id == rows.first?.id ? tip : nil))
             .contextMenu {
                 menuItems(menu, row)
@@ -339,36 +352,35 @@ extension HomeList {
     }
 }
 
-/// "Needs you", orange, with its count.
+/// "Needs you", with its count, in the colour of something waiting.
 struct NeedsYouHeader: View {
     let count: Int
 
     var body: some View {
-        HStack(spacing: 8) {
-            Label("Needs you", systemImage: "exclamationmark.bubble.fill")
-                .font(.headline)
-                .foregroundStyle(.orange)
-            Text("\(count)")
-                .font(.caption.bold())
-                .foregroundStyle(.white)
-                .padding(.horizontal, 6).padding(.vertical, 1)
-                .background(Capsule().fill(Color.orange))
-        }
-        .textCase(nil)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Needs you, \(count) \(count == 1 ? "thread" : "threads")")
-        .accessibilityAddTraits(.isHeader)
+        ShelfHeader(title: "Needs you", count: count, tone: Theme.attention)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Needs you, \(count) \(count == 1 ? "thread" : "threads")")
+            .accessibilityAddTraits(.isHeader)
     }
 }
 
-/// A Needs-you row's ground: an orange wash and a leading bar.
-struct NeedsYouGround: View {
+/// A shelf's name over its rows, small and quiet, with a count where it has one.
+struct ShelfHeader: View {
+    let title: String
+    let count: Int?
+    var tone: Color = Theme.inkSoft
+
     var body: some View {
-        Color("NeedsYouRow")
-            .background(Color(.secondarySystemGroupedBackground))
-            .overlay(alignment: .leading) {
-                Rectangle().fill(.orange).frame(width: 3)
+        HStack(spacing: 6) {
+            Text(title).font(.footnote.weight(.semibold)).foregroundStyle(tone)
+            if let count {
+                Text("\(count)").font(.footnote.monospacedDigit()).foregroundStyle(Theme.inkFaint)
             }
+        }
+        .textCase(nil)
+        .padding(.top, Theme.Space.s)
+        .listRowInsets(EdgeInsets(top: 0, leading: Theme.Space.l, bottom: 6, trailing: Theme.Space.l))
+        .accessibilityAddTraits(.isHeader)
     }
 }
 
@@ -453,81 +465,69 @@ struct HomeRowView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            ViewThatFits(in: .horizontal) {
-                HStack(spacing: 6) {
-                    place
+        HStack(alignment: .firstTextBaseline, spacing: Theme.Space.m) {
+            glyph.frame(width: 20)
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(alignment: .firstTextBaseline, spacing: Theme.Space.s) {
+                    Text(row.title)
+                        .font(.body.weight(face.needsYou ? .semibold : .regular))
+                        .foregroundStyle(face.recedes ? Theme.inkSoft : Theme.ink)
+                        .lineLimit(2)
                     Spacer(minLength: 4)
-                    status
+                    Text(face.age).font(.footnote).monospacedDigit().foregroundStyle(Theme.inkFaint).fixedSize()
                 }
-                VStack(alignment: .leading, spacing: 3) {
-                    place
-                    status
+                if let line = face.attentionLine {
+                    Text(line).font(.subheadline).foregroundStyle(Theme.inkSoft).lineLimit(2)
                 }
-            }
-            .font(.footnote)
-
-            Text(row.title)
-                .font(.body)
-                .fontWeight(face.needsYou ? .semibold : .regular)
-                .foregroundStyle(face.recedes ? .secondary : .primary)
-                .lineLimit(2)
-
-            Group {
-                if dynamicTypeSize.isAccessibilitySize {
-                    VStack(alignment: .leading, spacing: 2) {
-                        branchMark
-                        macMark
-                    }
-                } else {
-                    HStack(spacing: 4) {
-                        branchMark
-                        Spacer(minLength: 8)
-                        macMark
+                Group {
+                    if dynamicTypeSize.isAccessibilitySize {
+                        VStack(alignment: .leading, spacing: 2) {
+                            status
+                            place
+                            branchMark
+                            macMark
+                        }
+                    } else {
+                        // What gives way as the row narrows: the Mac, then the branch.
+                        ViewThatFits(in: .horizontal) {
+                            HStack(spacing: Theme.Space.s) { status; place; branchMark; macMark }
+                            // The last fits always: a long branch is cut in its middle.
+                            HStack(spacing: Theme.Space.s) { status; place.fixedSize(); branchMark }
+                        }
                     }
                 }
-            }
-            .font(.caption)
-            .foregroundStyle(.tertiary)
-
-            if let line = face.attentionLine {
-                Text(line)
-                    .font(.subheadline)
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
+                .font(.footnote)
+                .foregroundStyle(Theme.inkFaint)
             }
         }
-        .padding(.vertical, 2)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(face.accessibilityLabel)
     }
 
+    /// The row's state at its leading edge: what it waits on, that it works,
+    /// or a quiet ring for a thread at rest.
+    @ViewBuilder private var glyph: some View {
+        if let word = face.word {
+            symbol(word).font(.subheadline.weight(.semibold)).foregroundStyle(word.tone.color)
+        } else {
+            Image(systemName: "circle").font(.subheadline).foregroundStyle(Theme.inkFaint.opacity(0.6))
+        }
+    }
+
     private var place: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 5) {
             if let chip = face.chip {
                 ChipView(chip: chip)
             }
             if let place = face.place {
-                Text(place).foregroundStyle(.secondary).lineLimit(1).truncationMode(.tail)
+                Text(place).foregroundStyle(Theme.inkSoft).lineLimit(1).truncationMode(.tail)
             }
         }
     }
 
-    private var status: some View {
-        HStack(spacing: 6) {
-            if let word = face.word {
-                Label {
-                    Text(word.text)
-                } icon: {
-                    symbol(word)
-                }
-                .labelStyle(.titleAndIcon)
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(word.tone.color)
-                .lineLimit(1)
-                .fixedSize()
-            }
-            Text(face.age).monospacedDigit().foregroundStyle(.tertiary).fixedSize()
+    @ViewBuilder private var status: some View {
+        if let word = face.word {
+            Text(word.text).fontWeight(.medium).foregroundStyle(word.tone.color).lineLimit(1).fixedSize()
         }
     }
 
@@ -553,9 +553,9 @@ struct ChipView: View {
             } else {
                 RoundedRectangle(cornerRadius: 4).fill(fill)
             }
-            Text(chip.letter).font(.system(size: 10, weight: .bold)).foregroundStyle(.white)
+            Text(chip.letter).font(.system(size: 9, weight: .bold)).foregroundStyle(.white)
         }
-        .frame(width: 18, height: 18)
+        .frame(width: 15, height: 15)
         .accessibilityHidden(true)
     }
 
@@ -572,11 +572,11 @@ struct ChipView: View {
 extension StatusTone {
     var color: Color {
         switch self {
-        case .approval: .orange
-        case .input: .indigo
-        case .working: .cyan
-        case .snoozed: .indigo
-        case .settled: .green
+        case .approval: Theme.attention
+        case .input: Theme.accent
+        case .working: Theme.accent
+        case .snoozed: Theme.inkSoft
+        case .settled: Theme.good
         }
     }
 }

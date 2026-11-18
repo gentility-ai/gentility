@@ -61,15 +61,18 @@ struct DeskPhoneApp: App {
 
     var body: some Scene {
         WindowGroup {
-            #if DEBUG
-            if let screen = ProcessInfo.processInfo.environment["DESK_PHONE_SHOWCASE"] {
-                Showcase(screen: screen)
-            } else {
+            Group {
+                #if DEBUG
+                if let screen = ProcessInfo.processInfo.environment["DESK_PHONE_SHOWCASE"] {
+                    Showcase(screen: screen)
+                } else {
+                    root
+                }
+                #else
                 root
+                #endif
             }
-            #else
-            root
-            #endif
+            .tint(Theme.accent)
         }
         .onChange(of: phase) { _, now in
             Log.app.info("scene \(String(describing: now), privacy: .public)")

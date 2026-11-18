@@ -4,6 +4,7 @@ import SwiftUI
 struct ConversationView: View {
     let app: AppModel
     @StateObject var conversation: ConversationModel
+    @Environment(\.dismiss) private var dismiss
 
     init(app: AppModel, conversation: ConversationModel) {
         self.app = app
@@ -19,8 +20,14 @@ struct ConversationView: View {
             store: conversation.images, sessionID: conversation.row.id,
             worktreeRoot: conversation.worktreeRoot, open: conversation.phase == .open
         ))
-        .navigationTitle(conversation.row.title)
-        .navigationBarTitleDisplayMode(.inline)
+        .threadChrome(
+            title: conversation.row.title, branch: conversation.row.branch, machine: conversation.row.macLabel,
+            menu: HomeModel.menu(for: conversation.row)
+        ) { action in
+            let row = conversation.row
+            Task { await app.home?.act(action, on: row) }
+            dismiss()
+        }
         .onAppear { app.showing(conversation) }
         .task { await conversation.open() }
         .onDisappear {
@@ -109,13 +116,16 @@ struct TranscriptScreen: View {
             }
             ScrollViewReader { reader in
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 10) {
+                    LazyVStack(alignment: .leading, spacing: Theme.Space.l) {
                         if phase.offline {
                             Asleep(lines: asleepLines)
                         }
                         ForEach(turns) { turn in
-                            ForEach(turn.lines) { line in
-                                LineView(line: line, cursor: caret == .inLine(line.id))
+                            ForEach(TranscriptRow.rows(turn.lines)) { row in
+                                switch row {
+                                case .line(let line): LineView(line: line, cursor: caret == .inLine(line.id))
+                                case .tools(let run): ToolRunView(run: run)
+                                }
                             }
                             if let end = turn.drawnEnd {
                                 EndView(end: end)
@@ -134,7 +144,7 @@ struct TranscriptScreen: View {
                     .padding()
                 }
                 // Room under the last line for the strip floating over it.
-                .contentMargins(.bottom, strip == nil ? 0 : 52, for: .scrollContent)
+                .contentMargins(.bottom, strip == nil ? 0 : 60, for: .scrollContent)
                 // New lines follow only someone already at the end; scrolled
                 // up to read, they stay put and the arrow takes them down.
                 .onChange(of: turns) { _, _ in
@@ -149,7 +159,7 @@ struct TranscriptScreen: View {
                     StripView(strip: strip, atEnd: atEnd) {
                         withAnimation { reader.scrollTo("end", anchor: .bottom) }
                     }
-                    .padding(12)
+                    .padding(Theme.Space.m)
                 }
                 .animation(.easeOut(duration: 0.15), value: atEnd)
                 .animation(.easeOut(duration: 0.15), value: strip?.doing)
@@ -159,6 +169,7 @@ struct TranscriptScreen: View {
             Foot(acting: acting, cap: height * 0.55).layoutPriority(1)
         }
         .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
+        .background(Theme.ground)
     }
 
     /// A line under the title, and Retry beside it.
@@ -186,28 +197,33 @@ private struct StripView: View {
 
     var body: some View {
         if strip != nil || !atEnd {
-            HStack(spacing: 10) {
-                if let strip {
-                    if strip.doing != nil { ProgressView().controlSize(.small) }
-                    TimelineView(.periodic(from: .now, by: 1)) { context in
-                        Text(strip.words(now: context.date)).monospacedDigit()
+            // The whole capsule takes the tap, not the arrow alone.
+            Button(action: onJump) {
+                HStack(spacing: 10) {
+                    if let strip {
+                        if strip.doing != nil { ProgressView().controlSize(.small) }
+                        TimelineView(.periodic(from: .now, by: 1)) { context in
+                            Text(strip.words(now: context.date)).monospacedDigit()
+                        }
+                        .font(.footnote)
+                        .foregroundStyle(Theme.inkSoft)
                     }
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                }
-                if !atEnd {
-                    if strip != nil { Divider().frame(height: 18) }
-                    Button(action: onJump) {
-                        Image(systemName: "arrow.down").font(.body.weight(.semibold))
+                    if !atEnd {
+                        if strip != nil { Divider().frame(height: 18) }
+                        Image(systemName: "arrow.down").font(.body.weight(.semibold)).foregroundStyle(Theme.ink)
                     }
-                    .accessibilityLabel("Jump to latest")
                 }
+                .padding(.horizontal, strip == nil ? 0 : Theme.Space.l)
+                .frame(minWidth: Theme.touch, minHeight: Theme.touch)
+                .background(.regularMaterial, in: Capsule())
+                .overlay(Capsule().strokeBorder(Theme.hairline))
+                .shadow(color: .black.opacity(0.18), radius: 10, y: 3)
+                .contentShape(Capsule())
             }
-            .padding(.horizontal, strip == nil ? 0 : 14)
-            .frame(minWidth: 40, minHeight: 40)
-            .background(.regularMaterial, in: Capsule())
-            .shadow(radius: 2, y: 1)
-            .transition(.opacity)
+            .buttonStyle(.plain)
+            .disabled(atEnd)
+            .accessibilityLabel(atEnd ? "" : "Jump to latest")
+            .transition(.opacity.combined(with: .scale(scale: 0.9)))
         }
     }
 }
@@ -277,8 +293,8 @@ private struct EndView: View {
     }
 }
 
-/// One line of a turn: the person's words on the right, the agent's on the
-/// left, a tool call as one monospaced line with its mark first.
+/// One line of a turn: the person's words on a surface at the right, the
+/// agent's across the page as they are written. Tool calls draw as runs.
 private struct LineView: View {
     let line: Line
     /// The agent is still writing this line.
@@ -290,34 +306,185 @@ private struct LineView: View {
             VStack(alignment: .trailing, spacing: 6) {
                 if !attachments.isEmpty { AttachmentsRow(attachments: attachments) }
                 if !text.isEmpty {
-                    Text(text)
-                        .padding(10)
-                        .background(Color.accentColor.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
+                    Text(text).foregroundStyle(Theme.ink).youBubble()
                 }
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
-            .padding(.leading, 40)
+            .padding(.leading, 48)
         case .agent(_, let text):
             MarkdownView(text: text, cursor: cursor)
-                .padding(10)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
-                .padding(.trailing, 24)
         case .compaction(_, let text):
             HStack(spacing: 8) {
-                Rectangle().fill(Color.secondary.opacity(0.35)).frame(height: 0.5)
-                Text(text).font(.footnote).foregroundStyle(.secondary).lineLimit(1).layoutPriority(1)
-                Rectangle().fill(Color.secondary.opacity(0.35)).frame(height: 0.5)
+                Rectangle().fill(Theme.hairline).frame(height: 1)
+                Text(text).font(.footnote).foregroundStyle(Theme.inkFaint).lineLimit(1).layoutPriority(1)
+                Rectangle().fill(Theme.hairline).frame(height: 1)
             }
             .padding(.vertical, 4)
-        case .tool(_, let text):
-            Text(text)
-                .font(.footnote.monospaced())
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .padding(.horizontal, 10).padding(.vertical, 6)
-                .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(Color.secondary.opacity(0.35)))
+        case .tool:
+            // Tool calls reach the screen as runs; one alone is a run of one.
+            if case .tools(let run)? = TranscriptRow.rows([line]).first { ToolRunView(run: run) }
         }
+    }
+}
+
+extension View {
+    /// The person's own words.
+    func youBubble() -> some View {
+        padding(.horizontal, 14).padding(.vertical, 10)
+            .background(Theme.raised, in: RoundedRectangle(cornerRadius: Theme.Corner.large, style: .continuous))
+    }
+}
+
+/// A run of tool calls as one quiet row: the call going now, or how many
+/// there were. A run of several opens to each call.
+private struct ToolRunView: View {
+    let run: ToolRun
+    @State private var open = false
+
+    private var several: Bool { run.steps.count > 1 }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Button {
+                withAnimation(Theme.motion) { open.toggle() }
+            } label: {
+                HStack(spacing: Theme.Space.s) {
+                    glyph
+                    Text(run.headline)
+                        .font(several && run.running == nil ? .footnote : .footnote.monospaced())
+                        .foregroundStyle(Theme.inkSoft)
+                        .lineLimit(1).truncationMode(.middle)
+                    if several {
+                        if run.running != nil {
+                            Text("\(run.steps.count)").font(.caption.monospacedDigit()).foregroundStyle(Theme.inkFaint)
+                        }
+                        Image(systemName: "chevron.right")
+                            .font(.caption2.weight(.semibold)).foregroundStyle(Theme.inkFaint)
+                            .rotationEffect(.degrees(open ? 90 : 0))
+                    }
+                    Spacer(minLength: 0)
+                }
+                .frame(minHeight: several ? 36 : 24)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(!several)
+            .accessibilityLabel(several ? "\(run.headline), \(open ? "open" : "closed")" : run.headline)
+            if open, several {
+                VStack(alignment: .leading, spacing: 6) {
+                    ForEach(run.steps) { step in
+                        HStack(alignment: .firstTextBaseline, spacing: Theme.Space.s) {
+                            Text(step.mark).font(.caption).foregroundStyle(Self.color(step.state)).frame(width: 14)
+                            Text(step.title).font(.caption.monospaced()).foregroundStyle(Theme.inkSoft)
+                                .lineLimit(2).truncationMode(.middle)
+                        }
+                    }
+                }
+                .padding(.leading, Theme.Space.m).padding(.vertical, 6)
+                .overlay(alignment: .leading) { Rectangle().fill(Theme.hairline).frame(width: 1).padding(.leading, 7) }
+                .transition(.opacity)
+            }
+        }
+    }
+
+    @ViewBuilder private var glyph: some View {
+        Group {
+            if run.running != nil {
+                ProgressView().controlSize(.mini)
+            } else if run.failed > 0 {
+                Image(systemName: "xmark.circle.fill").foregroundStyle(Theme.bad)
+            } else if run.steps.allSatisfy({ $0.state == .done }) {
+                Image(systemName: "checkmark.circle").foregroundStyle(Theme.inkFaint)
+            } else {
+                Image(systemName: "minus.circle").foregroundStyle(Theme.inkFaint)
+            }
+        }
+        .font(.footnote)
+        .frame(width: 16)
+        .accessibilityHidden(true)
+    }
+
+    static func color(_ state: ToolStep.State) -> Color {
+        switch state {
+        case .failed: Theme.bad
+        case .running: Theme.accent
+        case .done, .other: Theme.inkFaint
+        }
+    }
+}
+
+/// The title with where the thread runs under it, and its actions at the
+/// trailing edge: what Home offers on a row, without going back for it.
+struct ThreadChrome: ViewModifier {
+    let title: String
+    let branch: String?
+    let machine: String?
+    let menu: [HomeMenuItem]
+    let onAct: (HomeAction) -> Void
+
+    private var place: String? { branch ?? machine }
+
+    func body(content: Content) -> some View {
+        content
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    VStack(spacing: 1) {
+                        Text(title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink).lineLimit(1)
+                        if let place {
+                            HStack(spacing: 3) {
+                                Image(systemName: branch == nil ? "laptopcomputer" : "arrow.triangle.branch")
+                                Text(place).lineLimit(1).truncationMode(.middle)
+                            }
+                            .font(.caption2).foregroundStyle(Theme.inkFaint)
+                        }
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityAddTraits(.isHeader)
+                }
+                if !menu.isEmpty {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            ForEach(Array(menu.enumerated()), id: \.offset) { _, item in item_(item) }
+                        } label: {
+                            Label("Thread actions", systemImage: "ellipsis")
+                        }
+                    }
+                }
+            }
+    }
+
+    @ViewBuilder private func item_(_ item: HomeMenuItem) -> some View {
+        switch item {
+        case .settle:
+            Button { onAct(.settle) } label: { Label("Settle", systemImage: "checkmark.circle") }
+        case .unsettle:
+            Button { onAct(.unsettle) } label: { Label("Unsettle", systemImage: "arrow.uturn.backward.circle") }
+        case .snooze(let presets):
+            Menu {
+                ForEach(presets, id: \.label) { preset in
+                    Button("\(preset.label) · \(preset.when)") { onAct(.snooze(preset.until)) }
+                }
+            } label: {
+                Label("Snooze", systemImage: "moon.zzz")
+            }
+        case .wake:
+            Button { onAct(.wake) } label: { Label("Wake", systemImage: "sun.max") }
+        case .archive:
+            Divider()
+            Button(role: .destructive) { onAct(.archive) } label: { Label("Archive", systemImage: "archivebox") }
+        case .managedOnMac:
+            Button {} label: { Label("Looper runs are managed on your Mac", systemImage: "laptopcomputer") }
+                .disabled(true)
+        }
+    }
+}
+
+extension View {
+    func threadChrome(title: String, branch: String?, machine: String?, menu: [HomeMenuItem], onAct: @escaping (HomeAction) -> Void) -> some View {
+        modifier(ThreadChrome(title: title, branch: branch, machine: machine, menu: menu, onAct: onAct))
     }
 }
 
@@ -338,9 +505,7 @@ private struct WaitingPromptView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 4) {
-            Text(words)
-                .padding(10)
-                .background(Color.accentColor.opacity(0.15), in: RoundedRectangle(cornerRadius: 12))
+            Text(words).foregroundStyle(Theme.ink).youBubble()
                 .opacity(0.6)
             HStack(spacing: 4) {
                 Image(systemName: "clock")
@@ -349,7 +514,7 @@ private struct WaitingPromptView: View {
             .font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .trailing)
-        .padding(.leading, 40)
+        .padding(.leading, 48)
         .accessibilityElement(children: .combine)
     }
 }

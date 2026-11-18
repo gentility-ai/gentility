@@ -78,7 +78,7 @@ private struct PlusLabel: View {
     var body: some View {
         Image(systemName: "plus")
             .font(.body.weight(.semibold))
-            .frame(width: 20, height: 20)
+            .frame(width: 22, height: 22)
     }
 }
 

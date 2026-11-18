@@ -68,6 +68,7 @@ struct Foot: View {
             }
         }
         .padding(.horizontal).padding(.vertical, 8)
+        .background(Theme.ground)
     }
 
     @ViewBuilder private var composer: some View {
@@ -91,22 +92,37 @@ struct Composer: View {
             }
             HStack(alignment: .bottom, spacing: 8) {
                 AttachButton(acting: acting)
-                TextField("Message…", text: $draft, axis: .vertical)
+                TextField(acting.working ? "Steer the turn" : "Message", text: $draft, axis: .vertical)
                     .lineLimit(1...5)
-                    .textFieldStyle(.roundedBorder)
-                Button { send(acting.working ? acting.onSteer : acting.onSend) } label: { Image(systemName: "return") }
-                    .buttonStyle(.borderedProminent)
-                    .accessibilityLabel(acting.working ? "Steer now" : "Send")
-                    .disabled(!sendable)
+                    .padding(.horizontal, 14).padding(.vertical, 9)
+                    .frame(minHeight: 40)
+                    .surface(20, fill: Theme.field)
+                Button { send(acting.working ? acting.onSteer : acting.onSend) } label: {
+                    Image(systemName: "arrow.up")
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(sendable ? Color.white : Theme.inkFaint)
+                        .frame(width: 40, height: 40)
+                        .background(sendable ? Theme.accent : Theme.field, in: Circle())
+                        .contentShape(Rectangle().inset(by: -4))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(acting.working ? "Steer now" : "Send")
+                .disabled(!sendable)
+                .animation(Theme.motion, value: sendable)
             }
             if let uploading = acting.tray.uploadingLine {
                 Text(uploading).font(.footnote).foregroundStyle(.secondary).padding(.leading, 44)
             }
             if acting.working {
-                Button("Queue instead") { send(acting.onSend) }
-                .font(.footnote.weight(.semibold))
-                .disabled(!sendable)
-                .padding(.leading, 4)
+                // Sending steers the running turn; this waits for it to end.
+                Button { send(acting.onSend) } label: { Label("Queue instead", systemImage: "clock") }
+                    .font(.footnote.weight(.medium))
+                    .buttonStyle(.bordered)
+                    .buttonBorderShape(.capsule)
+                    .controlSize(.small)
+                    .tint(Theme.inkSoft)
+                    .disabled(!sendable)
+                    .padding(.leading, 48)
             }
             ForEach(acting.pending) { line in
                 PendingLineView(line: line) {
@@ -116,7 +132,7 @@ struct Composer: View {
                 }
             }
             if let note = acting.note {
-                Text(note).font(.footnote).foregroundStyle(.orange)
+                Text(note).font(.footnote).foregroundStyle(Theme.attention)
             }
         }
     }

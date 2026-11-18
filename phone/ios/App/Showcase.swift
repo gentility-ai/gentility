@@ -82,7 +82,7 @@ struct Showcase: View {
         "idle", "approval", "approval-three", "approval-short", "show-all", "question", "question-tall", "link", "queued", "steer-refused",
         "requested-compacting", "requested-waiting",
         "elsewhere", "redial", "unopened-answer", "wrong-store", "ended", "ended-words",
-        "strip-working", "strip-scrolled", "strip-reconnecting", "strip-tall", "strip-compacting",
+        "tools", "tools-running", "strip-working", "strip-scrolled", "strip-reconnecting", "strip-tall", "strip-compacting",
         "attach-menu", "attach-tray", "attach-failed", "attach-old-mac",
         "transcript-images", "transcript-markdown", "transcript-streaming", "transcript-long", "transcript-remote-image", "image-viewer",
         "f1", "f2", "f3", "f5", "lapsed", "unjoined",
@@ -172,6 +172,9 @@ struct Showcase: View {
         case "strip-reconnecting":
             conversation(TranscriptScreen(turns: Self.turns, phase: .connecting, asleepLines: [], acting: Self.acting(open: false, working: true),
                                           strip: StatusStrip(phase: .connecting, held: true, working: true, since: nil, queued: 0), onRetry: {}), "Phone pairing spec")
+        case "tools": conversation(TranscriptScreen(turns: Self.toolTurns(running: false), phase: .open, asleepLines: [], acting: Self.acting(working: false), onRetry: {}), "Phone pairing spec")
+        case "tools-running": conversation(TranscriptScreen(turns: Self.toolTurns(running: true), phase: .open, asleepLines: [], acting: Self.acting(working: true),
+                                                           strip: StatusStrip(phase: .open, held: true, working: true, since: Date(timeIntervalSinceNow: -65), queued: 0), onRetry: {}), "Phone pairing spec")
         case "ended": conversation(TranscriptScreen(turns: Self.ended, phase: .open, asleepLines: [], acting: Self.acting(working: false), onRetry: {}), "Phone pairing spec")
         case "ended-words": conversation(TranscriptScreen(turns: Self.endedWords, phase: .open, asleepLines: [], acting: Self.acting(working: false), onRetry: {}), "Phone pairing spec")
         case "attach-menu", "attach-tray", "attach-failed", "attach-old-mac",
@@ -207,8 +210,7 @@ struct Showcase: View {
                 .navigationTitle("Home")
                 .navigationDestination(for: String.self) { _ in
                     screen
-                        .navigationTitle(title)
-                        .navigationBarTitleDisplayMode(.inline)
+                        .threadChrome(title: title, branch: "feat-phone-pairing", machine: "Morgan's MacBook Pro", menu: HomeModel.menu(for: Self.rows[2]), onAct: { _ in })
                 }
         }
     }
@@ -251,6 +253,30 @@ struct Showcase: View {
         .tool(id: "t", text: "✓ Write tmp/phone-pairing.html"),
         .agent(id: "b", text: "Proposed: number matching…"),
     ])]
+
+    /// Runs of tool calls between the agent's words: one clean, one with a
+    /// failure, one call alone, and the last still going.
+    static func toolTurns(running: Bool) -> [Turn] {
+        [Turn(number: 1, lines: [
+            .you(id: "u", text: "Find why the recap fires twice and fix it"),
+            .agent(id: "a0", text: "I'll read the recap scheduler and its tests first."),
+            .tool(id: "t0", text: "✓ Read src/recap.rs"),
+            .tool(id: "t1", text: "✓ Read src/recap/schedule.rs"),
+            .tool(id: "t2", text: "✓ Grep \"schedule_recap\""),
+            .tool(id: "t3", text: "✓ Read tests/recap.rs"),
+            .agent(id: "a1", text: "The timer is armed in two places: once when the turn ends and again when the row is read. I'll drop the second and pin it with a test."),
+            .tool(id: "t4", text: "✓ Edit src/recap/schedule.rs"),
+            .tool(id: "t5", text: "✗ Bash cargo test -p desk_core recap"),
+            .tool(id: "t6", text: "✓ Edit tests/recap.rs"),
+            .tool(id: "t7", text: "✓ Bash cargo test -p desk_core recap"),
+            .agent(id: "a2", text: "Fixed. The first run failed on a stale assertion, which I updated."),
+            .tool(id: "t8", text: "✓ Bash git diff --stat"),
+            .agent(id: "a3", text: "Two files changed. Checking the wider suite now."),
+        ] + (running ? [
+            .tool(id: "t9", text: "✓ Bash cargo fmt --check"),
+            .tool(id: "t10", text: "… Bash cargo test -p desk_core --lib"),
+        ] : []))]
+    }
 
     /// A transcript taller than the screen, its last line short: at latest,
     /// the strip's inset keeps it clear of the capsule.

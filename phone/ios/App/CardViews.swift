@@ -14,12 +14,15 @@ struct ApprovalCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(request.summary).font(.subheadline.weight(.semibold))
+            Label(request.summary, systemImage: "hand.raised.fill")
+                .font(.subheadline.weight(.semibold)).foregroundStyle(Theme.attention)
             if let detail { CommandDetail(heading: request.summary, detail: detail) }
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: 8) { buttons }
                 VStack(spacing: 8) { buttons }
             }
+            .controlSize(.large)
+            .buttonBorderShape(.capsule)
             .disabled(!enabled || card.answer != nil || card.checking)
             CardFoot(card: card, chosen: chosen)
         }
@@ -35,12 +38,12 @@ struct ApprovalCard: View {
     @ViewBuilder private var buttons: some View {
         ForEach(request.options) { option in
             if option.kind == "allow_once" {
-                Button { onAnswer(.option(option.id)) } label: { Text(option.label).frame(maxWidth: .infinity) }
+                Button { onAnswer(.option(option.id)) } label: { Text(option.label).lineLimit(1).fixedSize().frame(maxWidth: .infinity) }
                     .buttonStyle(.borderedProminent)
             } else {
-                Button { onAnswer(.option(option.id)) } label: { Text(option.label).frame(maxWidth: .infinity) }
+                Button { onAnswer(.option(option.id)) } label: { Text(option.label).lineLimit(1).frame(maxWidth: .infinity) }
                     .buttonStyle(.bordered)
-                    .tint(option.rejects ? .red : .accentColor)
+                    .tint(option.rejects ? Theme.bad : Theme.inkSoft)
             }
         }
     }
@@ -60,9 +63,11 @@ private struct CommandDetail: View {
     var body: some View {
         Text(detail)
             .font(.footnote.monospaced())
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Theme.ink)
             .lineLimit(4)
             .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(Theme.Space.m)
+            .background(Theme.ground, in: RoundedRectangle(cornerRadius: Theme.Corner.small, style: .continuous))
             .background(alignment: .topLeading) {
                 Text(detail)
                     .font(.footnote.monospaced())
@@ -305,9 +310,9 @@ private struct CardFoot: View {
 
 extension View {
     func cardStyle() -> some View {
-        padding(12)
+        padding(Theme.Space.l)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
-            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color.orange.opacity(0.6)))
+            .background(Theme.raised, in: RoundedRectangle(cornerRadius: Theme.Corner.large, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: Theme.Corner.large, style: .continuous).strokeBorder(Theme.attention.opacity(0.55)))
     }
 }
