@@ -31,6 +31,8 @@ enum Theme {
     /// Words on the accent: white on the light accent, the page's own colour
     /// on the dark one, where white would read at 3.2:1.
     static let onAccent = dynamic(light: 0xFFFFFF, dark: 0x0E0F11)
+    /// Behind white words on a filled button; the same in both looks.
+    static let accentFill = dynamic(light: 0x4F5BD5, dark: 0x5B66DE)
     /// Something waits on the person.
     static let attention = dynamic(light: 0x9E5800, dark: 0xF0A24B)
     static let good = dynamic(light: 0x1A7A42, dark: 0x4CC38A)

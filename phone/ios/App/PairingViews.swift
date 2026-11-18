@@ -23,11 +23,9 @@ struct PairingView: View {
                     #endif
                 }
         case .claiming(let host):
-            VStack(spacing: 12) {
-                ProgressView()
-                Text("Asking \(host)…").foregroundStyle(.secondary)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            Waiting(line: "Asking \(host)…")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Theme.ground)
         case .number(let machineLabel, let match, let host):
             // No Cancel: calling the poll off here would leave the Mac asking
             // with nobody to hear its Allow.
@@ -72,14 +70,14 @@ struct ScannerScreen: View {
     let onCode: (String) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("GenDesk").font(.title2.weight(.semibold))
+        VStack(alignment: .leading, spacing: Theme.Space.xl) {
+            PageHead(title: "Pair with your Mac", line: "In Desk on your Mac, open Settings, then Phone, and point this phone at the code.")
             ZStack {
-                Color(white: 0.16)
+                Color.black
                 switch state {
                 case .denied:
-                    VStack(spacing: 12) {
-                        Image(systemName: "camera.fill").font(.largeTitle).foregroundStyle(.white.opacity(0.7))
+                    VStack(spacing: Theme.Space.m) {
+                        Image(systemName: "camera").font(.title).foregroundStyle(.white.opacity(0.6))
                         Text("GenDesk needs the camera to read the code on your Mac.")
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.white)
@@ -88,47 +86,62 @@ struct ScannerScreen: View {
                         } label: {
                             Text("Open Settings").foregroundStyle(Theme.onAccent)
                         }
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(PageButtonStyle(wide: false))
                     }
-                    .padding()
+                    .padding(Theme.Space.xl)
                 case .asking:
                     ProgressView().tint(.white)
                 case .scanning, .notADeskCode:
                     if camera { CameraView(onCode: onCode) }
-                    RoundedRectangle(cornerRadius: 16)
-                        .strokeBorder(.white, lineWidth: 2)
-                        .frame(width: 200, height: 200)
+                    Reticle().stroke(.white, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                        .frame(width: 208, height: 208)
                     if state == .notADeskCode {
                         Text("Not a Desk code")
-                            .padding(.horizontal, 12).padding(.vertical, 6)
-                            .background(.thinMaterial, in: Capsule())
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, Theme.Space.m).padding(.vertical, 6)
+                            .background(.black.opacity(0.6), in: Capsule())
                             .frame(maxHeight: .infinity, alignment: .bottom)
-                            .padding(.bottom, 16)
+                            .padding(.bottom, Theme.Space.l)
                     }
                 }
             }
             .frame(maxWidth: .infinity)
-            .aspectRatio(0.8, contentMode: .fit)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            Text("Point at the code in Desk → Settings → Phone")
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
-            HStack {
-                Text("This phone:").foregroundStyle(.secondary)
+            .aspectRatio(1, contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Corner.large, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: Theme.Corner.large, style: .continuous).strokeBorder(Theme.hairline))
+            VStack(alignment: .leading, spacing: Theme.Space.s) {
+                Text("This phone's name").font(.footnote.weight(.medium)).foregroundStyle(Theme.inkSoft)
                 TextField("Name", text: $name)
                     .textInputAutocapitalization(.words)
                     .autocorrectionDisabled()
                     .submitLabel(.done)
                     .onSubmit { PhoneName.remember(name) }
-                Image(systemName: "pencil").foregroundStyle(.secondary)
+                    .padding(.horizontal, Theme.Space.m)
+                    .frame(minHeight: Theme.touch)
+                    .surface(Theme.Corner.medium, fill: Theme.field)
+                Text("Your Mac shows this name when it asks you to allow the phone.")
+                    .font(.footnote).foregroundStyle(Theme.inkFaint)
             }
-            .font(.callout)
-            .padding(12)
-            .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
             Spacer(minLength: 0)
         }
-        .padding()
+        .page()
+    }
+}
+
+/// The four corners of the square a code is held in.
+private struct Reticle: Shape {
+    func path(in rect: CGRect) -> Path {
+        let arm = rect.width * 0.2, r: CGFloat = 14
+        var path = Path()
+        for (x, y, dx, dy) in [(rect.minX, rect.minY, 1.0, 1.0), (rect.maxX, rect.minY, -1.0, 1.0),
+                               (rect.maxX, rect.maxY, -1.0, -1.0), (rect.minX, rect.maxY, 1.0, -1.0)] {
+            path.move(to: CGPoint(x: x, y: y + dy * arm))
+            path.addLine(to: CGPoint(x: x, y: y + dy * r))
+            path.addQuadCurve(to: CGPoint(x: x + dx * r, y: y), control: CGPoint(x: x, y: y))
+            path.addLine(to: CGPoint(x: x + dx * arm, y: y))
+        }
+        return path
     }
 }
 
@@ -139,26 +152,27 @@ struct NumberScreen: View {
     let host: String
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Check on your Mac")
-                .font(.title2.weight(.semibold))
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Spacer()
-            Text("Desk on \(Text(machineLabel).bold()) will ask you to confirm. Enter this number there:")
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-            Text(match)
-                .font(.system(size: 80, weight: .heavy, design: .rounded))
-                .tracking(8)
-                .monospacedDigit()
-                .foregroundStyle(.purple)
-                .accessibilityLabel("The number is \(match.map(String.init).joined(separator: " "))")
-            ProgressView()
-            Text("Waiting for your Mac…").foregroundStyle(.secondary)
-            Spacer()
-            Text("Pairing with \(host)").font(.footnote).foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: Theme.Space.xl) {
+            PageHead(title: "Enter this number on your Mac", line: "Desk on \(Text(machineLabel).foregroundStyle(Theme.ink).fontWeight(.medium)) is asking for it.")
+            HStack(spacing: Theme.Space.m) {
+                ForEach(Array(match.enumerated()), id: \.offset) { _, digit in
+                    Text(String(digit))
+                        .font(.system(size: 64, weight: .semibold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(Theme.ink)
+                        .frame(width: 84, height: 108)
+                        .surface()
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, Theme.Space.l)
+            .accessibilityElement()
+            .accessibilityLabel("The number is \(match.map(String.init).joined(separator: " "))")
+            Waiting(line: "Waiting for your Mac…")
+            Spacer(minLength: 0)
+            Text("Pairing with \(host)").font(.footnote).foregroundStyle(Theme.inkFaint).frame(maxWidth: .infinity)
         }
-        .padding()
+        .page()
     }
 }
 
@@ -167,15 +181,68 @@ struct JoiningScreen: View {
     let machineLabel: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Joining your network").font(.title2.weight(.semibold))
-            Banner(text: "✓ Allowed on \(machineLabel)", tone: .ok)
-            ProgressView().frame(maxWidth: .infinity)
-            Text("Setting up a private link to your Macs…")
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity)
-            Spacer()
+        VStack(alignment: .leading, spacing: Theme.Space.xl) {
+            PageHead(title: "Joining your network", line: "Setting up a private link to your Macs.")
+            Label("Allowed on \(machineLabel)", systemImage: "checkmark.circle.fill")
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(Theme.good)
+            Waiting(line: "This takes a few seconds…")
+            Spacer(minLength: 0)
         }
-        .padding()
+        .page()
+    }
+}
+
+/// A page's title and the one line under it.
+struct PageHead: View {
+    let title: String
+    let line: Text
+
+    init(title: String, line: Text) { self.title = title; self.line = line }
+    init(title: String, line: LocalizedStringKey) { self.init(title: title, line: Text(line)) }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Theme.Space.s) {
+            Text(title).font(.title2.weight(.semibold)).foregroundStyle(Theme.ink)
+            line.font(.body).foregroundStyle(Theme.inkSoft)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// Something is under way, and what.
+struct Waiting: View {
+    let line: String
+
+    var body: some View {
+        HStack(spacing: Theme.Space.s) {
+            ProgressView().controlSize(.small)
+            Text(line).font(.subheadline).foregroundStyle(Theme.inkSoft)
+        }
+    }
+}
+
+/// The one thing to do on a page.
+struct PageButtonStyle: ButtonStyle {
+    var wide = true
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body.weight(.semibold))
+            .foregroundStyle(.white)
+            .padding(.horizontal, Theme.Space.xl)
+            .frame(maxWidth: wide ? .infinity : nil, minHeight: 50)
+            .background(Theme.accentFill, in: RoundedRectangle(cornerRadius: Theme.Corner.medium, style: .continuous))
+            .opacity(configuration.isPressed ? 0.8 : 1)
+    }
+}
+
+extension View {
+    /// A whole-screen page outside Home: its margins and its ground.
+    func page() -> some View {
+        padding(.horizontal, Theme.Space.xl).padding(.top, Theme.Space.xl).padding(.bottom, Theme.Space.l)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .background(Theme.ground)
     }
 }

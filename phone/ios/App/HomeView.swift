@@ -105,28 +105,35 @@ struct HomeList: View {
                                 UIApplication.shared.open(settings)
                             }
                         } label: {
-                            Label("Notifications are off — turn them on in Settings", systemImage: "bell.slash")
-                                .font(.footnote)
+                            HStack(spacing: Theme.Space.s) {
+                                Image(systemName: "bell.slash").foregroundStyle(Theme.attention)
+                                Text("Notifications are off").foregroundStyle(Theme.ink)
+                                Spacer()
+                                Text("Turn on").fontWeight(.semibold).foregroundStyle(Theme.accent)
+                            }
+                            .font(.footnote)
+                            .padding(.horizontal, Theme.Space.m)
+                            .frame(minHeight: Theme.touch)
+                            .surface(Theme.Corner.medium)
                         }
+                        .buttonStyle(.plain)
                     }
                 }
+                .listRowBackground(Theme.ground)
+                .listRowSeparator(.hidden)
             }
             if empty {
                 Section {
-                    ContentUnavailableView {
-                        Label("No threads yet", systemImage: "laptopcomputer")
-                    } description: {
-                        Text("No sessions yet. Start one in Desk on your Mac.")
-                    }
+                    Vacant(glyph: "laptopcomputer", title: "No threads yet", line: "Start one in Desk on your Mac and it shows here.")
                 }
                 .listRowBackground(Color.clear)
                 .listRowSeparator(.hidden)
             } else if shelves.isEmpty {
                 Section {
                     if query.trimmingCharacters(in: .whitespaces).isEmpty {
-                        ContentUnavailableView("Nothing here", systemImage: "line.3.horizontal.decrease.circle", description: Text("No thread matches the filter."))
+                        Vacant(glyph: "line.3.horizontal.decrease", title: "Nothing here", line: "No thread matches the filter.")
                     } else {
-                        ContentUnavailableView.search(text: query)
+                        Vacant(glyph: "magnifyingglass", title: "No results", line: "No thread's title, branch or project has “\(query)”.")
                     }
                 }
                 .listRowBackground(Color.clear)
@@ -578,5 +585,23 @@ extension StatusTone {
         case .snoozed: Theme.inkSoft
         case .settled: Theme.good
         }
+    }
+}
+
+/// An empty list: what is missing and how it fills.
+private struct Vacant: View {
+    let glyph: String
+    let title: String
+    let line: String
+
+    var body: some View {
+        VStack(spacing: Theme.Space.s) {
+            Image(systemName: glyph).font(.title2).foregroundStyle(Theme.inkFaint).padding(.bottom, Theme.Space.xs)
+            Text(title).font(.headline).foregroundStyle(Theme.ink)
+            Text(line).font(.subheadline).foregroundStyle(Theme.inkSoft).multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 72).padding(.horizontal, Theme.Space.xl)
+        .accessibilityElement(children: .combine)
     }
 }

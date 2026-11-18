@@ -174,13 +174,19 @@ struct TranscriptScreen: View {
 
     /// A line under the title, and Retry beside it.
     private func retryBar(_ line: String) -> some View {
-        HStack {
-            Text(line).font(.footnote)
-            Spacer()
-            Button(retry, action: onRetry).font(.footnote.weight(.semibold))
+        HStack(alignment: .firstTextBaseline, spacing: Theme.Space.s) {
+            Image(systemName: "wifi.exclamationmark").font(.footnote).foregroundStyle(Theme.attention)
+            Text(line).font(.footnote).foregroundStyle(Theme.inkSoft)
+            Spacer(minLength: Theme.Space.s)
+            Button(retry, action: onRetry)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(Theme.accent)
+                .frame(minHeight: Theme.touch)
+                .contentShape(Rectangle())
         }
-        .padding(.horizontal).padding(.vertical, 8)
-        .background(Color.orange.opacity(0.15))
+        .padding(.horizontal, Theme.Space.l)
+        .background(Theme.raised)
+        .overlay(alignment: .bottom) { Theme.hairline.frame(height: 1) }
     }
 
     /// Nothing in the transcript moves unless the conversation is open:
@@ -240,16 +246,18 @@ private struct Asleep: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if let first = lines.first {
-                Banner(text: first, tone: .warn, foreground: .primary)
+                Label { Text(first).foregroundStyle(Theme.ink) } icon: {
+                    Image(systemName: "exclamationmark.circle").foregroundStyle(Theme.attention)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(Theme.Space.m)
+                .surface(Theme.Corner.medium)
             }
             if lines.count > 1 {
-                Text(lines[1]).foregroundStyle(.primary.opacity(0.7)).frame(maxWidth: .infinity)
+                Text(lines[1]).font(.footnote).foregroundStyle(Theme.inkFaint)
             }
             ForEach(lines.dropFirst(2), id: \.self) { line in
-                Text(line)
-                    .padding(10)
-                    .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
-                    .opacity(0.7)
+                Text(line).font(.subheadline).foregroundStyle(Theme.inkSoft)
             }
         }
     }
