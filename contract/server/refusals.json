@@ -57,6 +57,29 @@
     "presence": [
       "desk_login_required",
       "person_required"
+    ],
+    "screenshot_accept": [
+      "already_decided",
+      "computer_unavailable",
+      "expired",
+      "forbidden",
+      "grant_unavailable",
+      "grantee_unavailable",
+      "install_credential_required",
+      "install_mismatch",
+      "install_unavailable",
+      "invalid_id",
+      "issuer_departed",
+      "mcp_guest_refused",
+      "not_found",
+      "not_ready",
+      "not_yet_valid",
+      "person_guest_refused",
+      "personal_install_unsupported",
+      "revoked",
+      "scope_not_granted",
+      "wrong_grantee",
+      "wrong_kind"
     ]
   },
   "looper_threads": {

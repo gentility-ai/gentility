@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
     },
     "config_change/README.md": {
       "executable": false,
@@ -1311,12 +1311,12 @@
     "server/asks.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "07dde93de20e174dab1f89e95afc984166df1dfb472e38073930d177c61cd82c"
+      "sha256": "5a2cb6a3990397e4b9eb796dadafd2189a6c7a10298c395793743676464f04df"
     },
     "server/contract.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "e251a9d95b6dbbf4f09ae40cb0bba8a579a12c2da74eb7c8a44e1e2ff62588fd"
+      "sha256": "9d60c433e17c06392d78dc2f1ec223806410dc61a3d7b2c50add20844f332951"
     },
     "server/desk/answer.json": {
       "executable": false,
@@ -1337,6 +1337,11 @@
       "executable": false,
       "owner": "server",
       "sha256": "f84a747598cf2a2a7a1c9f448a8a8ec16e394066be7c20086d76613999c60f01"
+    },
+    "server/desk/ask_computer_screenshot.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "73d7a41882169f9057b17a64761a69c4d803b93eda501c54335b729a481b9bb6"
     },
     "server/desk/ask_session_answer.json": {
       "executable": false,
@@ -1483,6 +1488,11 @@
       "owner": "server",
       "sha256": "c8a6bc5373719474198ede9bb134f9792a3cb9afcd5a86c2b190e6a71054a398"
     },
+    "server/desk/screenshot_accept.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "242fe86afecce2fdc97913d5c45077139ac0e36703a125f199f2d8fe1902bf00"
+    },
     "server/facts.json": {
       "executable": false,
       "owner": "server",
@@ -1596,7 +1606,7 @@
     "server/refusals.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "63f0b72234ed464d089206d28de93092dbc9ff29ebb56ba6c5ed4f5fce5f035f"
+      "sha256": "e8cbe0b41b27d3a14c07b3c0af34545a8d3b2c097121954c6a28654430429f55"
     },
     "server/refused.jsonl": {
       "executable": false,
@@ -2821,8 +2831,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 1,
-  "source_commit": "dc4b7c3ede0df223737f7faf09d607d7bf377ed4",
+  "number": 2,
+  "source_commit": "59f43adbba89998d1f02f09aec1b3336d0e91800",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

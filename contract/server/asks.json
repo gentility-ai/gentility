@@ -1,4 +1,29 @@
 {
+  "computer_screenshot": {
+    "decisions": [
+      "cancelled",
+      "captured",
+      "refused",
+      "unknown"
+    ],
+    "payload": [
+      "binding_generation",
+      "computer_id",
+      "deadline",
+      "desk_machine_id",
+      "grant_id",
+      "version"
+    ],
+    "refusals": [
+      "expired",
+      "forbidden",
+      "malformed",
+      "not_ready",
+      "personal_control",
+      "secret_fill",
+      "unsupported"
+    ]
+  },
   "host_upgrade": {
     "decisions": [
       "current",

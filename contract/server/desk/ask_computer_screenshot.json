@@ -1,0 +1,17 @@
+{
+  "event": "ask",
+  "payload": {
+    "expires_at": "2026-01-01T00:00:00.000000Z",
+    "id": "00000000-0000-7000-8000-000000000001",
+    "kind": "computer_screenshot",
+    "payload": {
+      "binding_generation": 1,
+      "computer_id": "00000000-0000-7000-8000-000000000002",
+      "deadline": "2026-01-01T00:00:00.000000Z",
+      "desk_machine_id": "00000000-0000-7000-8000-000000000003",
+      "grant_id": "00000000-0000-7000-8000-000000000004",
+      "version": 1
+    }
+  },
+  "topic": "desk:<org>:<machine>"
+}

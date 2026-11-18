@@ -1,7 +1,7 @@
 {
   "openrpc": "1.3.2",
   "info": {
-    "title": "The Desk ↔ server contract",
+    "title": "The Desk \u2194 server contract",
     "version": "1.0.0",
     "description": "Every message between a Desk core and the Gentility server, named by domain, not by topic. Hand-kept: change it, then the server, and record the exchange. A method's `x-refusals` are the closed words it may refuse with, besides `x-common-refusals`; `x-phoenix` is where it lives on the Phoenix channel framing; `x-feature` is the hello word that gates it. A method or notification marked `x-untyped` carries its words and no shapes yet. The rules, and how the recorded exchanges are held to this, are in README.md beside it."
   },
@@ -761,11 +761,27 @@
                     "items": {
                       "type": "object",
                       "properties": {
-                        "desk_machine_id": { "type": "string" },
-                        "desk_presence": { "type": ["string", "null"] },
-                        "door_port": { "type": ["integer", "null"] }
+                        "desk_machine_id": {
+                          "type": "string"
+                        },
+                        "desk_presence": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "door_port": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        }
                       },
-                      "required": ["desk_machine_id", "desk_presence", "door_port"],
+                      "required": [
+                        "desk_machine_id",
+                        "desk_presence",
+                        "door_port"
+                      ],
                       "additionalProperties": false
                     }
                   },
@@ -1822,6 +1838,94 @@
       "x-refusals": [
         "desk_login_required",
         "person_required"
+      ]
+    },
+    {
+      "name": "machine.screenshot_accept",
+      "description": "Fresh screenshot verdict for an authenticated org-bound install. Personal bearer connections are refused. Requires end-to-end verified TLS; no tool is offered before endpoint proof.",
+      "x-phoenix": {
+        "channel": "desk",
+        "event": "screenshot_accept"
+      },
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "ask_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "result": {
+        "name": "verdict",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "integer"
+            },
+            "ask_id": {
+              "type": "string"
+            },
+            "computer_id": {
+              "type": "string"
+            },
+            "grant_id": {
+              "type": "string"
+            },
+            "desk_machine_id": {
+              "type": "string"
+            },
+            "binding_generation": {
+              "type": "integer"
+            },
+            "scope": {
+              "type": "string"
+            },
+            "lease_expires_at": {
+              "type": "string"
+            },
+            "expires_at": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "version",
+            "ask_id",
+            "computer_id",
+            "grant_id",
+            "desk_machine_id",
+            "binding_generation",
+            "scope",
+            "lease_expires_at",
+            "expires_at"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "x-refusals": [
+        "already_decided",
+        "computer_unavailable",
+        "expired",
+        "forbidden",
+        "grant_unavailable",
+        "grantee_unavailable",
+        "install_credential_required",
+        "install_mismatch",
+        "install_unavailable",
+        "invalid_id",
+        "issuer_departed",
+        "mcp_guest_refused",
+        "not_found",
+        "not_ready",
+        "not_yet_valid",
+        "person_guest_refused",
+        "personal_install_unsupported",
+        "revoked",
+        "scope_not_granted",
+        "wrong_grantee",
+        "wrong_kind"
       ]
     },
     {
@@ -7441,6 +7545,7 @@
             "description": "Open: a core answers a kind it does not read `unsupported`, once (`a_kind_this_build_does_not_read_is_recorded_and_reads_as_unsupported`, `desk/core/src/reactors/asks.rs`), and only a core reads asks. A kind a released core would misread still waits for a hello word.",
             "type": "string",
             "enum": [
+              "computer_screenshot",
               "host_upgrade",
               "host_upgrade_cancel",
               "phone_claim",
@@ -8179,6 +8284,59 @@
             "unknown_session",
             "unsupported",
             "upgrading"
+          ]
+        },
+        "computer_screenshot": {
+          "payload": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "computer_id": {
+                "type": "string"
+              },
+              "grant_id": {
+                "type": "string"
+              },
+              "desk_machine_id": {
+                "type": "string"
+              },
+              "binding_generation": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "deadline": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "version",
+              "computer_id",
+              "grant_id",
+              "desk_machine_id",
+              "binding_generation",
+              "deadline"
+            ],
+            "additionalProperties": false
+          },
+          "decisions": [
+            "cancelled",
+            "captured",
+            "refused",
+            "unknown"
+          ],
+          "refusals": [
+            "expired",
+            "forbidden",
+            "malformed",
+            "not_ready",
+            "personal_control",
+            "secret_fill",
+            "unsupported"
           ]
         }
       },

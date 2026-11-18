@@ -1,0 +1,21 @@
+{
+  "event": "screenshot_accept",
+  "payload": {
+    "ask_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "ask_id": "00000000-0000-7000-8000-000000000001",
+      "binding_generation": 1,
+      "computer_id": "00000000-0000-7000-8000-000000000002",
+      "desk_machine_id": "00000000-0000-7000-8000-000000000003",
+      "expires_at": "2026-01-01T00:00:00.000000Z",
+      "grant_id": "00000000-0000-7000-8000-000000000004",
+      "lease_expires_at": "2026-01-01T00:00:00.000000Z",
+      "scope": "screenshot",
+      "version": 1
+    },
+    "status": "ok"
+  },
+  "topic": "desk:<org>:<machine>"
+}
