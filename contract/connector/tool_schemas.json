@@ -178,7 +178,6 @@
                 "secret",
                 "egress",
                 "codebase",
-                "factory_case",
                 "git_ref",
                 "url",
                 "attachment",
