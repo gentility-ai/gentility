@@ -6,6 +6,7 @@ import UIKit
 struct HomeView: View {
     @ObservedObject var app: AppModel
     @ObservedObject var home: HomeModel
+    @State private var composing = false
 
     var body: some View {
         NavigationStack(path: $app.path) {
@@ -24,6 +25,14 @@ struct HomeView: View {
                 }
                 .refreshable { await home.refresh() }
                 .task { await app.homeAppeared() }
+                .overlay(alignment: .bottomTrailing) {
+                    if home.loaded { ComposeButton { composing = true } }
+                }
+        }
+        .sheet(isPresented: $composing) {
+            NewThreadView(model: app.newThread()) { started in
+                Task { await app.started(started) }
+            }
         }
         // AppModel pauses this cadence for conversations except notOpen.
         .onAppear { home.appear() }
@@ -603,5 +612,23 @@ private struct Vacant: View {
         .frame(maxWidth: .infinity)
         .padding(.top, 72).padding(.horizontal, Theme.Space.xl)
         .accessibilityElement(children: .combine)
+    }
+}
+
+/// Start a thread: where a thumb rests.
+struct ComposeButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "square.and.pencil")
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(.white)
+                .frame(width: 56, height: 56)
+                .background(Theme.accentFill, in: Circle())
+                .shadow(color: .black.opacity(0.25), radius: 12, y: 4)
+        }
+        .padding(.trailing, Theme.Space.l).padding(.bottom, Theme.Space.l)
+        .accessibilityLabel("New thread")
     }
 }

@@ -83,8 +83,11 @@ public final class DoorConnection: DoorSink, @unchecked Sendable {
         // A photo is one frame of up to 27 MiB of base64 each way over DERP.
         case .attachmentPut: return .seconds(60)
         case .attachmentRead, .fileImageRead: return .seconds(30)
+        // A start answers before the worktree is made; readiness looks for
+        // each agent's launcher.
+        case .sessionStart, .readiness, .harnessConfig: return .seconds(20)
         case .hello, .environmentsList, .sessionAnswer, .sessionElicitationAnswer, .sessionQuestionAnswer,
-             .sessionSteer, .sessionWithdraw, .sessionGet:
+             .sessionSteer, .sessionWithdraw, .sessionGet, .projectsList, .worktreeLayout, .sessionAbort:
             return .seconds(10)
         }
     }

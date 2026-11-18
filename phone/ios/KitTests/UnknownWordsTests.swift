@@ -34,9 +34,10 @@ final class UnknownWordsTests: XCTestCase {
     private static let vocabularies: [Vocabulary] = [
         Vocabulary(
             name: "Response",
-            named: ["hello", "transcript", "ok", "queued", "environments", "sessions", "session", "error", "attachment", "attachment_bytes"],
+            named: ["hello", "transcript", "ok", "queued", "environments", "sessions", "session", "error", "attachment", "attachment_bytes",
+                    "projects", "worktree_layout", "harness_config", "readiness", "session_started"],
             mirrorsAll: false,
-            frame: { #"{"id":1,"response":{"type":"\#($0)","version":"0","build":"0","items":[],"queue_id":"q","environments":[],"sessions":[],"session":{\#(row)},"code":"c","message":"m","attachment":{"path":"/p","name":"p","kind":"file","size":null},"bytes_b64":""}}"# },
+            frame: { #"{"id":1,"response":{"type":"\#($0)","version":"0","build":"0","items":[],"queue_id":"q","environments":[],"sessions":[],"session":{\#(row)},"code":"c","message":"m","attachment":{"path":"/p","name":"p","kind":"file","size":null},"bytes_b64":"","session_id":"s"}}"# },
             read: { frame in
                 guard case .reply(1, let response) = frame else { return nil }
                 if case .other = response { return .fallback }

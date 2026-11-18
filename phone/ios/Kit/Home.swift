@@ -567,6 +567,18 @@ public final class HomeModel: ObservableObject {
         return reached
     }
 
+    /// The Macs a thread can be started on: each one that holds a thread of
+    /// this person's and has a live door, the one heard from last first.
+    public func macs() -> [MacChoice] {
+        var seen: Set<String> = []
+        return rows.compactMap { row in
+            guard let machineID = row.machineID, case .door(let target) = reach(for: row), target.live else { return nil }
+            let choice = MacChoice(organizationID: row.organizationID, machineID: machineID, label: row.macLabel,
+                                   address: target.address, port: target.port)
+            return seen.insert(choice.id).inserted ? choice : nil
+        }
+    }
+
     /// Where to dial `row`'s Mac, in the row's organisation; nil when it has
     /// no approved door there.
     public func target(for row: HomeRow) -> DoorTarget? {

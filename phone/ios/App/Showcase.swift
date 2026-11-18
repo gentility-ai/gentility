@@ -85,7 +85,7 @@ struct Showcase: View {
         "tools", "tools-running", "strip-working", "strip-scrolled", "strip-reconnecting", "strip-reconnecting-tools", "strip-tall", "strip-compacting",
         "attach-menu", "attach-tray", "attach-failed", "attach-old-mac",
         "transcript-images", "transcript-markdown", "transcript-streaming", "transcript-long", "transcript-remote-image", "image-viewer",
-        "f1", "f2", "f3", "f5", "lapsed", "unjoined",
+        "f1", "f2", "f3", "f5", "lapsed", "unjoined", "new-thread", "new-thread-refused",
     ]
 
     let screen: String
@@ -159,7 +159,7 @@ struct Showcase: View {
         case "strip-working":
             conversation(TranscriptScreen(turns: Self.turns, phase: .open, asleepLines: [],
                                           acting: Self.acting(working: true, pending: [PendingLine(queueID: "q1", text: "then run the store tests"), PendingLine(queueID: "q2", text: "and open a PR")]),
-                                          strip: StatusStrip(phase: .open, held: true, working: true, since: Date(timeIntervalSinceNow: -65), queued: 2), onRetry: {}), "Phone pairing spec")
+                                          strip: StatusStrip(phase: .open, held: true, working: true, since: Date(timeIntervalSinceNow: -65), queued: 2), onStop: {}, onRetry: {}), "Phone pairing spec")
         case "strip-tall":
             ArrivingTranscript(turns: Self.tallTranscript, acting: Self.acting(working: true),
                                strip: StatusStrip(phase: .open, held: true, working: true, since: Date(timeIntervalSinceNow: -65), queued: 0))
@@ -177,7 +177,7 @@ struct Showcase: View {
                                           strip: StatusStrip(phase: .connecting, held: true, working: true, since: nil, queued: 0), onRetry: {}), "Phone pairing spec")
         case "tools": conversation(TranscriptScreen(turns: Self.toolTurns(running: false), phase: .open, asleepLines: [], acting: Self.acting(working: false), onRetry: {}), "Phone pairing spec")
         case "tools-running": conversation(TranscriptScreen(turns: Self.toolTurns(running: true), phase: .open, asleepLines: [], acting: Self.acting(working: true),
-                                                           strip: StatusStrip(phase: .open, held: true, working: true, since: Date(timeIntervalSinceNow: -65), queued: 0), onRetry: {}), "Phone pairing spec")
+                                                           strip: StatusStrip(phase: .open, held: true, working: true, since: Date(timeIntervalSinceNow: -65), queued: 0), onStop: {}, onRetry: {}), "Phone pairing spec")
         case "ended": conversation(TranscriptScreen(turns: Self.ended, phase: .open, asleepLines: [], acting: Self.acting(working: false), onRetry: {}), "Phone pairing spec")
         case "ended-words": conversation(TranscriptScreen(turns: Self.endedWords, phase: .open, asleepLines: [], acting: Self.acting(working: false), onRetry: {}), "Phone pairing spec")
         case "attach-menu", "attach-tray", "attach-failed", "attach-old-mac",
@@ -188,6 +188,7 @@ struct Showcase: View {
         case "f2": FailureView(failure: .denied, onAction: {})
         case "f3": FailureView(failure: .cannotJoin("no_gateway"), onAction: {})
         case "f5": FailureView(failure: .removed, onAction: {})
+        case "new-thread", "new-thread-refused": NewThreadShowcase(refused: screen == "new-thread-refused")
         case "lapsed": FailureView(failure: .lapsed, onAction: {})
         case "unjoined": FailureView(failure: .notJoined, onAction: {})
         default: Text("No showcase named \(screen)")
@@ -198,6 +199,7 @@ struct Showcase: View {
         NavigationStack {
             HomeList(rows: Self.rows, line: nil, empty: false, joining: false, notificationsOff: notificationsOff, undo: undo, query: query, open: open, snoozing: snoozing, preset: preset)
                 .navigationTitle("Home")
+                .overlay(alignment: .bottomTrailing) { ComposeButton {} }
         }
     }
 
@@ -431,3 +433,34 @@ struct Showcase: View {
     ]
 }
 #endif
+
+/// The new-thread sheet over sample choices.
+private struct NewThreadShowcase: View {
+    let refused: Bool
+    @State private var text = "Find why the recap fires twice and fix it"
+    @State private var newBranch = true
+    @State private var model: String? = nil
+    @State private var effort: String? = nil
+    @FocusState private var typing: Bool
+
+    var body: some View {
+        let macs = [MacChoice(organizationID: "o", machineID: "m", label: "Morgan's MacBook Pro", address: "", port: 0),
+                    MacChoice(organizationID: "o", machineID: "n", label: "cedar", address: "", port: 0)]
+        let projects = [DoorProject(path: "/Users/someone/sample-app", name: "sample-app")]
+        NavigationStack {
+            NewThreadForm(
+                text: $text, newBranch: $newBranch, model: $model, effort: $effort,
+                macs: macs, mac: macs[0], projects: projects, project: projects[0],
+                harnesses: ["claude", "codex"], harness: "claude", models: [], efforts: [],
+                loading: false, line: refused ? "The link to Morgan's MacBook Pro dropped. Try again." : nil, typing: $typing,
+                onMac: { _ in }, onProject: { _ in }, onHarness: { _ in }
+            )
+            .navigationTitle("New thread")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") {}.foregroundStyle(Theme.inkSoft) }
+                ToolbarItem(placement: .confirmationAction) { Button("Start") {}.fontWeight(.semibold) }
+            }
+        }
+    }
+}

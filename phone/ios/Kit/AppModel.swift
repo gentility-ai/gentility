@@ -670,6 +670,31 @@ public final class AppModel: ObservableObject {
         }
     }
 
+    /// The new-thread sheet's model, over the Macs reachable now.
+    public func newThread() -> NewThreadModel {
+        let doors = node
+        return NewThreadModel(macs: home?.macs() ?? [], open: { mac in
+            try await doors.openDoor(address: mac.address, port: mac.port)
+        })
+    }
+
+    /// A thread was started from here: its conversation opens once Home
+    /// lists it. The Mac tells the server of a start a moment after it
+    /// answers, so Home is read a few times before giving up.
+    public func started(_ thread: StartedThread) async {
+        guard let home else { return }
+        for attempt in 0..<8 {
+            await home.refresh()
+            if let row = home.row(organizationID: thread.organizationID, sessionID: thread.sessionID) {
+                Log.home.info("opening \(thread.sessionID, privacy: .public), just started")
+                if route == .home { path = [row] }
+                return
+            }
+            do { try await sleep(.milliseconds(attempt < 3 ? 600 : 1500)) } catch { return }
+        }
+        Log.home.notice("Home never listed \(thread.sessionID, privacy: .public); it will show when it does")
+    }
+
     /// A notification was tapped: its conversation opens once Home lists it.
     public func opened(_ payload: PushPayload) {
         Log.push.info("a tap on \(payload.fact, privacy: .public) for \(payload.sessionID, privacy: .public) in \(payload.organizationID, privacy: .public)")

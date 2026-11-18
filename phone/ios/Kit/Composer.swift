@@ -259,6 +259,24 @@ extension ConversationModel {
         return request
     }
 
+    /// Stop the turn running. Prompts waiting behind it still run. True
+    /// when the Mac took it.
+    @discardableResult
+    public func stop() async -> Bool {
+        guard let door, door.isOpen else {
+            Log.conversation.notice("stop with no door open")
+            return false
+        }
+        do {
+            let response = try await door.request(.sessionAbort(sessionID: row.id))
+            Log.conversation.info("stop answered \(response.kind, privacy: .public)")
+            return response == .ok
+        } catch {
+            Log.conversation.error("the stop did not reach the Mac: \(String(describing: error), privacy: .public)")
+            return false
+        }
+    }
+
     private func steer(queueID: String) async {
         pending.note(queueID, PendingLines.steering)
         guard let door, door.isOpen else {

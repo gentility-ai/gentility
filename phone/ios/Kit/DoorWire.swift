@@ -52,10 +52,21 @@ public enum DoorResponse: Decodable, Equatable, Sendable {
     case attachment(AttachmentRef)
     /// An attached file's or a worktree image's bytes, standard base64.
     case attachmentBytes(mime: String, bytesB64: String)
+    /// The checkouts this Mac knows as projects.
+    case projects([DoorProject])
+    /// Where a project's new worktrees start from.
+    case worktreeLayout(WorktreeLayout)
+    /// What one agent offers: its models, its effort levels.
+    case harnessConfig([AgentOption])
+    /// Which agents this Mac can run now.
+    case readiness([AgentReadiness])
+    /// A thread was started, or was already there under the id sent.
+    case sessionStarted(sessionID: String)
     case other(type: String)
 
     enum CodingKeys: String, CodingKey {
-        case type, environments, sessions, session, attachment, mime
+        case type, environments, sessions, session, attachment, mime, projects, options, harnesses
+        case sessionID = "session_id"
         case queueID = "queue_id"
         case bytesB64 = "bytes_b64"
     }
@@ -82,7 +93,25 @@ public enum DoorResponse: Decodable, Equatable, Sendable {
         case "attachment_bytes":
             guard let bytes = try c.decodeIfPresent(String.self, forKey: .bytesB64) else { throw DoorWireError.missing("bytes_b64") }
             self = .attachmentBytes(mime: try c.decodeIfPresent(String.self, forKey: .mime) ?? "application/octet-stream", bytesB64: bytes)
+        case "projects": self = .projects(Self.read(try c.decodeIfPresent([Lenient<DoorProject>].self, forKey: .projects) ?? [], "project"))
+        case "worktree_layout": self = .worktreeLayout(try WorktreeLayout(from: decoder))
+        case "harness_config": self = .harnessConfig(Self.read(try c.decodeIfPresent([Lenient<AgentOption>].self, forKey: .options) ?? [], "option"))
+        case "readiness": self = .readiness(Self.read(try c.decodeIfPresent([Lenient<AgentReadiness>].self, forKey: .harnesses) ?? [], "agent"))
+        case "session_started":
+            guard let id = try c.decodeIfPresent(String.self, forKey: .sessionID) else { throw DoorWireError.missing("session_id") }
+            self = .sessionStarted(sessionID: id)
         default: self = .other(type: type)
+        }
+    }
+
+    /// The elements that read: one this app cannot read is skipped, and
+    /// logged without a byte of it, so the others still apply.
+    private static func read<Value>(_ read: [Lenient<Value>], _ what: String) -> [Value] {
+        read.enumerated().compactMap { at, element in
+            if let why = element.failed {
+                Log.door.error("\(what, privacy: .public) \(at) of a list does not read (\(why, privacy: .public)); skipped")
+            }
+            return element.value
         }
     }
 
@@ -100,6 +129,11 @@ public enum DoorResponse: Decodable, Equatable, Sendable {
         case .error(let refusal): "error \(refusal.code)"
         case .attachment: "attachment"
         case .attachmentBytes(let mime, let bytes): "attachment_bytes \(mime) (\(bytes.utf8.count) bytes of base64)"
+        case .projects(let all): "projects (\(all.count))"
+        case .worktreeLayout: "worktree_layout"
+        case .harnessConfig(let options): "harness_config (\(options.count))"
+        case .readiness(let all): "readiness (\(all.count))"
+        case .sessionStarted: "session_started"
         case .other(let type): "other \(type)"
         }
     }
@@ -878,6 +912,13 @@ public enum DoorRequest: Equatable, Sendable {
     case attachmentRead(path: String)
     /// A raster image inside the session's worktree, by its relative path.
     case fileImageRead(sessionID: String, path: String)
+    case projectsList
+    case worktreeLayout(projectPath: String)
+    case harnessConfig(harness: String, environmentID: String, organizationID: String?)
+    case readiness(environmentID: String, organizationID: String?)
+    case sessionStart(ThreadStart)
+    /// Stop the turn running. Prompts that wait behind it still run.
+    case sessionAbort(sessionID: String)
 
     var body: JSONValue {
         switch self {
@@ -932,6 +973,29 @@ public enum DoorRequest: Equatable, Sendable {
             return .object(["type": .string("attachment_read"), "path": .string(path)])
         case .fileImageRead(let sessionID, let path):
             return .object(["type": .string("file_image_read"), "session_id": .string(sessionID), "path": .string(path)])
+        case .projectsList:
+            return .object(["type": .string("projects_list")])
+        case .worktreeLayout(let projectPath):
+            return .object(["type": .string("worktree_layout"), "project_path": .string(projectPath)])
+        case .harnessConfig(let harness, let environmentID, let organizationID):
+            var fields: [String: JSONValue] = ["type": .string("harness_config"), "harness": .string(harness)]
+            // The core reads the two together or not at all.
+            if let organizationID {
+                fields["environment_id"] = .string(environmentID)
+                fields["organization_id"] = .string(organizationID)
+            }
+            return .object(fields)
+        case .readiness(let environmentID, let organizationID):
+            var fields: [String: JSONValue] = ["type": .string("readiness")]
+            if let organizationID {
+                fields["environment_id"] = .string(environmentID)
+                fields["organization_id"] = .string(organizationID)
+            }
+            return .object(fields)
+        case .sessionStart(let start):
+            return start.json
+        case .sessionAbort(let sessionID):
+            return .object(["type": .string("session_abort"), "session_id": .string(sessionID)])
         }
     }
 
@@ -1004,6 +1068,194 @@ public struct AttachmentRef: Codable, Equatable, Sendable, Hashable {
         ]
         if let mime { fields["mime"] = .string(mime) }
         if let hash { fields["hash"] = .string(hash) }
+        return .object(fields)
+    }
+}
+
+/// A checkout a Mac knows as a project (`ProjectView`), read for what a new
+/// thread needs of it.
+public struct DoorProject: Decodable, Equatable, Sendable, Identifiable {
+    /// Where its new threads start, as a person set in Desk.
+    public enum NewThreads: String, Decodable, Sendable {
+        case newWorktree = "new_worktree"
+        case checkout
+        case unknown
+
+        public init(from decoder: Decoder) throws {
+            self = NewThreads(rawValue: try decoder.singleValueContainer().decode(String.self)) ?? .unknown
+        }
+    }
+
+    /// The agent its threads start on, as a person set in Desk.
+    public struct Agent: Decodable, Equatable, Sendable {
+        public let harness: String
+        public let model: String?
+        public let effort: String?
+    }
+
+    public let path: String
+    public let name: String
+    public let repository: String?
+    public let organizationID: String?
+    public let newThreads: NewThreads?
+    public let agent: Agent?
+    public let updatedAt: String?
+
+    public var id: String { path }
+
+    enum CodingKeys: String, CodingKey {
+        case name, repository, agent
+        case path = "project_path"
+        case organizationID = "organization_id"
+        case newThreads = "new_threads"
+        case updatedAt = "updated_at"
+    }
+
+    public init(path: String, name: String, repository: String? = nil, organizationID: String? = nil,
+                newThreads: NewThreads? = nil, agent: Agent? = nil, updatedAt: String? = nil) {
+        self.path = path
+        self.name = name
+        self.repository = repository
+        self.organizationID = organizationID
+        self.newThreads = newThreads
+        self.agent = agent
+        self.updatedAt = updatedAt
+    }
+}
+
+/// `worktree_layout`'s answer, read for the base a new branch starts from.
+public struct WorktreeLayout: Decodable, Equatable, Sendable {
+    public let defaultBase: String?
+    public let branches: [String]
+
+    /// The project's default branch, else its first.
+    public var base: String? { defaultBase ?? branches.first }
+
+    enum CodingKeys: String, CodingKey {
+        case branches
+        case defaultBase = "default_base"
+    }
+
+    public init(defaultBase: String?, branches: [String]) {
+        self.defaultBase = defaultBase
+        self.branches = branches
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        defaultBase = try c.decodeIfPresent(String.self, forKey: .defaultBase)
+        branches = try c.decodeIfPresent([String].self, forKey: .branches) ?? []
+    }
+}
+
+/// One thing an agent lets a person choose (`ConfigOption`): its model, or
+/// how hard it thinks.
+public struct AgentOption: Decodable, Equatable, Sendable {
+    public struct Choice: Decodable, Equatable, Sendable, Identifiable {
+        public let value: String
+        public let name: String
+
+        public var id: String { value }
+
+        public init(value: String, name: String) {
+            self.value = value
+            self.name = name
+        }
+    }
+
+    /// `model`, `effort`, or a word this app does not know and does not draw.
+    public let category: String
+    public let current: String?
+    public let choices: [Choice]
+
+    public init(category: String, current: String?, choices: [Choice]) {
+        self.category = category
+        self.current = current
+        self.choices = choices
+    }
+
+    enum CodingKeys: String, CodingKey { case category, current, choices }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        category = try c.decodeIfPresent(String.self, forKey: .category) ?? "unknown"
+        current = try c.decodeIfPresent(String.self, forKey: .current)
+        choices = (try c.decodeIfPresent([Lenient<Choice>].self, forKey: .choices) ?? []).compactMap(\.value)
+    }
+}
+
+/// Whether a Mac can run an agent now (`HarnessReadiness`).
+public struct AgentReadiness: Decodable, Equatable, Sendable {
+    public let harness: String
+    public let ready: Bool
+
+    public init(harness: String, ready: Bool) {
+        self.harness = harness
+        self.ready = ready
+    }
+}
+
+/// A `session_start`, as Desk's own window sends one: the thread's id is
+/// minted here, so asking twice starts one thread.
+public struct ThreadStart: Equatable, Sendable {
+    /// A worktree the Mac makes first, on a branch of the same name.
+    public struct Make: Equatable, Sendable {
+        public let name: String
+        public let base: String
+
+        public init(name: String, base: String) {
+            self.name = name
+            self.base = base
+        }
+    }
+
+    public let sessionID: String
+    public let environmentID: String
+    public let organizationID: String?
+    /// The project's main checkout.
+    public let cwd: String
+    public let harness: String
+    public let model: String?
+    public let effort: String?
+    public let title: String
+    /// Nil starts in the checkout itself.
+    public let make: Make?
+    /// Whether the Mac's Desk tells Codex's two drivers apart.
+    public let namesDriver: Bool
+
+    public init(sessionID: String, environmentID: String, organizationID: String?, cwd: String, harness: String,
+                model: String?, effort: String?, title: String, make: Make?, namesDriver: Bool) {
+        self.sessionID = sessionID
+        self.environmentID = environmentID
+        self.organizationID = organizationID
+        self.cwd = cwd
+        self.harness = harness
+        self.model = model
+        self.effort = effort
+        self.title = title
+        self.make = make
+        self.namesDriver = namesDriver
+    }
+
+    var json: JSONValue {
+        var fields: [String: JSONValue] = [
+            "type": .string("session_start"), "session_id": .string(sessionID),
+            "environment_id": .string(environmentID), "cwd": .string(cwd), "harness": .string(harness),
+            // Every action asks first: a phone is where the asking is answered.
+            "mode": .string("supervised"),
+            "model": model.map(JSONValue.string) ?? .null, "effort": effort.map(JSONValue.string) ?? .null,
+            "title": .string(title),
+            // The Mac may rename a branch it was left to name.
+            "rename_branch": .bool(make != nil),
+            "organization_id": organizationID.map(JSONValue.string) ?? .null,
+        ]
+        if let make {
+            fields["make"] = .object(["name": .string(make.name), "branch": .string(make.name), "base": .string(make.base)])
+        }
+        if harness == "codex", namesDriver {
+            fields["driver"] = .string("acp")
+            fields["package"] = .string("@agentclientprotocol/codex-acp")
+        }
         return .object(fields)
     }
 }

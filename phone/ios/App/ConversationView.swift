@@ -13,7 +13,8 @@ struct ConversationView: View {
 
     var body: some View {
         TranscriptScreen(turns: conversation.fold.turns, phase: conversation.phase, asleepLines: conversation.asleepLines, acting: acting,
-                         requested: conversation.waitingPrompt, compacting: conversation.fold.compacting, strip: strip) {
+                         requested: conversation.waitingPrompt, compacting: conversation.fold.compacting, strip: strip,
+                         onStop: stop) {
             Task { await conversation.retry() }
         }
         .environment(\.images, ImageContext(
@@ -22,7 +23,8 @@ struct ConversationView: View {
         ))
         .threadChrome(
             title: conversation.row.title, branch: conversation.row.branch, machine: conversation.row.macLabel,
-            menu: HomeModel.menu(for: conversation.row)
+            menu: HomeModel.menu(for: conversation.row),
+            onStop: stop
         ) { action in
             let row = conversation.row
             Task { await app.home?.act(action, on: row) }
@@ -34,6 +36,11 @@ struct ConversationView: View {
             conversation.leave()
             app.hid(conversation)
         }
+    }
+
+    /// Set while a turn runs and the Mac can hear a stop.
+    private var stop: (() -> Void)? {
+        conversation.working && conversation.phase == .open ? { Task { await conversation.stop() } } : nil
     }
 
     private var strip: StatusStrip? {
@@ -71,6 +78,8 @@ struct TranscriptScreen: View {
     /// is the live sign.
     let compacting: Bool
     let strip: StatusStrip?
+    /// Stops the running turn; nil where there is none to stop.
+    let onStop: (() -> Void)?
     let onRetry: () -> Void
 
     /// The screen's height above the keyboard, measured.
@@ -81,7 +90,8 @@ struct TranscriptScreen: View {
     /// `atEnd` false draws the jump arrow from the start (Showcase: it opens
     /// at the top of a long thread, where the app would have scrolled down).
     init(turns: [Turn], phase: ConversationModel.Phase, asleepLines: [String], acting: Acting,
-         requested: RequestedPrompt? = nil, compacting: Bool = false, strip: StatusStrip? = nil, onRetry: @escaping () -> Void, atEnd: Bool = true) {
+         requested: RequestedPrompt? = nil, compacting: Bool = false, strip: StatusStrip? = nil,
+         onStop: (() -> Void)? = nil, onRetry: @escaping () -> Void, atEnd: Bool = true) {
         self.turns = turns
         self.phase = phase
         self.asleepLines = asleepLines
@@ -89,6 +99,7 @@ struct TranscriptScreen: View {
         self.requested = requested
         self.compacting = compacting
         self.strip = strip
+        self.onStop = onStop
         self.onRetry = onRetry
         _atEnd = State(initialValue: atEnd)
     }
@@ -156,7 +167,7 @@ struct TranscriptScreen: View {
                 // At the trailing edge, where the jump has always been: the
                 // strip grows leftward from it.
                 .overlay(alignment: .bottomTrailing) {
-                    StripView(strip: strip, atEnd: atEnd) {
+                    StripView(strip: strip, atEnd: atEnd, onStop: onStop) {
                         withAnimation { reader.scrollTo("end", anchor: .bottom) }
                     }
                     .padding(Theme.Space.m)
@@ -201,38 +212,59 @@ struct TranscriptScreen: View {
 private struct StripView: View {
     let strip: StatusStrip?
     let atEnd: Bool
+    /// Stops the running turn. Its button stands where the spinner would:
+    /// the clock beside it is the sign of life.
+    let onStop: (() -> Void)?
     let onJump: () -> Void
+
+    private var stops: Bool { onStop != nil && strip?.doing != nil }
 
     var body: some View {
         if strip != nil || !atEnd {
-            // The whole capsule takes the tap, not the arrow alone.
-            Button(action: onJump) {
-                HStack(spacing: 10) {
-                    if let strip {
-                        if strip.spins(atEnd: atEnd) { ProgressView().controlSize(.small) }
-                        TimelineView(.periodic(from: .now, by: 1)) { context in
-                            Text(strip.words(now: context.date)).monospacedDigit()
-                        }
-                        .font(.footnote)
-                        .foregroundStyle(Theme.inkSoft)
+            HStack(spacing: 0) {
+                if stops, let onStop {
+                    Button(action: onStop) {
+                        Image(systemName: "stop.fill")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(Theme.ground)
+                            .frame(width: 26, height: 26)
+                            .background(Theme.ink, in: Circle())
+                            .frame(width: Theme.touch, height: Theme.touch)
+                            .contentShape(Rectangle())
                     }
-                    if !atEnd {
-                        if strip != nil { Divider().frame(height: 18) }
-                        Image(systemName: "arrow.down").font(.body.weight(.semibold)).foregroundStyle(Theme.ink)
-                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Stop the turn")
                 }
-                .padding(.horizontal, strip == nil ? 0 : Theme.Space.l)
-                .frame(minWidth: Theme.touch, minHeight: Theme.touch)
-                .background(.regularMaterial, in: Capsule())
-                .overlay(Capsule().strokeBorder(Theme.hairline))
-                .shadow(color: .black.opacity(0.18), radius: 10, y: 3)
-                .contentShape(Capsule())
+                // The rest of the capsule takes the jump, not the arrow alone.
+                Button(action: onJump) {
+                    HStack(spacing: 10) {
+                        if let strip {
+                            if strip.spins(atEnd: atEnd), !stops { ProgressView().controlSize(.small) }
+                            TimelineView(.periodic(from: .now, by: 1)) { context in
+                                Text(strip.words(now: context.date)).monospacedDigit()
+                            }
+                            .font(.footnote)
+                            .foregroundStyle(Theme.inkSoft)
+                        }
+                        if !atEnd {
+                            if strip != nil { Divider().frame(height: 18) }
+                            Image(systemName: "arrow.down").font(.body.weight(.semibold)).foregroundStyle(Theme.ink)
+                        }
+                    }
+                    .padding(.leading, strip == nil ? 0 : stops ? Theme.Space.xs : Theme.Space.l)
+                    .padding(.trailing, strip == nil ? 0 : Theme.Space.l)
+                    .frame(minWidth: Theme.touch, minHeight: Theme.touch)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                // At the end there is nowhere to jump. Not `disabled`, which dims the words.
+                .allowsHitTesting(!atEnd)
+                .accessibilityRemoveTraits(atEnd ? .isButton : [])
+                .accessibilityLabel(atEnd ? "" : "Jump to latest")
             }
-            .buttonStyle(.plain)
-            // At the end there is nowhere to jump. Not `disabled`, which dims the words.
-            .allowsHitTesting(!atEnd)
-            .accessibilityRemoveTraits(atEnd ? .isButton : [])
-            .accessibilityLabel(atEnd ? "" : "Jump to latest")
+            .background(.regularMaterial, in: Capsule())
+            .overlay(Capsule().strokeBorder(Theme.hairline))
+            .shadow(color: .black.opacity(0.18), radius: 10, y: 3)
             .transition(.opacity.combined(with: .scale(scale: 0.9)))
         }
     }
@@ -441,6 +473,8 @@ struct ThreadChrome: ViewModifier {
     let branch: String?
     let machine: String?
     let menu: [HomeMenuItem]
+    /// Set while a turn runs and the Mac can hear a stop.
+    var onStop: (() -> Void)? = nil
     let onAct: (HomeAction) -> Void
 
     private var place: String? { branch ?? machine }
@@ -464,9 +498,14 @@ struct ThreadChrome: ViewModifier {
                     .accessibilityElement(children: .combine)
                     .accessibilityAddTraits(.isHeader)
                 }
-                if !menu.isEmpty {
+                if !menu.isEmpty || onStop != nil {
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu {
+                            if let onStop {
+                                Section {
+                                    Button(role: .destructive, action: onStop) { Label("Stop the turn", systemImage: "stop.circle") }
+                                }
+                            }
                             ForEach(Array(menu.enumerated()), id: \.offset) { _, item in item_(item) }
                         } label: {
                             Label("Thread actions", systemImage: "ellipsis")
@@ -503,8 +542,8 @@ struct ThreadChrome: ViewModifier {
 }
 
 extension View {
-    func threadChrome(title: String, branch: String?, machine: String?, menu: [HomeMenuItem], onAct: @escaping (HomeAction) -> Void) -> some View {
-        modifier(ThreadChrome(title: title, branch: branch, machine: machine, menu: menu, onAct: onAct))
+    func threadChrome(title: String, branch: String?, machine: String?, menu: [HomeMenuItem], onStop: (() -> Void)? = nil, onAct: @escaping (HomeAction) -> Void) -> some View {
+        modifier(ThreadChrome(title: title, branch: branch, machine: machine, menu: menu, onStop: onStop, onAct: onAct))
     }
 }
 
