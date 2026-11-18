@@ -316,5 +316,13 @@ including its holds, FYI behavior and loop limits. The ask expires after ten
 minutes. Its text persists in append-only `desk_ask_events`; a pending answer
 is not a delivery receipt.
 
+A group's message (T-622) is the same ask with `sender` `{kind: "group",
+id, title, organization_id}`, raised only of a core whose hello says
+`group_message`. The server asks it as the group's person, so `by` names no
+`session_id`; a thread sender's `by.session_id` is still its own id. The
+core delivers it through the same inbox, framed as a peer message from
+`the group "<title>"` with no `reply_to`, and records no thread as its
+sender. A `kind` the core does not know is `malformed`.
+
 A remote `queued` answer is recorded as `delivered` in the sender's local
 receipt: it confirms the holder queued the message, not that an agent read it.

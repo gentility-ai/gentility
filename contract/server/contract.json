@@ -8155,9 +8155,16 @@
                 ]
               },
               "sender": {
-                "description": "The server's voucher for the sending thread, which the holder may not hold.",
+                "description": "The server's voucher for the sender, which the holder may not hold: the sending thread, or, with `kind` `group`, a group of threads (T-622), raised only of a core whose hello says `group_message`. A group's message is asked by its person (`by` has no `session_id`) and has no address to reply to.",
                 "type": "object",
                 "properties": {
+                  "kind": {
+                    "description": "Absent for a thread, as before groups; `group` for a group, whose `id` is the group's and names no session.",
+                    "type": "string",
+                    "enum": [
+                      "group"
+                    ]
+                  },
                   "id": {
                     "type": "string"
                   },
