@@ -39,7 +39,8 @@
           "style": "round_robin",
           "title": "Older"
         }
-      ]
+      ],
+      "next_cursor": null
     }
   }
 }

@@ -658,7 +658,7 @@ about: NoticeAbout | null,
  * The thread refused for want of a grant over `session_id`, for a
  * window to offer that grant without reading it off the sentence.
  */
-grant_to?: string, } | { "type": "url_opened", session_id: string, url: string, } | { "type": "pty", session_id: string, stream: number, state: PtyState, } | { "type": "worktree_setup", path: string, outcome: SetupOutcome, } | { "type": "repository_clone", path: string, outcome: SetupOutcome, } | { "type": "settings_changed", compact_around_cache: boolean, } | { "type": "projects_changed" } | { "type": "grants_changed" } | { "type": "hosts_changed", environment_id: string, organization_id: string, } | { "type": "refusals_changed", environment_id: string, organization_id: string, } | { "type": "adapter_changed", harness: string, } | { "type": "harness_advertised", harness: string, options: Array<ConfigOption>,
+grant_to?: string, } | { "type": "url_opened", session_id: string, url: string, } | { "type": "pty", session_id: string, stream: number, state: PtyState, } | { "type": "worktree_setup", path: string, outcome: SetupOutcome, } | { "type": "repository_clone", path: string, outcome: SetupOutcome, } | { "type": "settings_changed", compact_around_cache: boolean, } | { "type": "projects_changed" } | { "type": "grants_changed" } | { "type": "hosts_changed", environment_id: string, organization_id: string, } | { "type": "refusals_changed", environment_id: string, organization_id: string, } | { "type": "groups_changed", environment_id: string, organization_id: string, group_id?: string, } | { "type": "adapter_changed", harness: string, } | { "type": "harness_advertised", harness: string, options: Array<ConfigOption>,
 /**
  * The driver the advertising agent was spoken to over, and the
  * package it came from: whose options these are. Absent from a core
@@ -838,6 +838,88 @@ export type GrantView = { actor: string, actor_title: string | null, capability:
  * grant is the person's `grant_set` at the same actor and scope.
  */
 by_session_id?: string | null, by_title?: string | null, };
+
+export type GroupLimits = { turns: number | null, max_posts: number | null, ends_at: string | null, turn_minutes: number, };
+
+/**
+ * One member of a group being convened, as `Request::GroupConvene`
+ * passes it: every field the server's, absent for its default.
+ */
+export type GroupMemberDraft = { label?: string, harness?: string, model?: string, effort?: string,
+/**
+ * The machine's id; absent starts it on this one.
+ */
+machine?: string, instructions?: string, };
+
+/**
+ * A member as a person reads it: its label in the group, and its state in
+ * the server's words (`answering`, `waiting`, `passed`, `missed its turn`,
+ * `not started`, `done`).
+ */
+export type GroupMemberView = { label: string, model: string | null, harness: string | null, session_id: string, state: string,
+/**
+ * Whether its thread ever started: false for a member whose start
+ * failed, which has no thread to open. Absent from a server that does
+ * not say it.
+ */
+started?: boolean, };
+
+export type GroupPassView = { label: string, at: string, };
+
+export type GroupPostView = { number: number, label: string,
+/**
+ * `answer`, or `summary` for the chair's closing summary.
+ */
+kind: string, round: number | null, posted_at: string, body: string, };
+
+/**
+ * One group of threads as the server lists it (T-622): `style` and
+ * `status` are the server's words, kept as said, so a word this build does
+ * not know still lists. Its members are their labels in the group, in order.
+ */
+export type GroupRow = { id: string, title: string, style: string, status: string, members: Array<string>,
+/**
+ * The members' answers, the chair's summary not counted.
+ */
+answer_count: number, convened_by: string | null, convened_at: string, };
+
+/**
+ * A member's start: `pending`, `opened` or `failed`, with its one-word
+ * reason when it failed.
+ */
+export type GroupStart = { key: string, label: string, session_id: string, status: string, reason: string | null, };
+
+/**
+ * One group whole, as the server reads it to a person.
+ */
+export type GroupView = { id: string, url: string, title: string, question: string, style: string, status: string, convened_by: string | null, limits: GroupLimits,
+/**
+ * The chair's label, or none.
+ */
+chair: string | null, members: Array<GroupMemberView>, posts: Array<GroupPostView>, passes: Array<GroupPassView>,
+/**
+ * Posts hidden from a member thread during an open round: none for a
+ * person.
+ */
+hidden: number,
+/**
+ * More posts after this page.
+ */
+more: boolean, ended_reason: string | null,
+/**
+ * Whether the chair posted a closing summary.
+ */
+summary: boolean, end_message_failed: string | null,
+/**
+ * Where it stands, in the server's words: "Round 1", "Turn 3 of 8",
+ * "12 of 20 posts", whose summary it waits for and why, or why it
+ * ended. Absent from a server that does not say it.
+ */
+progress?: string,
+/**
+ * When it was convened. Absent from a server that does not say it.
+ */
+convened_at?: string, };
 
 /**
  * One of the person's servers a session is handed, as the inspector shows
@@ -1640,7 +1722,14 @@ mid_turn: boolean,
 /**
  * Present only when this incoming message can grant a sender allowance.
  */
-can_allow_sender?: boolean, };
+can_allow_sender?: boolean,
+/**
+ * Incoming only: the group of threads it is from, by its title on one
+ * line, when a group sent it (T-622). Absent from every other sender: a
+ * thread names itself in `counterpart_session_id`, and a socket peer
+ * names neither.
+ */
+group?: string, };
 
 /**
  * A pairing on the wire, to the window that asked for it and to nobody else
@@ -2769,7 +2858,32 @@ session_id?: string | null, } | { "type": "presence_probe", input_ago_s: number,
  * The organisation whose repositories are asked for. Absent from a
  * window that predates the set, and then the login's first.
  */
-organization_id?: string | null, } | { "type": "project_pull_requests", environment_id: string, project_path: string, } | { "type": "questions_list", environment_id: string, organization_id: string, section?: string, cursor?: string, limit?: number, } | { "type": "question_answer", environment_id: string, organization_id: string, session_id: string, question_id: string, value: JsonValue, } | { "type": "question_dismiss", environment_id: string, organization_id: string, session_id: string, question_id: string, reason?: string, } | { "type": "machine_read" } | { "type": "status_read" } | { "type": "host_diagnostics_read", sample?: boolean, } | { "type": "refusals_read" } | { "type": "refusal_review", id: string, organization_slug: string, } | { "type": "refusal_allow", id: string, organization_slug: string, choice: RefusalChoice, } | { "type": "refusal_mute", id: string, muted: boolean, organization_id?: string | null, } | { "type": "mcp_servers_read", project?: string | null, } | { "type": "mcp_server_switch", organization_id: string, id: string, project?: string | null, on: boolean, } | { "type": "hosts_read" } | { "type": "machines_read", environment_id: string, organization_id: string, } | { "type": "bind_code", machine_id: string, organization_id?: string | null, } | { "type": "delegation_token", machine_id: string, client: string, organization_id?: string | null, } | { "type": "phone_claim_mint" } | { "type": "phone_claim_answer", claim_id: string, decision: PhoneDecision, match?: string | null, } | { "type": "phones_list" } | { "type": "phones_asking" } | { "type": "phone_remove", device_id: string, } | { "type": "machine_rename", label: string, } | { "type": "settings_read" } | { "type": "settings_set", compact_around_cache: boolean, } | { "type": "repository_clone", environment_id: string, full_name: string, into?: string | null, organization_id?: string | null, } | { "type": "repos_list" } | { "type": "repo_remove", identity: string, } | { "type": "repo_keep_warm", identity: string, on: boolean, } | { "type": "repo_warm_base", project: string, base: string, } | { "type": "project_settings_set", project_path: string, worktrees_dir: string, nested: boolean, setup_command: string | null, organization_id?: string | null, new_threads?: NewThreads | null, agent?: AgentDefault | null, } | { "type": "worktree_create", project_path: string,
+organization_id?: string | null, } | { "type": "project_pull_requests", environment_id: string, project_path: string, } | { "type": "questions_list", environment_id: string, organization_id: string, section?: string, cursor?: string, limit?: number, } | { "type": "question_answer", environment_id: string, organization_id: string, session_id: string, question_id: string, value: JsonValue, } | { "type": "question_dismiss", environment_id: string, organization_id: string, session_id: string, question_id: string, reason?: string, } | { "type": "groups_list", environment_id: string, organization_id: string, cursor?: string, } | { "type": "group_get", environment_id: string, organization_id: string, group_id: string, after?: number, } | { "type": "group_convene", environment_id: string, organization_id: string, op: string, title: string, question: string,
+/**
+ * `together`, `round_robin` or `freeform`.
+ */
+style: string, members: Array<GroupMemberDraft>,
+/**
+ * The checkout members that name none start in: a repository (a
+ * worktree each), or a `cwd` they share. One, never both.
+ */
+repository?: string, cwd?: string, mode?: string,
+/**
+ * One member's label, or absent for no chair.
+ */
+chair?: string,
+/**
+ * Round robin only.
+ */
+turns?: number,
+/**
+ * Freeform only.
+ */
+max_posts?: number,
+/**
+ * Freeform only.
+ */
+minutes?: number, turn_minutes?: number, } | { "type": "group_stop", environment_id: string, organization_id: string, group_id: string, } | { "type": "machine_read" } | { "type": "status_read" } | { "type": "host_diagnostics_read", sample?: boolean, } | { "type": "refusals_read" } | { "type": "refusal_review", id: string, organization_slug: string, } | { "type": "refusal_allow", id: string, organization_slug: string, choice: RefusalChoice, } | { "type": "refusal_mute", id: string, muted: boolean, organization_id?: string | null, } | { "type": "mcp_servers_read", project?: string | null, } | { "type": "mcp_server_switch", organization_id: string, id: string, project?: string | null, on: boolean, } | { "type": "hosts_read" } | { "type": "machines_read", environment_id: string, organization_id: string, } | { "type": "bind_code", machine_id: string, organization_id?: string | null, } | { "type": "delegation_token", machine_id: string, client: string, organization_id?: string | null, } | { "type": "phone_claim_mint" } | { "type": "phone_claim_answer", claim_id: string, decision: PhoneDecision, match?: string | null, } | { "type": "phones_list" } | { "type": "phones_asking" } | { "type": "phone_remove", device_id: string, } | { "type": "machine_rename", label: string, } | { "type": "settings_read" } | { "type": "settings_set", compact_around_cache: boolean, } | { "type": "repository_clone", environment_id: string, full_name: string, into?: string | null, organization_id?: string | null, } | { "type": "repos_list" } | { "type": "repo_remove", identity: string, } | { "type": "repo_keep_warm", identity: string, on: boolean, } | { "type": "repo_warm_base", project: string, base: string, } | { "type": "project_settings_set", project_path: string, worktrees_dir: string, nested: boolean, setup_command: string | null, organization_id?: string | null, new_threads?: NewThreads | null, agent?: AgentDefault | null, } | { "type": "worktree_create", project_path: string,
 /**
  * What the checkout is called, which is one path segment and decides
  * where it goes.
@@ -2964,7 +3078,7 @@ reset?: boolean, } | { "type": "inherited", items: Array<TranscriptItem>, earlie
  * Whether `unified` is the whole diff. A turn that rewrote a lockfile
  * is not worth sending through an IPC channel in full.
  */
-truncated: boolean, } | { "type": "changed_files", from: string, to: string, files: Array<ChangedFile>, } | { "type": "settled", settled: Settled, } | { "type": "worktrees", recent: Array<RecentWorktree>, } | { "type": "worktree", worktree: WorktreeFacts, } | { "type": "folders", listing: FolderListing, } | { "type": "worktree_base", name: string | null, local: boolean, remote: boolean, } | { "type": "worktree_layout", worktrees_dir: string, nested: boolean, setup_command: string | null, default_base: string | null, branches: Array<string>, remembered: boolean, new_threads?: NewThreads | null, } | { "type": "projects", projects: Array<ProjectView>, } | { "type": "grants", standing: Array<GrantView>, } | { "type": "repositories", repositories: Array<RepositoryView>, listed: boolean, } | { "type": "project_pull_requests", full_name: string | null, status: PullRequestsStatus, pull_requests: Array<ListedPullRequest>, more: boolean, } | { "type": "questions_list", data: Array<PersonQuestion>, next_cursor: string | null, has_more: boolean, open_count: number, closed_count: number, starts_at: string, now: string, open_session_ids: Array<string>, } | { "type": "question_result", status: QuestionStatus, question_id: string, ask_id?: string, answer?: JsonValue, } | { "type": "machine", id: string, label: string, clone_parent: string | null, } | { "type": "settings", compact_around_cache: boolean, } | { "type": "status", status: StatusView, } | { "type": "host_diagnostics", snapshot: HostDiagnostics, } | { "type": "host_upgrade", gate?: UpgradeGate | null, } | { "type": "refusal_review", review: RefusalReview, } | { "type": "refusal_allowed", result: RefusalAllowed, } | { "type": "refusals", refusals: RefusalsView, } | { "type": "mcp_servers", servers: McpServersView, } | { "type": "hosts", hosts: JsonValue,
+truncated: boolean, } | { "type": "changed_files", from: string, to: string, files: Array<ChangedFile>, } | { "type": "settled", settled: Settled, } | { "type": "worktrees", recent: Array<RecentWorktree>, } | { "type": "worktree", worktree: WorktreeFacts, } | { "type": "folders", listing: FolderListing, } | { "type": "worktree_base", name: string | null, local: boolean, remote: boolean, } | { "type": "worktree_layout", worktrees_dir: string, nested: boolean, setup_command: string | null, default_base: string | null, branches: Array<string>, remembered: boolean, new_threads?: NewThreads | null, } | { "type": "projects", projects: Array<ProjectView>, } | { "type": "grants", standing: Array<GrantView>, } | { "type": "repositories", repositories: Array<RepositoryView>, listed: boolean, } | { "type": "project_pull_requests", full_name: string | null, status: PullRequestsStatus, pull_requests: Array<ListedPullRequest>, more: boolean, } | { "type": "questions_list", data: Array<PersonQuestion>, next_cursor: string | null, has_more: boolean, open_count: number, closed_count: number, starts_at: string, now: string, open_session_ids: Array<string>, } | { "type": "question_result", status: QuestionStatus, question_id: string, ask_id?: string, answer?: JsonValue, } | { "type": "groups", groups: Array<GroupRow>, next_cursor?: string, unavailable?: string, } | { "type": "group", group: GroupView, } | { "type": "group_convened", group_id: string, url: string, status: string, members: Array<GroupStart>, } | { "type": "group_stopped", group_id: string, status: string, } | { "type": "machine", id: string, label: string, clone_parent: string | null, } | { "type": "settings", compact_around_cache: boolean, } | { "type": "status", status: StatusView, } | { "type": "host_diagnostics", snapshot: HostDiagnostics, } | { "type": "host_upgrade", gate?: UpgradeGate | null, } | { "type": "refusal_review", review: RefusalReview, } | { "type": "refusal_allowed", result: RefusalAllowed, } | { "type": "refusals", refusals: RefusalsView, } | { "type": "mcp_servers", servers: McpServersView, } | { "type": "hosts", hosts: JsonValue,
 /**
  * The organisations whose lobby could not be read, and why, in the
  * login's order. Empty when every one answered; absent from a core
@@ -4214,12 +4328,12 @@ export const PROTOCOL: Protocol = { major: 1, minor: 55 };
  * What this build's core can do that an older one would silently not:
  * `desk_core::api::FEATURES`. A core's hello says which it has.
  */
-export const FEATURES = ["brief_body", "thread_briefs", "thread_settle_finished", "questions_list", "hello_wants", "machine_confirmation", "shell_models", "frame_trace", "transcript_paging", "hello_host", "start_later", "thread_traffic", "index_follow", "host_upgrade", "steer_injects", "model_catalog", "project_agent_defaults", "inherited_turns", "upgrade_wait", "phone_pairing", "hosts_everywhere", "transcript_brief", "transcript_seq", "transcript_copy", "session_get", "lease_routing", "start_on_host", "titled_open", "named_models", "host_diagnostics", "rehome", "harness_capabilities", "assign_elsewhere", "harness_driver_selection", "native_codex_selection", "unknown_words", "upgrade_following", "repository_store", "repo_warm_base", "fork_review", "transcript_find", "session_star", "machines_read", "session_reopen", "thread_delegate"] as const;
+export const FEATURES = ["brief_body", "thread_briefs", "thread_settle_finished", "questions_list", "hello_wants", "machine_confirmation", "shell_models", "frame_trace", "transcript_paging", "hello_host", "start_later", "thread_traffic", "index_follow", "host_upgrade", "steer_injects", "model_catalog", "project_agent_defaults", "inherited_turns", "upgrade_wait", "phone_pairing", "hosts_everywhere", "transcript_brief", "transcript_seq", "transcript_copy", "session_get", "lease_routing", "start_on_host", "titled_open", "named_models", "host_diagnostics", "rehome", "harness_capabilities", "assign_elsewhere", "harness_driver_selection", "native_codex_selection", "unknown_words", "upgrade_following", "repository_store", "repo_warm_base", "fork_review", "transcript_find", "session_star", "machines_read", "session_reopen", "thread_delegate", "groups"] as const;
 
 export type Feature = (typeof FEATURES)[number];
 
 /** Contract vocabulary; not a core's advertisement. */
-export const FEATURE_VOCABULARY = ["brief_body", "thread_briefs", "thread_settle_finished", "questions_list", "hello_wants", "machine_confirmation", "shell_models", "frame_trace", "transcript_paging", "hello_host", "start_later", "thread_traffic", "index_follow", "host_upgrade", "steer_injects", "model_catalog", "project_agent_defaults", "inherited_turns", "upgrade_wait", "phone_pairing", "hosts_everywhere", "transcript_brief", "transcript_seq", "transcript_copy", "session_get", "lease_routing", "start_on_host", "titled_open", "named_models", "host_diagnostics", "rehome", "harness_capabilities", "assign_elsewhere", "harness_driver_selection", "native_codex_selection", "unknown_words", "upgrade_following", "repository_store", "repo_warm_base", "fork_review", "transcript_find", "session_star", "machines_read", "session_reopen", "thread_delegate", "families", "family_thread", "family_checkout", "family_tools", "family_minders", "family_terminals", "family_files", "family_bound_host", "family_network", "family_home"] as const;
+export const FEATURE_VOCABULARY = ["brief_body", "thread_briefs", "thread_settle_finished", "questions_list", "hello_wants", "machine_confirmation", "shell_models", "frame_trace", "transcript_paging", "hello_host", "start_later", "thread_traffic", "index_follow", "host_upgrade", "steer_injects", "model_catalog", "project_agent_defaults", "inherited_turns", "upgrade_wait", "phone_pairing", "hosts_everywhere", "transcript_brief", "transcript_seq", "transcript_copy", "session_get", "lease_routing", "start_on_host", "titled_open", "named_models", "host_diagnostics", "rehome", "harness_capabilities", "assign_elsewhere", "harness_driver_selection", "native_codex_selection", "unknown_words", "upgrade_following", "repository_store", "repo_warm_base", "fork_review", "transcript_find", "session_star", "machines_read", "session_reopen", "thread_delegate", "groups", "families", "family_thread", "family_checkout", "family_tools", "family_minders", "family_terminals", "family_files", "family_bound_host", "family_network", "family_home"] as const;
 
 export type FeatureWord = (typeof FEATURE_VOCABULARY)[number];
 
@@ -4260,6 +4374,10 @@ export const ANSWERS = {
   folders_list: ["folders"],
   grant_set: ["ok"],
   grants_read: ["grants"],
+  group_convene: ["group_convened"],
+  group_get: ["group"],
+  group_stop: ["group_stopped"],
+  groups_list: ["groups"],
   harness_config: ["harness_config"],
   harness_refresh: ["harness_config"],
   hello: ["hello"],
@@ -4465,6 +4583,10 @@ export const REQUEST_CLASS: Record<Request["type"], "inbox" | "run" | "host_loca
   folders_list: "host_local",
   grant_set: "inbox",
   grants_read: "home",
+  group_convene: "home",
+  group_get: "home",
+  group_stop: "home",
+  groups_list: "home",
   harness_config: "host_local",
   harness_refresh: "host_local",
   hello: "host_local",

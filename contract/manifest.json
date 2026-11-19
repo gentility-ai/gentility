@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "06e9d52c1720fca412803e3b07c4b228ff113e303f4c7ab94665319d832bbfb7"
+      "sha256": "10159baf262b43a92d95db59dae1f72c645127301661e0a3ce4e38b295a97c58"
     },
     "config_change/README.md": {
       "executable": false,
@@ -196,7 +196,7 @@
     "door/hello.json": {
       "executable": false,
       "owner": "core",
-      "sha256": "edd0582d8d903bf84909968e171d82c9827e82a9420eaea66cd1f12d96ead0be"
+      "sha256": "b8470d35721c7ae6e2cddbb4a6ac1ab506c81a84f9f691ca9ba1d221c9dc5a16"
     },
     "door/prompt.json": {
       "executable": false,
@@ -1296,7 +1296,7 @@
     "released.json": {
       "executable": false,
       "owner": "core",
-      "sha256": "177bddfe0d76cb2d73a25b8cbdf2c569d71b6f4f4b056dbef10b5a41e671e658"
+      "sha256": "55b0f0efef001c6e56e9619629750c4bf0849ec2376c5b4c89b83660a8af846f"
     },
     "repository_forms.json": {
       "executable": false,
@@ -1316,7 +1316,7 @@
     "server/contract.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "9d687e4483ca50adb890b62d96d7a08c6fabaf6123d214456af513a510e01b9c"
+      "sha256": "8437c3a5614f3c2cf2faca7ad44efad39ba07487c8d3581b269fe73d491146d9"
     },
     "server/desk/answer.json": {
       "executable": false,
@@ -1666,7 +1666,7 @@
     "server/rpc/groups_get.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "3cfdb6636dc5d47d524eb8a34c13330c79efc270dd5eaeb620dbd720019d7622"
+      "sha256": "dd11a89be9b9708239e517c98b3225b54a15cec8ad714a54d12e0f5516f33850"
     },
     "server/rpc/groups_get_not_found.json": {
       "executable": false,
@@ -1676,12 +1676,17 @@
     "server/rpc/groups_list.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "f8bea0ba2a18a8610697484dfbcc0ab244962bb43a2c23c9bee70ccb404d4609"
+      "sha256": "a8e52ce00735747518bf0b7875c42b25b7ecb1ea5164b7722d7150d4704c030a"
     },
     "server/rpc/groups_list_busy.json": {
       "executable": false,
       "owner": "server",
       "sha256": "ab55c3858d6af622603f91ba0d3061a7c9ecb9538a62b2ae54c45f8ba3e49297"
+    },
+    "server/rpc/groups_list_malformed.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "5e28c30242a748a5cd06ab9b20afce7de3dd22d440c6d7706fca470c1a801f7e"
     },
     "server/rpc/groups_list_task_died.json": {
       "executable": false,
@@ -2017,6 +2022,11 @@
       "executable": false,
       "owner": "server",
       "sha256": "c3623d7c0d7c3e56516b94c8c682c9a91b7ac51a42fcb22d9c5306a913c6c6da"
+    },
+    "server/rpc/watch_groups_host.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "8e84a70cec5e2daa2bed01f4c2ff5bbad7e7cf0e1debea489db8300818e20cdd"
     },
     "server/rpc/watch_machine.json": {
       "executable": false,
@@ -2896,13 +2906,13 @@
     "window/protocol.gen.ts": {
       "executable": false,
       "owner": "core",
-      "sha256": "dd54b067e1366970ad40c58bf2769a451e0ee299a1842f95f67a158fda445c1f"
+      "sha256": "b1b411ad46fccade1391b062239cd25563b571468220134b0faae22ca42855be"
     }
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 6,
-  "source_commit": "ba09032097e2b84a145d6c7953803db1337ab528",
+  "number": 7,
+  "source_commit": "1c97984d22d323427d0d3131312e7ffdaa769c70",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

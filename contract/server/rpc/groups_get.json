@@ -14,6 +14,7 @@
     "result": {
       "group": {
         "chair": null,
+        "convened_at": "2026-01-01T00:00:00.000000Z",
         "convened_by": "Ada",
         "end_message_failed": null,
         "ended_reason": null,
@@ -31,6 +32,7 @@
             "label": "A",
             "model": null,
             "session_id": "00000000-0000-7000-8000-000000000003",
+            "started": true,
             "state": "answering"
           },
           {
@@ -38,12 +40,14 @@
             "label": "B",
             "model": null,
             "session_id": "00000000-0000-7000-8000-000000000004",
+            "started": true,
             "state": "answering"
           }
         ],
         "more": false,
         "passes": [],
         "posts": [],
+        "progress": "Round 1",
         "question": "Which queue should the build use?",
         "status": "running",
         "style": "together",

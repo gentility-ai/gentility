@@ -1,0 +1,23 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "groups.list",
+    "params": {
+      "limit": 51,
+      "org": "00000000-0000-7000-8000-000000000001"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32602,
+      "data": {
+        "message": "A page contains between 1 and 50 groups.",
+        "reason": "malformed_payload"
+      },
+      "message": "A page contains between 1 and 50 groups."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

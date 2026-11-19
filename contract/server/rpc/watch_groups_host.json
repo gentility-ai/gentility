@@ -1,0 +1,25 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "rpc.watch",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001",
+      "streams": [
+        "groups"
+      ]
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32001,
+      "data": {
+        "message": "Only a person's Desk watches groups.",
+        "reason": "forbidden"
+      },
+      "message": "Only a person's Desk watches groups."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

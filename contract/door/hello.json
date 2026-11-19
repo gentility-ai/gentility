@@ -55,7 +55,8 @@
       "session_star",
       "machines_read",
       "session_reopen",
-      "thread_delegate"
+      "thread_delegate",
+      "groups"
     ],
     "host": {
       "account": "recorded",

@@ -568,7 +568,7 @@
     },
     {
       "name": "groups.get",
-      "description": "One group of the organization as a person reads it (`Gentility.AgentGroups.read/2`): its question, members and their state, and up to 50 posts after the number `after`. Anyone in the organization reads. Served only on `/desk/rpc`, under `rpc_groups`, with no Phoenix handler: a core on a link without it refuses the call itself, at once.",
+      "description": "One group of the organization as a person reads it (`Gentility.AgentGroups.read/3`): its question, members and their state, up to 50 posts after the number `after`, and its header's `progress` in words and `convened_at`. Anyone in the organization reads. Served only on `/desk/rpc`, under `rpc_groups`, with no Phoenix handler: a core on a link without it refuses the call itself, at once.",
       "paramStructure": "by-name",
       "params": [
         {
@@ -614,9 +614,33 @@
     },
     {
       "name": "groups.list",
-      "description": "The organization's groups, newest first (`Gentility.AgentGroups.list/1`). Anyone in the organization reads. Served only on `/desk/rpc`, under `rpc_groups`, with no Phoenix handler: a core on a link without it refuses the call itself, at once.",
+      "description": "A page of the organization's groups, newest first by when each was convened (`Gentility.AgentGroups.list/2`). `limit` is 1 to 50, 50 when absent; `cursor` is a page's `next_cursor`, opaque. Any other key, a limit out of bounds or a cursor the server did not give is `malformed_payload`, with its sentence. Anyone in the organization reads. Served only on `/desk/rpc`, under `rpc_groups`, with no Phoenix handler: a core on a link without it refuses the call itself, at once.",
       "paramStructure": "by-name",
-      "params": [],
+      "params": [
+        {
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        {
+          "name": "cursor",
+          "required": false,
+          "schema": {
+            "description": "A previous page's `next_cursor`.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      ],
       "result": {
         "name": "groups",
         "schema": {
@@ -627,10 +651,18 @@
               "items": {
                 "$ref": "#/components/schemas/GroupRow"
               }
+            },
+            "next_cursor": {
+              "description": "The next page's cursor; null on the last page.",
+              "type": [
+                "string",
+                "null"
+              ]
             }
           },
           "required": [
-            "groups"
+            "groups",
+            "next_cursor"
           ],
           "additionalProperties": false
         }
@@ -4805,7 +4837,7 @@
     },
     {
       "name": "rpc.watch",
-      "description": "Hear `org`'s streams as notifications carrying `org`, answering the cursor of each stream that has one, so a core pulls from there. `loopers` is `loopers.changed`, with its cursor. `machine` is what joining `desk:<org>:<machine>` was: the connection holds its machine live until it unwatches its last organization or closes, `machine.heartbeat` re-arms its deadline, and `machine.ask` is pushed for every ask still open, then for each one raised; it has no cursor, and a connection whose hello named no machine is refused `forbidden`. Joining a topic did this on the Phoenix framing. The sessions stream emits sessions.changed; its authoritative cursor and generation come from sessions.feed, so this watch adds no cursor. Watch first, then call sessions.feed from the stored cursor and page until more is false; changes before the watch are caught by the feed, and changes after it also emit sessions.changed. The groups stream emits groups.changed, with the group's id, and has no cursor.",
+      "description": "Hear `org`'s streams as notifications carrying `org`, answering the cursor of each stream that has one, so a core pulls from there. `loopers` is `loopers.changed`, with its cursor. `machine` is what joining `desk:<org>:<machine>` was: the connection holds its machine live until it unwatches its last organization or closes, `machine.heartbeat` re-arms its deadline, and `machine.ask` is pushed for every ask still open, then for each one raised; it has no cursor, and a connection whose hello named no machine is refused `forbidden`. Joining a topic did this on the Phoenix framing. The sessions stream emits sessions.changed; its authoritative cursor and generation come from sessions.feed, so this watch adds no cursor. Watch first, then call sessions.feed from the stored cursor and page until more is false; changes before the watch are caught by the feed, and changes after it also emit sessions.changed. The groups stream emits groups.changed, with the group's id, and has no cursor; only a person's Desk watches it, and a bound host, which is no person, is refused `forbidden`.",
       "paramStructure": "by-name",
       "params": [
         {
@@ -9133,7 +9165,7 @@
         "additionalProperties": false
       },
       "Group": {
-        "description": "A group as a person reads it (`Gentility.AgentGroups.read/2`): its question, its members and their state, and a page of its posts.",
+        "description": "A group as a person reads it (`Gentility.AgentGroups.read/3` with `header: true`): its question, its members and their state, a page of its posts, and the Desk window header's progress in words and convened time.",
         "type": "object",
         "properties": {
           "id": {
@@ -9240,8 +9272,12 @@
                   "type": "string"
                 },
                 "state": {
-                  "description": "Its state in words, lower case: `answering`, `waiting`, `passed`, `missed its turn`, `not started`. Open: words may be added.",
+                  "description": "Its state in words, lower case: `answering`, `waiting`, `passed`, `missed its turn`, `not started`, `done`. Open: words may be added.",
                   "type": "string"
+                },
+                "started": {
+                  "description": "Whether the member's thread ever started: false for one whose start failed, which has no thread to open.",
+                  "type": "boolean"
                 }
               },
               "required": [
@@ -9249,7 +9285,8 @@
                 "model",
                 "harness",
                 "session_id",
-                "state"
+                "state",
+                "started"
               ],
               "additionalProperties": false
             }
@@ -9342,6 +9379,14 @@
               "string",
               "null"
             ]
+          },
+          "progress": {
+            "description": "The group's progress in words, for the Desk window's header, as the web's page words it: `Starting`, `Round 1`, `Turn 3 of 8`, `12 of 20 posts`, `Summarising`, `Waiting for C's summary because …` or `Ended because …`. Shown word for word.",
+            "type": "string"
+          },
+          "convened_at": {
+            "description": "When the group was convened, ISO 8601, for the Desk window's header.",
+            "type": "string"
           }
         },
         "required": [
@@ -9361,12 +9406,14 @@
           "more",
           "ended_reason",
           "summary",
-          "end_message_failed"
+          "end_message_failed",
+          "progress",
+          "convened_at"
         ],
         "additionalProperties": false
       },
       "GroupRow": {
-        "description": "One group as `groups.list` lists it (`Gentility.AgentGroups.list/1`), from the projections.",
+        "description": "One group as `groups.list` lists it (`Gentility.AgentGroups.list/2`), from the projections.",
         "type": "object",
         "properties": {
           "id": {
