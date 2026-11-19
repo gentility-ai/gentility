@@ -4907,7 +4907,7 @@
     },
     {
       "name": "session.append",
-      "description": "One session's facts, a batch at a time, in client order (`Gentility.Sessions.append/4`), from the machine that holds it. `client_seq` is dense per session: a fact at or below the highest held is a replay, taken as nothing new only if it is the fact held there (`replay_mismatch` otherwise), and the first new one must be exactly one past it (`sequence_gap` names the one expected). The answer is the highest `client_seq` the server now holds; a batch is acked up to there and no further. A core that holds the lease says its `epoch`; one that does not is told `stale_epoch`, or `not_a_holder` when its hello named no lease support. A bound host's batch is fenced by its binding's generation first (`superseded`). At most fifty facts a batch.",
+      "description": "One session's facts, a batch at a time, in client order (`Gentility.Sessions.append/4`), from the machine that holds it. `client_seq` is dense per session: a fact at or below the highest held is a replay, taken as nothing new only if it is the fact held there (`replay_mismatch` otherwise), and the first new one must be exactly one past it (`sequence_gap` names the one expected). The answer is the highest `client_seq` the server now holds; a batch is acked up to there and no further. A core that holds the lease says its `epoch`; one that does not is told `stale_epoch`, or `not_a_holder` when its hello named no lease support. A bound host's batch is fenced by its binding's generation first (`superseded`). A transcript item the server's copy cannot place refuses the batch: a message whose role changed (`invalid_role`), or an item naming a message the copy does not hold (`unknown_message`). A later server may place it, so the core keeps the queue and waits. At most fifty facts a batch.",
       "x-phoenix": {
         "channel": "work_session",
         "event": "append"
@@ -5013,6 +5013,7 @@
         "event_emit_failed",
         "forbidden",
         "invalid",
+        "invalid_role",
         "malformed_batch",
         "not_a_holder",
         "not_found",
@@ -5024,7 +5025,8 @@
         "stale_epoch",
         "superseded",
         "unavailable",
-        "unknown_actor"
+        "unknown_actor",
+        "unknown_message"
       ]
     },
     {

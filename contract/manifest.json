@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "10159baf262b43a92d95db59dae1f72c645127301661e0a3ce4e38b295a97c58"
+      "sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8"
     },
     "config_change/README.md": {
       "executable": false,
@@ -1316,7 +1316,7 @@
     "server/contract.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "8437c3a5614f3c2cf2faca7ad44efad39ba07487c8d3581b269fe73d491146d9"
+      "sha256": "4138a30e073c5bc36114231bc2d249ee1757d24e6b41e027e9558ef05470d238"
     },
     "server/desk/answer.json": {
       "executable": false,
@@ -1606,7 +1606,7 @@
     "server/refusals.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "13d31eb253f9b5c25527208f393aec929b0b4c404a2e53b0c674304dd124ccf5"
+      "sha256": "a1e23d582da328bc2c865b0bdb61ae97841074b3a2ea2cc98f3a91668e261545"
     },
     "server/refused.jsonl": {
       "executable": false,
@@ -2716,7 +2716,7 @@
     "transcript/manifest.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "b1a315e5843a2f20a2f0838c906d9cc1f7bf4eb1f97cb904fbe1baced63eecc2"
+      "sha256": "09a31ff4c5c1946b1670cd119c7f8a120cacaf68de78f91917e8b1debd489674"
     },
     "transcript/message_replaced/facts.jsonl": {
       "executable": false,
@@ -2833,6 +2833,21 @@
       "owner": "core",
       "sha256": "5285003b6514d00b3fd5b9c30acb4e759550d8f7cc2e5a3e3354793067de95d4"
     },
+    "transcript/tool_call_heard_under_later_message/facts.jsonl": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "bb9ee10d164b944313fd078c6f475ecbe5655d31885eb1c263b168e328a308e2"
+    },
+    "transcript/tool_call_heard_under_later_message/items.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "49fc2cfd4a2fdbba32b22e470f877db334cc2361d8dc06bf33aeae3ea4b176a2"
+    },
+    "transcript/tool_call_heard_under_later_message/turns.json": {
+      "executable": false,
+      "owner": "core",
+      "sha256": "3e45c1de690b60456b8310dfccd3c7380a0bceb8597830edf394edefb7994b6a"
+    },
     "transcript/tool_call_pending_then_executed/facts.jsonl": {
       "executable": false,
       "owner": "server",
@@ -2911,8 +2926,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 7,
-  "source_commit": "1c97984d22d323427d0d3131312e7ffdaa769c70",
+  "number": 8,
+  "source_commit": "1fd9d5adf55f17edcca702b3139a3f951874400f",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

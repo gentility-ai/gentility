@@ -1,0 +1,57 @@
+[
+  {
+    "blocks": [
+      {
+        "id": "0199f000-0000-7000-8000-0000000000b2",
+        "text": "Delegating two reads."
+      }
+    ],
+    "calls": [
+      {
+        "children": [
+          {
+            "text": {
+              "id": "0199f000-0000-7000-8000-0000000000e1",
+              "text": "Reading it."
+            }
+          },
+          {
+            "call": {
+              "children": [],
+              "id": "call-e2",
+              "kind": "read",
+              "name": "Read",
+              "parent_call_id": "call-d1",
+              "status": "executed",
+              "title": "Read test/flaky_test.exs"
+            }
+          },
+          {
+            "text": {
+              "id": "0199f000-0000-7000-8000-0000000000e3",
+              "text": "The read ran on."
+            }
+          }
+        ],
+        "id": "call-d1",
+        "kind": "agent",
+        "name": "Task",
+        "parent_call_id": null,
+        "status": "cancelled",
+        "title": "Read the test"
+      },
+      {
+        "children": [],
+        "id": "call-d2",
+        "kind": "agent",
+        "name": "Task",
+        "parent_call_id": null,
+        "status": "cancelled",
+        "title": "Read the helper"
+      }
+    ],
+    "number": 1,
+    "thoughts": [],
+    "user": "fix the flaky test"
+  }
+]

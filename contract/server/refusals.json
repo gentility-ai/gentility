@@ -207,6 +207,7 @@
       "event_emit_failed",
       "forbidden",
       "invalid",
+      "invalid_role",
       "malformed_batch",
       "not_a_holder",
       "not_found",
@@ -218,7 +219,8 @@
       "stale_epoch",
       "superseded",
       "unavailable",
-      "unknown_actor"
+      "unknown_actor",
+      "unknown_message"
     ],
     "brief": [
       "forbidden",
