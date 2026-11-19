@@ -1945,6 +1945,20 @@ export type Operation = "check" | "update" | "unknown";
 export type OrganizationView = { id: string, slug: string, name: string, };
 
 /**
+ * A version skew the session's stream stands in, as
+ * `SessionView::outbox_skew` shows it.
+ */
+export type OutboxSkewView = {
+/**
+ * The server's word for the refusal.
+ */
+reason: string,
+/**
+ * When this machine recorded the skew: RFC 3339, its own clock.
+ */
+since: string, };
+
+/**
  * One pairing, as a list shows it. Never the token.
  *
  * The moments are RFC 3339 here and seconds in the row: this is the wire, and
@@ -3790,6 +3804,13 @@ refused_prompt?: RefusedPrompt,
  * Absent on the wire otherwise.
  */
 requested_prompt?: RequestedPrompt,
+/**
+ * The server refuses this session's stream as version skew, and its
+ * queued work waits for this app or the server to be upgraded
+ * (`crate::ledger::Row::outbox_skew`). Absent on the wire otherwise,
+ * and from a core before the field.
+ */
+outbox_skew?: OutboxSkewView,
 /**
  * Set on a row that is a looper run and not a session: who ran it, which
  * run, how it stands and what it asked. Everything the sidebar draws is
