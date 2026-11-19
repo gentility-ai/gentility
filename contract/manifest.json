@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "f0b5c2c2211c8d67ed15e75e656c7862d086e9245420892a7de62cd9ec582a06"
+      "sha256": "06e9d52c1720fca412803e3b07c4b228ff113e303f4c7ab94665319d832bbfb7"
     },
     "config_change/README.md": {
       "executable": false,
@@ -1306,7 +1306,7 @@
     "server/README.md": {
       "executable": false,
       "owner": "server",
-      "sha256": "fba9571a4e584c0e12ecc7520586acedc35c2ba8acef58a7700dd2e348096696"
+      "sha256": "753f00cae80d05a6cd69f7351516417e20862688318960de6581d50cc0625061"
     },
     "server/asks.json": {
       "executable": false,
@@ -1316,7 +1316,7 @@
     "server/contract.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "f2924ccfdd52d0aa3cc18ee998d6e6dddd0ce54e2ae885178f7a3ee02be409d9"
+      "sha256": "9d687e4483ca50adb890b62d96d7a08c6fabaf6123d214456af513a510e01b9c"
     },
     "server/desk/answer.json": {
       "executable": false,
@@ -1536,7 +1536,7 @@
     "server/looper_threads/join.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "d40dbe13270023dc7b643b8e012dab5e6119885749fd34ea050b905ad1b349a4"
+      "sha256": "cedde3cfd581747a1f12c392538e6a65737370b8985f9eea43f1b2835fb1c887"
     },
     "server/looper_threads/list.json": {
       "executable": false,
@@ -1606,7 +1606,7 @@
     "server/refusals.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "e8cbe0b41b27d3a14c07b3c0af34545a8d3b2c097121954c6a28654430429f55"
+      "sha256": "13d31eb253f9b5c25527208f393aec929b0b4c404a2e53b0c674304dd124ccf5"
     },
     "server/refused.jsonl": {
       "executable": false,
@@ -1643,15 +1643,80 @@
       "owner": "server",
       "sha256": "2d4b53e2d9745f495d0689cabd214eda49f284c1f5c9640ec91e2f417ce28ca9"
     },
+    "server/rpc/groups_changed.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "ae5339130875b5738fe6cec9850ecc8a0f7094c799b37c69d51e7fd1b47a7d47"
+    },
+    "server/rpc/groups_convene.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "0c6225537a58be7dc5831dc16b46473ae76721f5fd18532e376c096a2475c722"
+    },
+    "server/rpc/groups_convene_invalid.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "af829eb3555d9ef3d173cb60365ebce68021d6b6fb70d229c8689f42d442eace"
+    },
+    "server/rpc/groups_convene_task_died.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "5e3be6602628fb9a2af0a21902b907f2c10a5c801aa1a0fc34e9eeb00ae0247a"
+    },
+    "server/rpc/groups_get.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "3cfdb6636dc5d47d524eb8a34c13330c79efc270dd5eaeb620dbd720019d7622"
+    },
+    "server/rpc/groups_get_not_found.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "2c529e2f72e72ae05475ed1876537a41f2021bc26c16fad316878b3ae25471c5"
+    },
+    "server/rpc/groups_list.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "f8bea0ba2a18a8610697484dfbcc0ab244962bb43a2c23c9bee70ccb404d4609"
+    },
+    "server/rpc/groups_list_busy.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "ab55c3858d6af622603f91ba0d3061a7c9ecb9538a62b2ae54c45f8ba3e49297"
+    },
+    "server/rpc/groups_list_task_died.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "1ef653a9f796b0fabbc5f382fd8973704b7ee01f6062dd5921e022bf0f7027f0"
+    },
+    "server/rpc/groups_stop.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "b0df186971fd04d54f9aa6a0cc927e8e87a5639f63aec58dd321380b7f5a48ed"
+    },
+    "server/rpc/groups_stop_ended.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "b1ee54db7ddd03d8c06742c4f213fb01221fbaa7df3a220fb432d504a87f31ca"
+    },
+    "server/rpc/groups_stop_not_convener.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "68e013a30166c1d72587efe368da497b7dbb3c5464c6aa4b68fda32f0c766ed3"
+    },
+    "server/rpc/groups_stop_task_died.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "6caab6b1ca1d1337e7bf4d94052ec47ad3f8b418ce8f0a239efd1a888495c001"
+    },
     "server/rpc/hello.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "4b7fa64c5e52a91b86e6ebb3c02915073c79937343ce07d03177f745ba22f9f9"
+      "sha256": "a3d801ff21c8f492f8caed9f748b0b8a3c699593d03ded8ceea3a9f5a5f9fe13"
     },
     "server/rpc/hello_host.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "69bac64fb2a02a2b4ef8c98e5581691e6836efc20ca5abcd79ff028b23662c14"
+      "sha256": "95c9865b46e7f043438423aa25ef9dcb9ee682e3f6f95ef3a45dbb6235f5f8af"
     },
     "server/rpc/hello_required.json": {
       "executable": false,
@@ -1947,6 +2012,11 @@
       "executable": false,
       "owner": "server",
       "sha256": "d0d7e63b30959649e37b76dd50a73a557298b1e4c669a1ebfe40ea368badcef8"
+    },
+    "server/rpc/watch_groups.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "c3623d7c0d7c3e56516b94c8c682c9a91b7ac51a42fcb22d9c5306a913c6c6da"
     },
     "server/rpc/watch_machine.json": {
       "executable": false,
@@ -2301,7 +2371,7 @@
     "server/work_sessions/join.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "2c926e89042e742bbbe212576c8581e57cb517818fed1d2edfd91b84c3de7f8b"
+      "sha256": "4cf7270de0068ec4af3224e8950573bbc074b3c93b8502cc02bae8a4fa6448a3"
     },
     "server/work_sessions/lease_take.json": {
       "executable": false,
@@ -2831,8 +2901,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 5,
-  "source_commit": "ce5fec5423b45779c2975ff2220d84421f4fcee2",
+  "number": 6,
+  "source_commit": "ad5d408b16c21dc7331efa70324a71f3e6ee7cab",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

@@ -1,0 +1,22 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "groups.stop",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32603,
+      "data": {
+        "message": "The group may have stopped. Check it before stopping it again.",
+        "reason": "outcome_unknown"
+      },
+      "message": "The group may have stopped. Check it before stopping it again."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "groups.get",
+    "params": {
+      "group_id": "00000000-0000-7000-8000-000000000001",
+      "org": "00000000-0000-7000-8000-000000000002"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32001,
+      "data": {
+        "message": "No group has that id in this organization. Check the id you were given.",
+        "reason": "not_found"
+      },
+      "message": "No group has that id in this organization. Check the id you were given."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

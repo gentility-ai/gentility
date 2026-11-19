@@ -1,0 +1,56 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "groups.get",
+    "params": {
+      "group_id": "00000000-0000-7000-8000-000000000001",
+      "org": "00000000-0000-7000-8000-000000000002"
+    }
+  },
+  "response": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+      "group": {
+        "chair": null,
+        "convened_by": "Ada",
+        "end_message_failed": null,
+        "ended_reason": null,
+        "hidden": 0,
+        "id": "00000000-0000-7000-8000-000000000001",
+        "limits": {
+          "ends_at": null,
+          "max_posts": null,
+          "turn_minutes": 15,
+          "turns": null
+        },
+        "members": [
+          {
+            "harness": "fake",
+            "label": "A",
+            "model": null,
+            "session_id": "00000000-0000-7000-8000-000000000003",
+            "state": "answering"
+          },
+          {
+            "harness": "fake",
+            "label": "B",
+            "model": null,
+            "session_id": "00000000-0000-7000-8000-000000000004",
+            "state": "answering"
+          }
+        ],
+        "more": false,
+        "passes": [],
+        "posts": [],
+        "question": "Which queue should the build use?",
+        "status": "running",
+        "style": "together",
+        "summary": false,
+        "title": "Which queue?",
+        "url": "https://gentility.test/<slug>/groups/00000000-0000-7000-8000-000000000001"
+      }
+    }
+  }
+}

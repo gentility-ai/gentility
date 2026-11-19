@@ -1,0 +1,33 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "groups.convene",
+    "params": {
+      "members": [
+        {
+          "label": "The \"fast\" one"
+        },
+        {}
+      ],
+      "op": "screen-op-1",
+      "org": "00000000-0000-7000-8000-000000000001",
+      "question": "Which queue should the build use?",
+      "repository": "acme/app",
+      "style": "together",
+      "title": "Which queue?"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32001,
+      "data": {
+        "message": "A member's label can't contain quotation marks or line breaks.",
+        "reason": "invalid"
+      },
+      "message": "A member's label can't contain quotation marks or line breaks."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

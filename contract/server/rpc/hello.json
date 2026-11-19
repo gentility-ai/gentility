@@ -55,6 +55,7 @@
         "rpc_pulls",
         "rpc_projects",
         "rpc_questions",
+        "rpc_groups",
         "rpc_models",
         "rpc_mcp",
         "rpc_phone",

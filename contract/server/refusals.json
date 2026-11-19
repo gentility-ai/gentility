@@ -163,6 +163,30 @@
       "malformed_payload",
       "unknown_event"
     ],
+    "groups.convene": [
+      "forbidden",
+      "invalid",
+      "outcome_unknown",
+      "unavailable"
+    ],
+    "groups.get": [
+      "forbidden",
+      "invalid",
+      "not_found",
+      "unavailable"
+    ],
+    "groups.list": [
+      "forbidden",
+      "unavailable"
+    ],
+    "groups.stop": [
+      "ended",
+      "forbidden",
+      "not_convener",
+      "not_found",
+      "outcome_unknown",
+      "unavailable"
+    ],
     "hello": [
       "malformed_payload",
       "superseded"
