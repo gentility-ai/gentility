@@ -1,0 +1,48 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "groups.convene",
+    "params": {
+      "members": [
+        {
+          "harness": "fake"
+        },
+        {
+          "harness": "fake"
+        }
+      ],
+      "op": "screen-op-1",
+      "org": "00000000-0000-7000-8000-000000000001",
+      "question": "Which queue should the build use?",
+      "repository": "acme/app",
+      "style": "together",
+      "title": "Which queue?"
+    }
+  },
+  "response": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+      "group_id": "00000000-0000-7000-8000-000000000002",
+      "members": [
+        {
+          "key": "a",
+          "label": "A",
+          "reason": null,
+          "session_id": "00000000-0000-7000-8000-000000000003",
+          "status": "pending"
+        },
+        {
+          "key": "b",
+          "label": "B",
+          "reason": null,
+          "session_id": "00000000-0000-7000-8000-000000000004",
+          "status": "pending"
+        }
+      ],
+      "status": "running",
+      "url": "https://gentility.test/<slug>/groups/00000000-0000-7000-8000-000000000002"
+    }
+  }
+}

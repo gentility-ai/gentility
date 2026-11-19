@@ -1,0 +1,23 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "groups.stop",
+    "params": {
+      "group_id": "00000000-0000-7000-8000-000000000001",
+      "org": "00000000-0000-7000-8000-000000000002"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32001,
+      "data": {
+        "message": "Only the thread or person that convened this group, or an admin, stops it.",
+        "reason": "not_convener"
+      },
+      "message": "Only the thread or person that convened this group, or an admin, stops it."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

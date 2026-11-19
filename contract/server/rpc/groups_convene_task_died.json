@@ -1,0 +1,22 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "groups.convene",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32603,
+      "data": {
+        "message": "The group may have started. Start it again: the same request answers that group and starts nothing twice.",
+        "reason": "outcome_unknown"
+      },
+      "message": "The group may have started. Start it again: the same request answers that group and starts nothing twice."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

@@ -357,6 +357,340 @@
       ]
     },
     {
+      "name": "groups.convene",
+      "description": "Convenes a group from the person's Desk (`Gentility.AgentGroups.convene/3`): 2 to 6 new threads answering one question, on the person's own Desk machines. The connection's machine, the one its hello named, is the convener's: members that name no machine start there, and the operation key `op` is bound to the person and that machine, so a retry with it answers the same group and starts nothing. Answers at once, with each member's start as it stands. Only Desk's own sign-in convenes. A refusal of the group's is `invalid`, with its sentence. Served only on `/desk/rpc`, under `rpc_groups`, with no Phoenix handler: a core on a link without it refuses the call itself, at once.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "op",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "title",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "question",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "style",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "together",
+              "round_robin",
+              "freeform"
+            ]
+          }
+        },
+        {
+          "name": "members",
+          "required": true,
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "description": "A, B, \u2026 when absent; at most 40 characters, no quotation marks or line breaks.",
+                  "type": "string"
+                },
+                "harness": {
+                  "type": "string"
+                },
+                "model": {
+                  "type": "string"
+                },
+                "effort": {
+                  "type": "string"
+                },
+                "machine": {
+                  "description": "One of the person's Desk machines, by label or id; this Desk when absent.",
+                  "type": "string"
+                },
+                "repository": {
+                  "type": "string"
+                },
+                "cwd": {
+                  "type": "string"
+                },
+                "instructions": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "repository",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "cwd",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "mode",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "chair",
+          "required": false,
+          "schema": {
+            "description": "The label of the member who writes the closing summary.",
+            "type": "string"
+          }
+        },
+        {
+          "name": "turns",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "max_posts",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "minutes",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "turn_minutes",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "result": {
+        "name": "convened",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "group_id": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "status": {
+              "description": "`running`, `summarising` (its chair writes the closing summary) or `ended`.",
+              "type": "string",
+              "enum": [
+                "running",
+                "summarising",
+                "ended"
+              ]
+            },
+            "members": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "session_id": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "description": "Its start: `pending`, `opened` or `failed`.",
+                    "type": "string"
+                  },
+                  "reason": {
+                    "description": "`failed`: the start's refusal, in one word.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "key",
+                  "label",
+                  "session_id",
+                  "status",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "group_id",
+            "url",
+            "status",
+            "members"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "x-refusals": [
+        "forbidden",
+        "invalid",
+        "outcome_unknown",
+        "unavailable"
+      ],
+      "x-rpc-only-refusals": [
+        "outcome_unknown"
+      ]
+    },
+    {
+      "name": "groups.get",
+      "description": "One group of the organization as a person reads it (`Gentility.AgentGroups.read/2`): its question, members and their state, and up to 50 posts after the number `after`. Anyone in the organization reads. Served only on `/desk/rpc`, under `rpc_groups`, with no Phoenix handler: a core on a link without it refuses the call itself, at once.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "group_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "after",
+          "required": false,
+          "schema": {
+            "description": "Posts after this number; 0 when absent.",
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        }
+      ],
+      "result": {
+        "name": "group",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "group": {
+              "$ref": "#/components/schemas/Group"
+            }
+          },
+          "required": [
+            "group"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "x-refusals": [
+        "forbidden",
+        "invalid",
+        "not_found",
+        "unavailable"
+      ]
+    },
+    {
+      "name": "groups.list",
+      "description": "The organization's groups, newest first (`Gentility.AgentGroups.list/1`). Anyone in the organization reads. Served only on `/desk/rpc`, under `rpc_groups`, with no Phoenix handler: a core on a link without it refuses the call itself, at once.",
+      "paramStructure": "by-name",
+      "params": [],
+      "result": {
+        "name": "groups",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "groups": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/GroupRow"
+              }
+            }
+          },
+          "required": [
+            "groups"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "x-refusals": [
+        "forbidden",
+        "unavailable"
+      ]
+    },
+    {
+      "name": "groups.stop",
+      "description": "Stops a group (`Gentility.AgentGroups.stop/2`): the person who convened it, or an organization admin. A running group's open turns end and its chair, if any, writes the summary (`summarising`); a second stop ends it at once. Only Desk's own sign-in stops. A stop is not idempotent, so a task that dies answers `outcome_unknown`. Served only on `/desk/rpc`, under `rpc_groups`, with no Phoenix handler: a core on a link without it refuses the call itself, at once.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "group_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "result": {
+        "name": "stopped",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "group_id": {
+              "type": "string"
+            },
+            "status": {
+              "description": "`running`, `summarising` (its chair writes the closing summary) or `ended`.",
+              "type": "string",
+              "enum": [
+                "running",
+                "summarising",
+                "ended"
+              ]
+            }
+          },
+          "required": [
+            "group_id",
+            "status"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "x-refusals": [
+        "ended",
+        "forbidden",
+        "not_convener",
+        "not_found",
+        "outcome_unknown",
+        "unavailable"
+      ],
+      "x-rpc-only-refusals": [
+        "outcome_unknown"
+      ]
+    },
+    {
       "name": "hosts.bind_code",
       "description": "A one-time code to bind a Desk host to the organization machine `machine_id` (`Gentility.Sessions.Bindings.mint_code/2`), good for five minutes and spent once. An admin's of that machine alone, as `Gentility.Access.check/3` decides.",
       "x-phoenix": {
@@ -4471,7 +4805,7 @@
     },
     {
       "name": "rpc.watch",
-      "description": "Hear `org`'s streams as notifications carrying `org`, answering the cursor of each stream that has one, so a core pulls from there. `loopers` is `loopers.changed`, with its cursor. `machine` is what joining `desk:<org>:<machine>` was: the connection holds its machine live until it unwatches its last organization or closes, `machine.heartbeat` re-arms its deadline, and `machine.ask` is pushed for every ask still open, then for each one raised; it has no cursor, and a connection whose hello named no machine is refused `forbidden`. Joining a topic did this on the Phoenix framing. The sessions stream emits sessions.changed; its authoritative cursor and generation come from sessions.feed, so this watch adds no cursor. Watch first, then call sessions.feed from the stored cursor and page until more is false; changes before the watch are caught by the feed, and changes after it also emit sessions.changed.",
+      "description": "Hear `org`'s streams as notifications carrying `org`, answering the cursor of each stream that has one, so a core pulls from there. `loopers` is `loopers.changed`, with its cursor. `machine` is what joining `desk:<org>:<machine>` was: the connection holds its machine live until it unwatches its last organization or closes, `machine.heartbeat` re-arms its deadline, and `machine.ask` is pushed for every ask still open, then for each one raised; it has no cursor, and a connection whose hello named no machine is refused `forbidden`. Joining a topic did this on the Phoenix framing. The sessions stream emits sessions.changed; its authoritative cursor and generation come from sessions.feed, so this watch adds no cursor. Watch first, then call sessions.feed from the stored cursor and page until more is false; changes before the watch are caught by the feed, and changes after it also emit sessions.changed. The groups stream emits groups.changed, with the group's id, and has no cursor.",
       "paramStructure": "by-name",
       "params": [
         {
@@ -4491,7 +4825,8 @@
               "enum": [
                 "loopers",
                 "machine",
-                "sessions"
+                "sessions",
+                "groups"
               ]
             },
             "minItems": 1
@@ -7461,6 +7796,20 @@
   ],
   "x-notifications": [
     {
+      "name": "groups.changed",
+      "description": "A group of the organization changed: an append to its ledger (`agent_groups`). It carries the group's id and nothing of its words, so a core reads the group, or the list, again. Heard after an `rpc.watch` of `groups`, served only on `/desk/rpc`.",
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "group_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    {
       "name": "lobby.hosts_changed",
       "description": "Something `lobby.desk_hosts` reads moved, or a node's presence did (`Gentility.Desk.Hints`): the desk asks again. The payload is empty. The server says it to a socket whose server advertises `reach_hints`.",
       "x-phoenix": {
@@ -8780,6 +9129,300 @@
           "holder",
           "fold",
           "row_seq"
+        ],
+        "additionalProperties": false
+      },
+      "Group": {
+        "description": "A group as a person reads it (`Gentility.AgentGroups.read/2`): its question, its members and their state, and a page of its posts.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "description": "The group's web page.",
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "style": {
+            "type": "string",
+            "enum": [
+              "together",
+              "round_robin",
+              "freeform"
+            ]
+          },
+          "status": {
+            "description": "`running`, `summarising` (its chair writes the closing summary) or `ended`.",
+            "type": "string",
+            "enum": [
+              "running",
+              "summarising",
+              "ended"
+            ]
+          },
+          "convened_by": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "limits": {
+            "type": "object",
+            "properties": {
+              "turns": {
+                "description": "Round robin's turns; null in another style.",
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "max_posts": {
+                "description": "Freeform's post limit; null in another style.",
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "ends_at": {
+                "description": "When a freeform group ends; null in another style.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "turn_minutes": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "turns",
+              "max_posts",
+              "ends_at",
+              "turn_minutes"
+            ],
+            "additionalProperties": false
+          },
+          "chair": {
+            "description": "The chair's label, or null for no chair.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "model": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "harness": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "session_id": {
+                  "description": "The member's thread, minted at convene.",
+                  "type": "string"
+                },
+                "state": {
+                  "description": "Its state in words, lower case: `answering`, `waiting`, `passed`, `missed its turn`, `not started`. Open: words may be added.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "label",
+                "model",
+                "harness",
+                "session_id",
+                "state"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "posts": {
+            "description": "Up to 50 posts after `after`, oldest first.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": "integer"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "kind": {
+                  "description": "`answer`, or `summary` for the chair's closing summary.",
+                  "type": "string",
+                  "enum": [
+                    "answer",
+                    "summary"
+                  ]
+                },
+                "round": {
+                  "description": "Its round, in together and round robin; null in freeform.",
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "posted_at": {
+                  "type": "string"
+                },
+                "body": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "number",
+                "label",
+                "kind",
+                "round",
+                "posted_at",
+                "body"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "passes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "at": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "label",
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "hidden": {
+            "description": "Posts hidden from a member thread during an open together round; a person sees every post, so 0.",
+            "type": "integer"
+          },
+          "more": {
+            "description": "Whether posts follow this page.",
+            "type": "boolean"
+          },
+          "ended_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "summary": {
+            "description": "Whether the chair posted a closing summary.",
+            "type": "boolean"
+          },
+          "end_message_failed": {
+            "description": "Why the end message could not reach the convening thread, or null.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "title",
+          "question",
+          "style",
+          "status",
+          "convened_by",
+          "limits",
+          "chair",
+          "members",
+          "posts",
+          "passes",
+          "hidden",
+          "more",
+          "ended_reason",
+          "summary",
+          "end_message_failed"
+        ],
+        "additionalProperties": false
+      },
+      "GroupRow": {
+        "description": "One group as `groups.list` lists it (`Gentility.AgentGroups.list/1`), from the projections.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "style": {
+            "type": "string",
+            "enum": [
+              "together",
+              "round_robin",
+              "freeform"
+            ]
+          },
+          "status": {
+            "description": "`running`, `summarising` (its chair writes the closing summary) or `ended`.",
+            "type": "string",
+            "enum": [
+              "running",
+              "summarising",
+              "ended"
+            ]
+          },
+          "members": {
+            "description": "The members' labels, in order.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "answer_count": {
+            "description": "The members' answers, the chair's summary not counted.",
+            "type": "integer"
+          },
+          "convened_by": {
+            "description": "Who convened it, as the convening fact's actor snapshot names them.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "convened_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "style",
+          "status",
+          "members",
+          "answer_count",
+          "convened_by",
+          "convened_at"
         ],
         "additionalProperties": false
       },
@@ -10346,7 +10989,8 @@
       "questions": "org",
       "models": "org",
       "mcp": "org",
-      "phone": "person"
+      "phone": "person",
+      "groups": "org"
     },
     "features": {
       "machine": "rpc_machine",
@@ -10363,7 +11007,8 @@
       "questions": "rpc_questions",
       "models": "rpc_models",
       "mcp": "rpc_mcp",
-      "phone": "rpc_phone"
+      "phone": "rpc_phone",
+      "groups": "rpc_groups"
     },
     "org": "An `org` field, in params and in notifications, is the organization's id (`RpcOrganization.id`), never its slug.",
     "person": "The phone domain has param-less person scope: the connection's authenticated person. No user_id or org selector is required or used. Each call rechecks credential liveness; a bound host is forbidden.",
@@ -10372,7 +11017,7 @@
       "-32600": "not a JSON-RPC request (malformed_payload)",
       "-32601": "unknown_event",
       "-32602": "malformed_payload",
-      "-32603": "RPC-only task failure: sessions.ask task_died after serialized recovery or outcome_unknown if recovery failed; pulls writes outcome_unknown when a task dies and GitHub may have acted; questions writes outcome_unknown when a task dies and the question may have changed; models and MCP writes outcome_unknown when a task dies after it may have changed state",
+      "-32603": "RPC-only task failure: sessions.ask task_died after serialized recovery or outcome_unknown if recovery failed; pulls writes outcome_unknown when a task dies and GitHub may have acted; questions writes outcome_unknown when a task dies and the question may have changed; models and MCP writes outcome_unknown when a task dies after it may have changed state; groups writes outcome_unknown when a convene or a stop task dies after it may have acted",
       "-32001": "any other refusal word"
     },
     "x-common-refusals": [

@@ -1,0 +1,45 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "groups.list",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001"
+    }
+  },
+  "response": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+      "groups": [
+        {
+          "answer_count": 0,
+          "convened_at": "2026-01-01T00:00:00.000000Z",
+          "convened_by": "Ada",
+          "id": "00000000-0000-7000-8000-000000000002",
+          "members": [
+            "A",
+            "B",
+            "C"
+          ],
+          "status": "running",
+          "style": "together",
+          "title": "Newer"
+        },
+        {
+          "answer_count": 0,
+          "convened_at": "2026-01-01T00:00:00.000000Z",
+          "convened_by": "Ada",
+          "id": "00000000-0000-7000-8000-000000000003",
+          "members": [
+            "A",
+            "B"
+          ],
+          "status": "running",
+          "style": "round_robin",
+          "title": "Older"
+        }
+      ]
+    }
+  }
+}

@@ -88,6 +88,20 @@ The sessions watch carries `sessions.changed` hints with `org`; the feed
 reply remains the authority for cursor and generation. Watch first, then
 pull from the stored cursor until the feed has no more pages.
 
+`groups` (T-622, ruling G) is the first domain served only on `/desk/rpc`:
+`groups.list`, `groups.get`, `groups.convene` and `groups.stop` have no
+`x-phoenix` address, under `rpc_groups`, and their words sit under `rpc` in
+`refusals.json` by whole method name. The core asks them on the lobby's
+topic by method name; on a link not carrying them it refuses each at once,
+`unavailable`, "Groups need Desk's newer connection to the server, which
+this link is not using." Anyone in the organization lists and reads; Desk's
+own sign-in convenes for its person, the operation key bound to the person
+and the hello's machine, members defaulting to that machine; the convener
+or an organization admin stops. Bound hosts are forbidden. Reads and writes
+have separate bounds of four; a dead write answers RPC-only
+`outcome_unknown`. Watching `groups` (`rpc/watch_groups.json`) hears
+`groups.changed {org, group_id}` on every append to a group's ledger.
+
 Migrating lobby declarations are renamed in place, retaining their Phoenix
 addresses and recordings. Compat permits a rename at the same unique
 Phoenix address only when the base did not serve that method over RPC, and
