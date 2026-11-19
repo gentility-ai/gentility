@@ -1,0 +1,61 @@
+# The phone on macOS: the Phonenode framework, the app and its KitTests on a
+# simulator. The end-to-end UITests need a running Desk and a development
+# server, and are run by hand.
+#
+# Only when something the phone builds from changes, never for the contract
+# alone: macOS minutes cost ten times Linux's, and phone.yml's readers judge
+# the contract on Linux (ruled 2026-11-18). Nor for a change to this file
+# alone, which runs it by hand (workflow_dispatch) instead.
+name: phone kit
+
+on:
+  pull_request:
+    paths:
+      - "phone/**"
+      - "connector/phonenode/**"
+      - "connector/internal/**"
+      - "connector/go.mod"
+      - "connector/go.sum"
+      - "bin/phone-*"
+  push:
+    branches: [main]
+    paths:
+      - "phone/**"
+      - "connector/phonenode/**"
+      - "connector/internal/**"
+      - "connector/go.mod"
+      - "connector/go.sum"
+      - "bin/phone-*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kit:
+    # Xcode 27, as the phone is built with: Xcode 26.6 (macos-26's default)
+    # never finishes type-checking the KitTests.
+    runs-on: xcode-27
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: connector/go.mod
+          cache-dependency-path: connector/go.sum
+      - run: brew install xcodegen
+      - run: phone/build-phonenode.sh
+      - run: xcodegen generate
+        working-directory: phone/ios
+      # Any available iPhone simulator: the runner image's list changes with
+      # its Xcode, and a named device would break on the next image.
+      - name: KitTests on a simulator
+        working-directory: phone/ios
+        run: |
+          device=$(xcrun simctl list devices available --json | jq -r '
+            [.devices | to_entries[] | select(.key | contains("iOS")) | .value[]
+             | select(.name | startswith("iPhone"))] | last | .udid')
+          test -n "$device" && test "$device" != null
+          xcodebuild test -project DeskPhone.xcodeproj -scheme DeskPhoneKit \
+            -destination "id=$device" -derivedDataPath ../build/kit-tests \
+            CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=
