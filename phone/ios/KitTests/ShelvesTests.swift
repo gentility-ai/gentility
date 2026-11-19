@@ -3,7 +3,7 @@ import XCTest
 
 final class ShelvesTests: XCTestCase {
     private let now = WireDate.parse("2026-01-01T12:00:00.000000Z")!
-    private let all = HomeFilter(query: "", project: nil, showLoopers: true)
+    private let all = HomeFilter(query: "", project: nil, hidden: [])
 
     private func row(_ id: String, minutesAgo: Double = 0, waiting: Bool = false, settled: Bool = false, snoozedFor: Double? = nil,
                      title: String? = nil, branch: String? = nil, project: String? = nil, looper: Bool = false,
@@ -50,13 +50,60 @@ final class ShelvesTests: XCTestCase {
             row("tagged", tagged: true), row("asks", waiting: true), row("idle"),
             row("snoozed-tagged", snoozedFor: 30, tagged: true), row("working-tagged", tagged: true, working: true),
         ]
-        let waiting = HomeFilter(query: "", project: nil, showLoopers: true, waitingOnly: true)
+        let waiting = HomeFilter(query: "", project: nil, hidden: [], waitingOnly: true)
         let s = shelves(rows, waiting)
         XCTAssertEqual(s[.needsYou], ["tagged"])
         XCTAssertEqual(s[.snoozed], ["snoozed-tagged"])
         XCTAssertNil(s[.live])
         XCTAssertTrue(waiting.narrowed)
         XCTAssertFalse(all.waitingOnly, "off unless asked")
+    }
+
+    func testWorkingKeepsOnlyTheWorkingRowsAndWithWaitingEither() {
+        let rows = [row("tagged", tagged: true), row("busy", working: true), row("idle")]
+        XCTAssertEqual(shelves(rows, HomeFilter(query: "", project: nil, hidden: [], workingOnly: true))[.live], ["busy"])
+        let either = shelves(rows, HomeFilter(query: "", project: nil, hidden: [], waitingOnly: true, workingOnly: true))
+        XCTAssertEqual(either[.needsYou], ["tagged"])
+        XCTAssertEqual(either[.live], ["busy"])
+    }
+
+    func testStarredNarrowsWhateverElseIsAsked() {
+        func starred(_ id: String, working: Bool = false) -> HomeRow {
+            HomeRow(id: id, organizationID: "o", title: id, state: working ? "working" : "idle", ago: "", machineID: nil, macLabel: "mbp",
+                    recapLine: nil, lastEventAt: now, starred: true)
+        }
+        let rows = [starred("star"), starred("busy-star", working: true), row("busy", working: true), row("idle")]
+        let onlyStars = HomeFilter(query: "", project: nil, hidden: [], starredOnly: true)
+        XCTAssertEqual(Set(shelves(rows, onlyStars)[.live] ?? []), ["star", "busy-star"])
+        let busyStars = HomeFilter(query: "", project: nil, hidden: [], workingOnly: true, starredOnly: true)
+        XCTAssertEqual(shelves(rows, busyStars)[.live], ["busy-star"])
+        XCTAssertEqual(busyStars.showing, "starred, working")
+        XCTAssertEqual(onlyStars.showing, "starred")
+        XCTAssertNil(all.showing)
+    }
+
+    func testAHiddenKindIsLeftOutUnlessItAsks() {
+        func kinded(_ id: String, _ kind: ThreadKind, waiting: Bool = false) -> HomeRow {
+            HomeRow(id: id, organizationID: "o", title: id, state: waiting ? HomeRow.waitingOnYou : "idle", ago: "", machineID: nil,
+                    macLabel: "mbp", recapLine: nil, lastEventAt: now, kind: kind)
+        }
+        let rows = [kinded("t", .thread), kinded("c", .coordinator), kinded("s", .supervisor), kinded("asks", .coordinator, waiting: true)]
+        let s = shelves(rows, HomeFilter(query: "", project: nil, hidden: [.coordinator]))
+        XCTAssertEqual(Set(s[.live] ?? []), ["t", "s"])
+        XCTAssertEqual(s[.needsYou], ["asks"])
+    }
+
+    func testAKindIsTheServersRoleAndALooperRunWithNoneIsALooper() {
+        XCTAssertEqual(ThreadKind(role: "coordinator", looper: false), .coordinator)
+        XCTAssertEqual(ThreadKind(role: "responder", looper: true), .responder)
+        XCTAssertEqual(ThreadKind(role: nil, looper: true), .looper)
+        XCTAssertEqual(ThreadKind(role: "unknown", looper: false), .thread)
+        XCTAssertEqual(ThreadKind(role: nil, looper: false), .thread)
+    }
+
+    func testTheMenuCountsWhatNarrowsAndTheKindsOnce() {
+        XCTAssertEqual(HomeFilter(query: "x", project: nil).count, 0, "a search is not the menu's")
+        XCTAssertEqual(HomeFilter(query: "", project: "a/b", hidden: [], waitingOnly: true, starredOnly: true).count, 4)
     }
 
     func testAnExpiredSnoozeIsNoSnooze() {
@@ -79,31 +126,31 @@ final class ShelvesTests: XCTestCase {
 
     func testSearchMatchesTitleBranchOrProjectIgnoringCaseAndSpaces() {
         let rows = [row("a", title: "Fix Recap"), row("b", branch: "feat-recap"), row("c", project: "sampleco/recapper"), row("d")]
-        let s = shelves(rows, HomeFilter(query: "  RECAP ", project: nil, showLoopers: true))
+        let s = shelves(rows, HomeFilter(query: "  RECAP ", project: nil, hidden: []))
         XCTAssertEqual(s[.live].map(Set.init), ["a", "b", "c"])
     }
 
     func testAProjectFilterKeepsOnlyThatProject() {
         let rows = [row("a", project: "sampleco/gentility"), row("b", project: "sampleco/sample-app"), row("c")]
-        XCTAssertEqual(shelves(rows, HomeFilter(query: "", project: "sampleco/gentility", showLoopers: true))[.live], ["a"])
+        XCTAssertEqual(shelves(rows, HomeFilter(query: "", project: "sampleco/gentility", hidden: []))[.live], ["a"])
     }
 
     func testLooperRunsHideUnlessShown() {
         let rows = [row("thread"), row("run", looper: true)]
-        XCTAssertEqual(shelves(rows, HomeFilter(query: "", project: nil, showLoopers: false))[.live], ["thread"])
+        XCTAssertEqual(shelves(rows, HomeFilter(query: "", project: nil))[.live], ["thread"])
         XCTAssertEqual(shelves(rows)[.live].map(Set.init), ["thread", "run"])
     }
 
     /// Needs you holds whatever waits on the person, a looper's run included.
     func testAHiddenLooperRunThatWaitsOnYouStillNeedsYou() {
         let rows = [row("run", waiting: true, looper: true), row("quiet", looper: true)]
-        let s = shelves(rows, HomeFilter(query: "", project: nil, showLoopers: false))
+        let s = shelves(rows, HomeFilter(query: "", project: nil))
         XCTAssertEqual(s[.needsYou], ["run"])
         XCTAssertNil(s[.live])
     }
 
     func testAProjectNoLongerListedFallsBackToAll() {
-        let filter = HomeFilter(query: "", project: "sampleco/gone", showLoopers: true)
+        let filter = HomeFilter(query: "", project: "sampleco/gone", hidden: [])
         XCTAssertNil(filter.effective(projects: ["sampleco/gentility"]).project)
         XCTAssertEqual(filter.effective(projects: ["sampleco/gone"]).project, "sampleco/gone")
     }
@@ -113,8 +160,8 @@ final class ShelvesTests: XCTestCase {
     }
 
     func testNarrowedIsASearchOrAProject() {
-        XCTAssertFalse(HomeFilter(query: " ", project: nil, showLoopers: false).narrowed)
-        XCTAssertTrue(HomeFilter(query: "x", project: nil, showLoopers: false).narrowed)
-        XCTAssertTrue(HomeFilter(query: "", project: "a/b", showLoopers: false).narrowed)
+        XCTAssertFalse(HomeFilter(query: " ", project: nil).narrowed)
+        XCTAssertTrue(HomeFilter(query: "x", project: nil).narrowed)
+        XCTAssertTrue(HomeFilter(query: "", project: "a/b").narrowed)
     }
 }

@@ -64,9 +64,12 @@ struct HomeList: View {
 
     /// `owner/repo`; empty is every project.
     @AppStorage("home.project") private var project = ""
-    @AppStorage("home.showLoopers") private var showLoopers = false
+    /// The kinds left out, as `ThreadKind` names with commas between.
+    @AppStorage("home.hiddenKinds") private var hiddenKinds = HomeList.spell(HomeFilter.quiet)
     /// Only the threads waiting on you.
     @AppStorage("home.waitingOnly") private var waitingOnly = false
+    @AppStorage("home.workingOnly") private var workingOnly = false
+    @AppStorage("home.starredOnly") private var starredOnly = false
     @State private var query: String
     /// The folds the person opened.
     @State private var open: Set<Shelf>
@@ -92,7 +95,31 @@ struct HomeList: View {
     private var projects: [String] { Shelves.projects(rows) }
 
     private var filter: HomeFilter {
-        HomeFilter(query: query, project: project.isEmpty ? nil : project, showLoopers: showLoopers, waitingOnly: waitingOnly).effective(projects: projects)
+        HomeFilter(query: query, project: project.isEmpty ? nil : project, hidden: hidden, waitingOnly: waitingOnly, workingOnly: workingOnly, starredOnly: starredOnly).effective(projects: projects)
+    }
+
+    private var hidden: Set<ThreadKind> {
+        Set(hiddenKinds.split(separator: ",").compactMap { ThreadKind(rawValue: String($0)) })
+    }
+
+    static func spell(_ kinds: Set<ThreadKind>) -> String {
+        kinds.map(\.rawValue).sorted().joined(separator: ",")
+    }
+
+    /// Whether `kind` is shown, for its tick in the menu.
+    private func shows(_ kind: ThreadKind) -> Binding<Bool> {
+        Binding(
+            get: { !hidden.contains(kind) },
+            set: { hiddenKinds = Self.spell($0 ? hidden.subtracting([kind]) : hidden.union([kind])) }
+        )
+    }
+
+    private func clear() {
+        project = ""
+        hiddenKinds = Self.spell(HomeFilter.quiet)
+        waitingOnly = false
+        workingOnly = false
+        starredOnly = false
     }
 
     var body: some View {
@@ -192,11 +219,12 @@ struct HomeList: View {
                     ShelfHeader(title: "Later", count: nil)
                 }
             }
-            if let shown = filter.project {
+            let shown = [filter.showing, filter.project].compactMap { $0 }.joined(separator: " in ")
+            if !shown.isEmpty {
                 Section {
                     HStack(spacing: 4) {
                         Text("Showing \(shown) only ·").foregroundStyle(.secondary)
-                        Button("Show all") { project = "" }
+                        Button("Show all") { clear() }
                             .buttonStyle(.borderless)
                     }
                     .font(.footnote)
@@ -212,8 +240,10 @@ struct HomeList: View {
         .task {
             if let preset {
                 project = preset.project
-                showLoopers = preset.showLoopers
+                hiddenKinds = Self.spell(preset.hidden)
                 waitingOnly = preset.waitingOnly
+                workingOnly = preset.workingOnly
+                starredOnly = preset.starredOnly
             }
         }
         .confirmationDialog("Snooze until", isPresented: Binding(get: { snoozing != nil }, set: { if !$0 { snoozing = nil } }), titleVisibility: .visible, presenting: snoozing) { row in
@@ -241,13 +271,29 @@ struct HomeList: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
+                    Section("Status") {
+                        Toggle(isOn: $waitingOnly) { Label("Waiting on you", systemImage: "hand.raised") }
+                        Toggle(isOn: $workingOnly) { Label("Working", systemImage: "circle.dashed") }
+                        Toggle(isOn: $starredOnly) { Label("Starred", systemImage: "star") }
+                    }
+                    Section("Show") {
+                        ForEach(ThreadKind.allCases, id: \.self) { kind in
+                            Toggle(isOn: shows(kind)) {
+                                if let symbol = kind.symbol {
+                                    Label(kind.plural, systemImage: symbol)
+                                } else {
+                                    Text(kind.plural)
+                                }
+                            }
+                        }
+                    }
                     Picker("Project", selection: $project) {
                         Text("All projects").tag("")
                         ForEach(projects, id: \.self) { Text($0).tag($0) }
                     }
-                    Toggle("Show looper runs", isOn: $showLoopers)
-                    Toggle(isOn: $waitingOnly) {
-                        Label("Waiting on you", systemImage: "hand.raised")
+                    .pickerStyle(.menu)
+                    if filter.count > 0 {
+                        Button(action: clear) { Label("Clear filters", systemImage: "xmark.circle") }
                     }
                     if let onSettings {
                         Divider()
@@ -255,11 +301,11 @@ struct HomeList: View {
                     }
                 } label: {
                     Label(
-                        "Filter",
-                        systemImage: filter.project != nil || showLoopers || waitingOnly
-                            ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle"
+                        filter.count > 0 ? "Filter, \(filter.count) on" : "Filter",
+                        systemImage: filter.count > 0 ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle"
                     )
                 }
+                .menuActionDismissBehavior(.disabled)
             }
         }
     }
@@ -308,8 +354,10 @@ struct HomeList: View {
 /// The filter Showcase draws a screen with.
 struct HomeListPreset {
     var project: String
-    var showLoopers: Bool
+    var hidden: Set<ThreadKind> = HomeFilter.quiet
     var waitingOnly = false
+    var workingOnly = false
+    var starredOnly = false
 }
 
 extension HomeList {
@@ -466,7 +514,6 @@ struct HomeActionsTip: Tip {
 struct HomeRowView: View {
     let row: HomeRow
     let face: RowFace
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @ViewBuilder
@@ -491,107 +538,79 @@ struct HomeRowView: View {
     }
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: Theme.Space.m) {
-            glyph.frame(width: 20)
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(alignment: .firstTextBaseline, spacing: Theme.Space.s) {
-                    Text(row.title)
-                        .font(.body.weight(face.needsYou ? .semibold : .regular))
-                        .foregroundStyle(face.recedes ? Theme.inkSoft : Theme.ink)
-                        .lineLimit(2)
-                    Spacer(minLength: 4)
-                    Text(face.age).font(.footnote).monospacedDigit().foregroundStyle(Theme.inkFaint).fixedSize()
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .firstTextBaseline, spacing: Theme.Space.s) {
+                Text(row.title)
+                    .font(.body.weight(face.needsYou ? .semibold : .regular))
+                    .foregroundStyle(face.recedes ? Theme.inkSoft : Theme.ink)
+                    .lineLimit(2)
+                Spacer(minLength: 4)
+                if face.starred {
+                    Image(systemName: "star.fill").font(.caption2).foregroundStyle(Theme.inkFaint)
                 }
-                if let line = face.attentionLine {
-                    Text(line).font(.subheadline).foregroundStyle(Theme.inkSoft).lineLimit(2)
-                }
-                Group {
-                    if dynamicTypeSize.isAccessibilitySize {
-                        VStack(alignment: .leading, spacing: 2) {
-                            status
-                            place
-                            branchMark
-                            macMark
-                        }
-                    } else {
-                        // What gives way as the row narrows: the Mac, then the branch.
-                        ViewThatFits(in: .horizontal) {
-                            HStack(spacing: Theme.Space.s) { status; place; branchMark; macMark }
-                            // The last fits always: a long branch is cut in its middle.
-                            HStack(spacing: Theme.Space.s) { status; place.fixedSize(); branchMark }
-                        }
+                slot
+            }
+            if let line = face.attentionLine {
+                Text(line).font(.subheadline).foregroundStyle(Theme.inkSoft).lineLimit(2)
+            }
+            Group {
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(alignment: .leading, spacing: 2) {
+                        status
+                        place
+                        branchMark
+                        macMark
+                    }
+                } else {
+                    // What gives way as the row narrows: the Mac, then the branch.
+                    ViewThatFits(in: .horizontal) {
+                        HStack(spacing: Theme.Space.s) { status; place; branchMark; macMark }
+                        // The last fits always: a long branch is cut in its middle.
+                        HStack(spacing: Theme.Space.s) { status; place.fixedSize(); branchMark }
                     }
                 }
-                .font(.footnote)
-                .foregroundStyle(Theme.inkFaint)
             }
+            .font(.footnote)
+            .foregroundStyle(Theme.inkFaint)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(face.accessibilityLabel)
     }
 
-    /// The row's state at its leading edge: what it waits on, that it works,
-    /// or a quiet ring for a thread at rest.
-    @ViewBuilder private var glyph: some View {
-        if let word = face.word {
-            symbol(word).font(.subheadline.weight(.semibold)).foregroundStyle(word.tone.color)
+    /// The row's end: what it asks of the person, in its colour, or else
+    /// its age.
+    @ViewBuilder private var slot: some View {
+        if let word = face.word, face.asks {
+            HStack(spacing: 4) {
+                Image(systemName: word.symbol)
+                Text(word.text)
+            }
+            .font(.footnote.weight(.medium))
+            .foregroundStyle(word.tone.color)
+            .fixedSize()
         } else {
-            Image(systemName: "circle").font(.subheadline).foregroundStyle(Theme.inkFaint.opacity(0.6))
+            Text(face.age).font(.footnote).monospacedDigit().foregroundStyle(Theme.inkFaint).fixedSize()
         }
     }
 
     private var place: some View {
-        HStack(spacing: 5) {
-            if let chip = face.chip {
-                ChipView(chip: chip)
+        HStack(spacing: 4) {
+            if let kind = face.kind {
+                Image(systemName: kind.symbol).imageScale(.small)
             }
             if let place = face.place {
-                Text(place).foregroundStyle(Theme.inkSoft).lineLimit(1).truncationMode(.tail)
+                Text(place).lineLimit(1).truncationMode(.tail)
+            } else if let kind = face.kind {
+                Text(kind.name).lineLimit(1)
             }
         }
     }
 
+    /// A word that asks nothing: said quietly, with the row's other facts.
     @ViewBuilder private var status: some View {
-        if let word = face.word {
-            Text(word.text).fontWeight(.medium).foregroundStyle(word.tone.color).lineLimit(1).fixedSize()
+        if let word = face.word, !face.asks {
+            Text(word.text).lineLimit(1).fixedSize()
         }
-    }
-
-    @ViewBuilder
-    private func symbol(_ word: StatusWord) -> some View {
-        if word.tone == .working, !reduceMotion, #available(iOS 18, *) {
-            Image(systemName: word.symbol).symbolEffect(.rotate, options: .repeat(.continuous))
-        } else {
-            Image(systemName: word.symbol)
-        }
-    }
-}
-
-/// A project's letter tile, in the Mac's hue for it.
-struct ChipView: View {
-    let chip: Chip
-
-    var body: some View {
-        let fill = Self.hues[chip.colorIndex % Self.hues.count]
-        ZStack {
-            if chip.round {
-                Circle().fill(fill)
-            } else {
-                RoundedRectangle(cornerRadius: 4).fill(fill)
-            }
-            Text(chip.letter).font(.system(size: 9, weight: .bold)).foregroundStyle(.white)
-        }
-        .frame(width: 15, height: 15)
-        .accessibilityHidden(true)
-    }
-
-    /// The Mac's eighteen hues (`chip.logic.ts`), at their 600 shade so a
-    /// white letter reads on each.
-    static let hues: [Color] = [
-        0x4b5563, 0xdc2626, 0xea580c, 0xd97706, 0xca8a04, 0x65a30d, 0x16a34a, 0x059669, 0x0d9488,
-        0x0891b2, 0x0284c7, 0x2563eb, 0x4f46e5, 0x7c3aed, 0x9333ea, 0xc026d3, 0xdb2777, 0xe11d48,
-    ].map { (hex: Int) in
-        Color(red: Double((hex >> 16) & 0xff) / 255, green: Double((hex >> 8) & 0xff) / 255, blue: Double(hex & 0xff) / 255)
     }
 }
 

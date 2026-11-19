@@ -405,6 +405,23 @@ final class HomeModelTests: XCTestCase {
         XCTAssertEqual(rows.map(\.attentionLine), ["Wants to execute", nil])
     }
 
+    /// The star and the role, as the list carries them.
+    func testARowCarriesItsStarAndItsKind() async throws {
+        lobby.lists["o-1"] = [LobbyList(sessions: [
+            try Build.row("s-1", title: "Programme", mac: "m-mbp", host: "mbp", starredAt: "2026-01-01T10:00:00.000000Z", role: "coordinator"),
+            try Build.row("s-2", title: "Sorter #4", mac: "m-mbp", host: "mbp", lastEventAt: "2026-01-01T11:00:00.000000Z", looper: "l-1", role: .some(nil)),
+            try Build.row("s-3", title: "Old server", mac: "m-mbp", host: "mbp", lastEventAt: "2026-01-01T10:00:00.000000Z"),
+        ], now: Build.now)]
+        let home = home()
+        await home.refresh()
+        let rows = Dictionary(uniqueKeysWithValues: home.rows.map { ($0.id, $0) })
+        XCTAssertEqual(rows["s-1"]?.kind, .coordinator)
+        XCTAssertEqual(rows["s-1"]?.starred, true)
+        XCTAssertEqual(rows["s-2"]?.kind, .looper)
+        XCTAssertEqual(rows["s-2"]?.starred, false)
+        XCTAssertEqual(rows["s-3"]?.kind, .thread, "no tags at all is a thread")
+    }
+
     /// The server inbox's tag, as the list carries it.
     func testATaggedRowCarriesWhoItWaitsOnAndWhy() async throws {
         lobby.lists["o-1"] = [LobbyList(sessions: [

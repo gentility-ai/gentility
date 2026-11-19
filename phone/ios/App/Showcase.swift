@@ -12,7 +12,7 @@ private struct HomeMenuShowcase: View {
         let face = RowFace(row, now: Date(), showsMacName: RowFace.showsMacName(rows))
         ZStack {
             NavigationStack {
-                HomeList(rows: rows, line: nil, empty: false, joining: false, notificationsOff: false, preset: HomeListPreset(project: "", showLoopers: false))
+                HomeList(rows: rows, line: nil, empty: false, joining: false, notificationsOff: false, preset: HomeListPreset(project: ""))
                     .navigationTitle("Home")
             }
             .blur(radius: 12)
@@ -104,11 +104,11 @@ struct Showcase: View {
                               "Showing what the server last heard.", "Status: idle · last turn 3 min"],
                 acting: Self.acting(open: false, working: false), onRetry: {}), "Phone pairing spec")
         case "home-siblings", "home-sibling-unavailable": NavigationStack {
-            HomeList(rows: Self.siblingRows(secondReachable: screen == "home-siblings"), line: nil, empty: false, joining: false, notificationsOff: false, preset: HomeListPreset(project: "", showLoopers: false))
+            HomeList(rows: Self.siblingRows(secondReachable: screen == "home-siblings"), line: nil, empty: false, joining: false, notificationsOff: false, preset: HomeListPreset(project: ""))
                 .navigationTitle("Home")
         }
         case "home-presence": NavigationStack {
-            HomeList(rows: Self.presenceRows, line: nil, empty: false, joining: false, notificationsOff: false, preset: HomeListPreset(project: "", showLoopers: false))
+            HomeList(rows: Self.presenceRows, line: nil, empty: false, joining: false, notificationsOff: false, preset: HomeListPreset(project: ""))
                 .navigationTitle("Home")
         }
         case "home-off": home(notificationsOff: true)
@@ -118,14 +118,16 @@ struct Showcase: View {
         case "home-undo": home(notificationsOff: false, undo: Undo(words: "Snoozed until Tue 09:00", rowID: "s-2", organizationID: "o-1", inverse: .wake))
         case "home-menu": HomeMenuShowcase(row: Self.rows[2], rows: Self.rows)
         case "home-tip": home(notificationsOff: false)
-        case "home-filtered": home(notificationsOff: false, preset: HomeListPreset(project: "sampleco/sample-app", showLoopers: false))
-        case "home-waiting": home(notificationsOff: false, preset: HomeListPreset(project: "", showLoopers: false, waitingOnly: true))
+        case "home-filtered": home(notificationsOff: false, preset: HomeListPreset(project: "sampleco/sample-app"))
+        case "home-waiting": home(notificationsOff: false, preset: HomeListPreset(project: "", waitingOnly: true))
         case "home-empty": NavigationStack {
-            HomeList(rows: [], line: nil, empty: true, joining: false, notificationsOff: false, preset: HomeListPreset(project: "", showLoopers: false))
+            HomeList(rows: [], line: nil, empty: true, joining: false, notificationsOff: false, preset: HomeListPreset(project: ""))
                 .navigationTitle("Home")
         }
         case "home-nomatch": home(notificationsOff: false, query: "zebra")
-        case "home-loopers": home(notificationsOff: false, preset: HomeListPreset(project: "", showLoopers: true))
+        case "home-starred": home(notificationsOff: false, preset: HomeListPreset(project: "", hidden: [], starredOnly: true))
+        case "home-working": home(notificationsOff: false, preset: HomeListPreset(project: "", hidden: [], workingOnly: true))
+        case "home-loopers": home(notificationsOff: false, preset: HomeListPreset(project: "", hidden: []))
         case "home-xxl": home(notificationsOff: false).dynamicTypeSize(.accessibility2)
         case "conversation": conversation(Self.acting(working: true), "Phone pairing spec")
         case "idle": conversation(Self.acting(working: false), "Phone pairing spec")
@@ -206,7 +208,7 @@ struct Showcase: View {
         }
     }
 
-    private func home(notificationsOff: Bool, query: String = "", open: Set<Shelf> = [], snoozing: HomeRow? = nil, undo: Undo? = nil, preset: HomeListPreset = HomeListPreset(project: "", showLoopers: false)) -> some View {
+    private func home(notificationsOff: Bool, query: String = "", open: Set<Shelf> = [], snoozing: HomeRow? = nil, undo: Undo? = nil, preset: HomeListPreset = HomeListPreset(project: "")) -> some View {
         NavigationStack {
             HomeList(rows: Self.rows, line: nil, empty: false, joining: false, notificationsOff: notificationsOff, undo: undo, query: query, open: open, snoozing: snoozing, preset: preset)
                 .navigationTitle("Home")
@@ -253,10 +255,13 @@ struct Showcase: View {
     static let rows = [
         HomeRow(id: "s-2", organizationID: "o", title: "Fix the recap timing", state: HomeRow.waitingOnYou, ago: "now", machineID: "m-mbp", macLabel: "Morgan's MacBook Pro", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -40), attentionLine: "Wants to execute cargo test -p desk_core --lib recorded", live: true, branch: "fix-recap-timing", project: "sampleco/gentility", attention: .approval),
         HomeRow(id: "s-7", organizationID: "o", title: "Invite teammates to a channel", state: HomeRow.waitingOnYou, ago: "14 min", machineID: "m-cedar", macLabel: "cedar", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -840), attentionLine: "Which branch should the fix go on?", branch: "feat-invites", project: "sampleco/sample-app", attention: .question),
-        HomeRow(id: "s-1", organizationID: "o", title: "Phone pairing spec", state: "working", ago: "2 min", machineID: "m-mbp", macLabel: "Morgan's MacBook Pro", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -120), live: true, branch: "feat-phone-pairing", project: "sampleco/gentility"),
+        HomeRow(id: "s-1", organizationID: "o", title: "Phone pairing spec", state: "working", ago: "2 min", machineID: "m-mbp", macLabel: "Morgan's MacBook Pro", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -120), live: true, branch: "feat-phone-pairing", project: "sampleco/gentility", starred: true),
         HomeRow(id: "s-8", organizationID: "o", title: "task-sorter #41", state: "working", ago: "6 min", machineID: "m-mbp", macLabel: "Morgan's MacBook Pro", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -360), live: true, project: "sampleco/gentility", looper: true),
+        HomeRow(id: "s-11", organizationID: "o", title: "Phone app programme", state: "idle", ago: "20 min", machineID: "m-mbp", macLabel: "Morgan's MacBook Pro", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -1_200), live: true, branch: "main", project: "sampleco/gentility", kind: .coordinator, starred: true),
+        HomeRow(id: "s-12", organizationID: "o", title: "Architecture review", state: "idle", ago: "1 h", machineID: "m-mbp", macLabel: "Morgan's MacBook Pro", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -3_600), live: true, project: "sampleco/gentility", kind: .supervisor),
+        HomeRow(id: "s-13", organizationID: "o", title: "Support inbox: refund question", state: "idle", ago: "2 h", machineID: "m-mbp", macLabel: "Morgan's MacBook Pro", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -7_200), live: true, looper: true, kind: .responder),
         HomeRow(id: "s-3", organizationID: "o", title: "Billing precision: keep decimal dollars through the ledger and the invoice renderer", state: "idle", ago: "yesterday", machineID: "m-cedar", macLabel: "cedar", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -90_000), branch: "fix-billing-precision-decimal-dollars-through-ledger", project: "sampleco/gentility"),
-        HomeRow(id: "s-9", organizationID: "o", title: "Onboarding copy pass", state: "idle", ago: "3 h", machineID: "m-mbp", macLabel: "Morgan's MacBook Pro", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -10_000), live: true, branch: "copy-onboarding", project: "sampleco/sample-app"),
+        HomeRow(id: "s-9", organizationID: "o", title: "Onboarding copy pass", state: "idle", ago: "3 h", machineID: "m-mbp", macLabel: "Morgan's MacBook Pro", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -10_000), live: true, branch: "copy-onboarding", project: "sampleco/sample-app", starred: true),
         HomeRow(id: "s-4", organizationID: "o", title: "Recap line for loopers", state: "idle", ago: "3 h", machineID: "m-mbp", macLabel: "Morgan's MacBook Pro", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -10_800), live: true, snoozedUntil: Date(timeIntervalSinceNow: 7_200), project: "sampleco/gentility"),
         HomeRow(id: "s-5", organizationID: "o", title: "Make the welcome screen clearer", state: "idle", ago: "2 d", machineID: "m-mbp", macLabel: "Morgan's MacBook Pro", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -172_800), live: true, settledAt: Date(timeIntervalSinceNow: -100_000), project: "sampleco/sample-app"),
         HomeRow(id: "s-6", organizationID: "o", title: "Port band", state: "idle", ago: "4 d", machineID: "m-cedar", macLabel: "cedar", recapLine: nil, lastEventAt: Date(timeIntervalSinceNow: -345_600), settledAt: Date(timeIntervalSinceNow: -300_000), project: "sampleco/gentility"),

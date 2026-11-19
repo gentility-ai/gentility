@@ -72,27 +72,6 @@ final class RowFaceTests: XCTestCase {
         XCTAssertEqual(Ago.compact(nil, now: now), "")
     }
 
-    // MARK: ChipColor, as the Mac's hue
-
-    func testChipColourIsTheMacsHue() {
-        // chip.logic.test.ts: the hue's index in HUES.
-        let expected: [(String, Int)] = [
-            ("gentility", 7), ("Juniper", 9), ("ele", 16), ("desk", 15),
-            ("derpex", 6), ("Nebula", 1), ("Silver Orchard", 10), ("X", 12),
-        ]
-        for (name, index) in expected {
-            XCTAssertEqual(ChipColor.index(for: name), index, name)
-        }
-    }
-
-    func testChipColourIgnoresCaseAndSurroundingSpaceAndStaysInRange() {
-        XCTAssertEqual(ChipColor.index(for: "  NEBULA  "), ChipColor.index(for: "Nebula"))
-        for name in ["", "---", "文書", "T3", "Scripts and Extractors"] {
-            XCTAssertTrue((0..<ChipColor.count).contains(ChipColor.index(for: name)), name)
-        }
-        XCTAssertEqual(ChipColor.count, 18)
-    }
-
     // MARK: Attention
 
     func testWaitingFollowsAttention() {
@@ -144,27 +123,48 @@ final class RowFaceTests: XCTestCase {
         XCTAssertEqual(face(row(state: "working", attention: .question, settled: true)).word?.tone, .input)
     }
 
-    // MARK: Place, chip, branch, Mac
+    // MARK: Place, kind, branch, Mac
 
-    func testAProjectRowShowsTheRepositoryNameAndASquareChip() {
+    func testAProjectRowShowsTheRepositoryNameAndNoMark() {
         let face = face(row(branch: "fix-recap", project: "sampleco/gentility"))
         XCTAssertEqual(face.place, "gentility")
-        XCTAssertEqual(face.chip, Chip(letter: "G", round: false, colorIndex: 7))
+        XCTAssertNil(face.kind, "a plain thread carries no mark")
+        XCTAssertFalse(face.starred)
         XCTAssertEqual(face.branch, "fix-recap")
     }
 
-    func testALooperRunIsRoundAndSaysLooperRun() {
+    func testALooperRunSaysLooperRunAndIsMarked() {
         let face = face(row(project: "sampleco/gentility", looper: true))
         XCTAssertEqual(face.place, "Looper run")
-        XCTAssertEqual(face.chip?.round, true)
-        XCTAssertEqual(face.chip?.letter, "G")
+        XCTAssertEqual(face.kind, KindMark(symbol: "repeat", name: "Looper"))
     }
 
-    func testNoProjectAndNoLooperHasNoChipOrPlace() {
+    func testNoProjectAndNoLooperHasNoPlace() {
         let face = face(row())
-        XCTAssertNil(face.chip)
+        XCTAssertNil(face.kind)
         XCTAssertNil(face.place)
         XCTAssertNil(face.branch)
+    }
+
+    func testEachKindButAThreadIsMarkedAndSaid() {
+        func kinded(_ kind: ThreadKind, looper: Bool = false) -> RowFace {
+            face(HomeRow(id: "s", organizationID: "o", title: "T", state: "idle", ago: "", machineID: "m", macLabel: "mbp", recapLine: nil,
+                         lastEventAt: nil, live: true, project: "sampleco/gentility", looper: looper, kind: kind, starred: true))
+        }
+        XCTAssertEqual(kinded(.coordinator).kind?.name, "Coordinator")
+        XCTAssertEqual(kinded(.supervisor).kind?.symbol, "eye")
+        XCTAssertEqual(kinded(.responder, looper: true).place, "Responder run")
+        XCTAssertNil(kinded(.thread).kind)
+        XCTAssertTrue(kinded(.thread).starred)
+        XCTAssertTrue(kinded(.coordinator).accessibilityLabel.hasPrefix("T. Starred. Coordinator."))
+    }
+
+    func testOnlyAWordThatAsksIsDrawnAtTheRowsEnd() {
+        XCTAssertTrue(face(row(state: HomeRow.waitingOnYou, attention: .approval)).asks)
+        XCTAssertTrue(face(row(state: HomeRow.waitingOnYou, attention: .question)).asks)
+        XCTAssertFalse(face(row(state: "working")).asks)
+        XCTAssertFalse(face(row(settled: true)).asks)
+        XCTAssertFalse(face(row()).asks)
     }
 
     func testTheMacIsNamedOnlyWhenRowsSpanMoreThanOne() {

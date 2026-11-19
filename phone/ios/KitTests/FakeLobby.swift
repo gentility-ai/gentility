@@ -106,8 +106,8 @@ enum Build {
     static let now = "2026-01-01T12:00:00.000000Z"
     static let morgan = "u-morgan"
 
-    static func row(_ id: String, title: String, mac: String?, host: String?, owner: String = morgan, lastEventAt: String = now, working: Bool = false, attention: String = "none", attentionLine: String? = nil, archivedAt: String? = nil, settledAt: String? = nil, snoozedUntil: String? = nil, branch: String? = nil, repository: String? = nil, looper: String? = nil, waitingOn: String? = nil, waitingReason: String? = nil) throws -> LobbyRow {
-        let fields: [String: JSONValue] = [
+    static func row(_ id: String, title: String, mac: String?, host: String?, owner: String = morgan, lastEventAt: String = now, working: Bool = false, attention: String = "none", attentionLine: String? = nil, archivedAt: String? = nil, settledAt: String? = nil, snoozedUntil: String? = nil, branch: String? = nil, repository: String? = nil, looper: String? = nil, waitingOn: String? = nil, waitingReason: String? = nil, starredAt: String? = nil, role: String?? = nil) throws -> LobbyRow {
+        var fields: [String: JSONValue] = [
             "id": .string(id), "title": .string(title), "status": .string("open"),
             "attention": .string(attention), "attention_line": attentionLine.map(JSONValue.string) ?? .null, "working": .bool(working), "turns": .number(3),
             "owner_id": .string(owner), "last_event_at": .string(lastEventAt),
@@ -118,7 +118,10 @@ enum Build {
             "looper_id": looper.map(JSONValue.string) ?? .null,
             "waiting_on": waitingOn.map(JSONValue.string) ?? .null,
             "waiting_reason": waitingReason.map(JSONValue.string) ?? .null,
+            "starred_at": starredAt.map(JSONValue.string) ?? .null,
         ]
+        // A server older than tags sends none: `role` unnamed leaves them out.
+        if let role { fields["tags"] = .object(["role": role.map(JSONValue.string) ?? .null]) }
         return try JSONValue.object(fields).decode()
     }
 

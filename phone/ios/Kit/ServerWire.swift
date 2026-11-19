@@ -59,9 +59,20 @@ public struct LobbyRow: Decodable, Equatable, Sendable, Identifiable {
     public let waitingOn: String?
     /// Why, in one sentence; nil on a teammate's row, as `attentionLine` is.
     public let waitingReason: String?
+    /// When the person starred it, on any of their machines; nil while not.
+    public let starredAt: String?
+    /// What the server tagged it with; absent from a server older than tags.
+    public let tags: Tags?
+
+    public struct Tags: Decodable, Equatable, Sendable {
+        /// `supervisor`, `coordinator`, `looper` or `responder`; nil for a
+        /// thread with no role.
+        public let role: String?
+    }
 
     enum CodingKeys: String, CodingKey {
-        case id, title, status, attention, working, turns, host, branch, repository
+        case id, title, status, attention, working, turns, host, branch, repository, tags
+        case starredAt = "starred_at"
         case attentionLine = "attention_line"
         case waitingOn = "waiting_on"
         case waitingReason = "waiting_reason"

@@ -25,27 +25,96 @@ public struct ShelfGroup: Identifiable, Equatable, Sendable {
     public var title: String { shelf.title }
 }
 
+/// What a thread is for, after the Desk sidebar's kinds
+/// (`desk/ui/src/sidebar/row.logic.ts`, `kindOf`).
+public enum ThreadKind: String, CaseIterable, Sendable {
+    case thread, supervisor, coordinator, looper, responder
+
+    /// The server's role for the row; a looper's run with no role is a looper.
+    public init(role: String?, looper: Bool) {
+        self = role.flatMap(ThreadKind.init(rawValue:)) ?? (looper ? .looper : .thread)
+    }
+
+    /// As the filter names them.
+    public var plural: String {
+        switch self {
+        case .thread: "Threads"
+        case .supervisor: "Supervisors"
+        case .coordinator: "Coordinators"
+        case .looper: "Loopers"
+        case .responder: "Responders"
+        }
+    }
+
+    public var singular: String {
+        switch self {
+        case .thread: "Thread"
+        case .supervisor: "Supervisor"
+        case .coordinator: "Coordinator"
+        case .looper: "Looper"
+        case .responder: "Responder"
+        }
+    }
+
+    /// The SF Symbol a row is marked with; a plain thread carries none.
+    public var symbol: String? {
+        switch self {
+        case .thread: nil
+        case .supervisor: "eye"
+        case .coordinator: "point.3.connected.trianglepath.dotted"
+        case .looper: "repeat"
+        case .responder: "bolt"
+        }
+    }
+}
+
 /// What the person narrowed Home to.
 public struct HomeFilter: Equatable, Sendable {
     public var query: String
     /// `owner/repo`; nil is every project.
     public var project: String?
-    public var showLoopers: Bool
+    /// The kinds left out. A row waiting on an approval or a question shows
+    /// whatever its kind.
+    public var hidden: Set<ThreadKind>
     /// Only the threads waiting on you (`HomeRow.waitsOnYou`).
     public var waitingOnly: Bool
+    /// Only the threads working. With `waitingOnly`, either.
+    public var workingOnly: Bool
+    public var starredOnly: Bool
 
-    public init(query: String, project: String?, showLoopers: Bool, waitingOnly: Bool = false) {
+    /// What Home leaves out until asked: the runs nobody started by hand.
+    public static let quiet: Set<ThreadKind> = [.looper, .responder]
+
+    public init(query: String, project: String?, hidden: Set<ThreadKind> = HomeFilter.quiet, waitingOnly: Bool = false, workingOnly: Bool = false, starredOnly: Bool = false) {
         self.query = query
         self.project = project
-        self.showLoopers = showLoopers
+        self.hidden = hidden
         self.waitingOnly = waitingOnly
+        self.workingOnly = workingOnly
+        self.starredOnly = starredOnly
     }
 
     private var needle: String { query.trimmingCharacters(in: .whitespacesAndNewlines) }
 
-    /// A search, a project or Waiting on you: the folds open, so a match
-    /// never hides.
-    public var narrowed: Bool { !needle.isEmpty || project != nil || waitingOnly }
+    /// How many things the menu narrows by; the kinds count once, when they
+    /// are not as Home starts.
+    public var count: Int {
+        [project != nil, hidden != Self.quiet, waitingOnly, workingOnly, starredOnly].filter { $0 }.count
+    }
+
+    /// A search, a project or a status: the folds open, so a match never
+    /// hides.
+    public var narrowed: Bool { !needle.isEmpty || project != nil || waitingOnly || workingOnly || starredOnly }
+
+    /// What the footer says Home is showing only; nil when no status narrows it.
+    public var showing: String? {
+        var words: [String] = []
+        if waitingOnly { words.append("waiting on you") }
+        if workingOnly { words.append("working") }
+        guard !words.isEmpty || starredOnly else { return nil }
+        let status = words.joined(separator: " or ")
+        return starredOnly ? (status.isEmpty ? "starred" : "starred, \(status)") : status
+    }
 
     /// A remembered project no row is in any more reads as every project.
     public func effective(projects: [String]) -> HomeFilter {
@@ -55,8 +124,13 @@ public struct HomeFilter: Equatable, Sendable {
     }
 
     public func admits(_ row: HomeRow) -> Bool {
-        if waitingOnly && !row.waitsOnYou { return false }
-        if row.looper && !showLoopers && !row.waiting { return false }
+        if waitingOnly || workingOnly {
+            let waits = waitingOnly && row.waitsOnYou
+            let works = workingOnly && row.state == "working"
+            if !waits && !works { return false }
+        }
+        if starredOnly && !row.starred { return false }
+        if hidden.contains(row.kind) && !row.waiting { return false }
         if let project, row.project != project { return false }
         guard !needle.isEmpty else { return true }
         return [row.title, row.branch, row.project].contains { $0?.localizedCaseInsensitiveContains(needle) == true }

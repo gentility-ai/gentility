@@ -40,18 +40,10 @@ public struct StatusWord: Hashable, Sendable {
     }
 }
 
-/// A project's letter tile: square for a repository, round for a looper run.
-public struct Chip: Hashable, Sendable {
-    public let letter: String
-    public let round: Bool
-    /// Into `ChipColor`'s eighteen hues.
-    public let colorIndex: Int
-
-    public init(letter: String, round: Bool, colorIndex: Int) {
-        self.letter = letter
-        self.round = round
-        self.colorIndex = colorIndex
-    }
+/// What a row that is not a plain thread is marked with.
+public struct KindMark: Hashable, Sendable {
+    public let symbol: String
+    public let name: String
 }
 
 /// The Mac on line 3: named only when the person's rows span more than one.
@@ -62,27 +54,6 @@ public struct MacMark: Hashable, Sendable {
     public init(name: String?, asleep: Bool) {
         self.name = name
         self.asleep = asleep
-    }
-}
-
-/// The colour of a project's chip: a port of `hue` in
-/// `desk/ui/src/sidebar/chip.logic.ts`, so a project is one colour on the
-/// phone and the Mac. Change one, change both.
-public enum ChipColor {
-    /// The hues, in the Mac's order: gray, red, orange, amber, yellow, lime,
-    /// green, emerald, teal, cyan, sky, blue, indigo, violet, purple,
-    /// fuchsia, pink, rose.
-    public static let count = 18
-
-    public static func index(for name: String) -> Int {
-        let normal = name.precomposedStringWithCompatibilityMapping.trimmingCharacters(in: .whitespacesAndNewlines)
-        let lowered = normal.lowercased(with: Locale(identifier: "en_US"))
-        let seed = lowered.isEmpty ? "project" : lowered
-        var index = 0
-        for scalar in seed.unicodeScalars {
-            index = (index * 31 + Int(scalar.value)) % count
-        }
-        return index
     }
 }
 
@@ -116,10 +87,15 @@ extension Ago {
 
 /// What a Home row draws, as plain values: the view only maps tones to colours.
 public struct RowFace: Equatable, Sendable {
-    public let chip: Chip?
-    /// The repository's name, or "Looper run".
+    /// The repository's name, or "Looper run" or "Responder run".
     public let place: String?
+    /// Nil for a plain thread.
+    public let kind: KindMark?
+    public let starred: Bool
     public let word: StatusWord?
+    /// The word asks something of the person: it is drawn in its colour at
+    /// the row's end, where a calm row has its age.
+    public let asks: Bool
     public let age: String
     public let branch: String?
     public let mac: MacMark
@@ -132,11 +108,9 @@ public struct RowFace: Equatable, Sendable {
 
     public init(_ row: HomeRow, now: Date, showsMacName: Bool, calendar: Calendar = .current) {
         let repository = row.project.flatMap { $0.split(separator: "/").last.map(String.init) }
-        let chipName = repository ?? (row.looper ? "looper" : nil)
-        chip = chipName.map { name in
-            Chip(letter: name.first.map { String($0).uppercased() } ?? "?", round: row.looper, colorIndex: ChipColor.index(for: name))
-        }
-        place = row.looper ? "Looper run" : repository
+        place = row.looper ? (row.kind == .responder ? "Responder run" : "Looper run") : repository
+        kind = row.kind.symbol.map { KindMark(symbol: $0, name: row.kind.singular) }
+        starred = row.starred
         let snoozed = row.snoozedUntil.flatMap { $0 > now ? $0 : nil }
         word = switch row.attention {
         case .approval: StatusWord(text: "Approval", symbol: "checkmark.shield", tone: .approval)
@@ -156,6 +130,7 @@ public struct RowFace: Equatable, Sendable {
                 nil
             }
         }
+        asks = word.map { $0.tone == .approval || $0.tone == .input } ?? false
         age = Ago.compact(row.lastEventAt, now: now)
         branch = row.branch.flatMap { $0.isEmpty ? nil : $0 }
         let asleep = !row.live && !row.deskOnline
@@ -165,6 +140,8 @@ public struct RowFace: Equatable, Sendable {
         attentionLine = needsYou ? row.waitingLine : nil
 
         var parts = [row.title]
+        if starred { parts.append("Starred") }
+        if let kind, !row.looper { parts.append(kind.name) }
         if let word {
             parts.append(attentionLine.map { "\(word.text): \($0)" } ?? word.text)
         }

@@ -31,10 +31,16 @@ public struct HomeRow: Identifiable, Hashable, Sendable {
     /// the person, and why in one sentence. Nil while it waits on nobody.
     public let waitingOn: String?
     public let waitingReason: String?
+    public let kind: ThreadKind
+    /// Starred by the person, on any of their machines.
+    public let starred: Bool
 
     /// `attention` defaults from `state`: a row built as waiting on you,
-    /// with no kind named, waits on an approval.
-    public init(id: String, organizationID: String, title: String, state: String, ago: String, machineID: String?, macLabel: String, recapLine: String?, lastEventAt: Date?, attentionLine: String? = nil, live: Bool = false, deskOnline: Bool = false, settledAt: Date? = nil, snoozedUntil: Date? = nil, branch: String? = nil, project: String? = nil, looper: Bool = false, attention: RowAttention? = nil, waitingOn: String? = nil, waitingReason: String? = nil) {
+    /// with no kind named, waits on an approval. `kind` defaults from
+    /// `looper`.
+    public init(id: String, organizationID: String, title: String, state: String, ago: String, machineID: String?, macLabel: String, recapLine: String?, lastEventAt: Date?, attentionLine: String? = nil, live: Bool = false, deskOnline: Bool = false, settledAt: Date? = nil, snoozedUntil: Date? = nil, branch: String? = nil, project: String? = nil, looper: Bool = false, attention: RowAttention? = nil, waitingOn: String? = nil, waitingReason: String? = nil, kind: ThreadKind? = nil, starred: Bool = false) {
+        self.kind = kind ?? (looper ? .looper : .thread)
+        self.starred = starred
         self.attention = attention ?? (state == Self.waitingOnYou ? .approval : .none)
         self.waitingOn = waitingOn
         self.waitingReason = waitingReason
@@ -83,7 +89,7 @@ public struct HomeRow: Identifiable, Hashable, Sendable {
 
     /// This row with its park state replaced.
     func parked(settledAt: Date?, snoozedUntil: Date?) -> HomeRow {
-        HomeRow(id: id, organizationID: organizationID, title: title, state: state, ago: ago, machineID: machineID, macLabel: macLabel, recapLine: recapLine, lastEventAt: lastEventAt, attentionLine: attentionLine, live: live, deskOnline: deskOnline, settledAt: settledAt, snoozedUntil: snoozedUntil, branch: branch, project: project, looper: looper, attention: attention, waitingOn: waitingOn, waitingReason: waitingReason)
+        HomeRow(id: id, organizationID: organizationID, title: title, state: state, ago: ago, machineID: machineID, macLabel: macLabel, recapLine: recapLine, lastEventAt: lastEventAt, attentionLine: attentionLine, live: live, deskOnline: deskOnline, settledAt: settledAt, snoozedUntil: snoozedUntil, branch: branch, project: project, looper: looper, attention: attention, waitingOn: waitingOn, waitingReason: waitingReason, kind: kind, starred: starred)
     }
 }
 
@@ -649,7 +655,9 @@ public final class HomeModel: ObservableObject {
                     looper: row.looperID != nil,
                     attention: attention,
                     waitingOn: row.waitingOn,
-                    waitingReason: row.waitingReason
+                    waitingReason: row.waitingReason,
+                    kind: ThreadKind(role: row.tags?.role, looper: row.looperID != nil),
+                    starred: row.starredAt != nil
                 ))
             }
         }
