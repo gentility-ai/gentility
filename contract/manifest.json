@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469"
+      "sha256": "25d4f2a86deb5e2574bb3210b67bb24fcc4afb19f93a7b65a057daa874a9d18e"
     },
     "config_change/README.md": {
       "executable": false,
@@ -1316,7 +1316,7 @@
     "server/contract.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "518f873225c31a20263b51ac4b63bcf90a5c468ae161bfb1a631049f34ac5235"
+      "sha256": "ec3408d0bde27d3a66b98ebe0b5bf2bbac0dee5819f09a7549e85646176c0d97"
     },
     "server/desk/answer.json": {
       "executable": false,
@@ -1606,7 +1606,7 @@
     "server/refusals.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "a1e23d582da328bc2c865b0bdb61ae97841074b3a2ea2cc98f3a91668e261545"
+      "sha256": "ee9ea4a41209847570bf751dc8bbc8172fbbcb5a5fe2bf1a66c5228e8ff04cb4"
     },
     "server/refused.jsonl": {
       "executable": false,
@@ -1727,6 +1727,11 @@
       "executable": false,
       "owner": "server",
       "sha256": "9abda2a58901ef7148dbc7af8207709b90b4716de27cc1efad4b797efbd168b7"
+    },
+    "server/rpc/hello_revoked.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "1761ee9abb6833b91d5c4bbcf05b7d9535bc8aa1f7090fb7d07756b80813c0f5"
     },
     "server/rpc/hello_superseded.json": {
       "executable": false,
@@ -1918,6 +1923,11 @@
       "owner": "server",
       "sha256": "0cd7d0863386476fb9d4726fd88773fcecca1cad7ea847174ed836a97a52390a"
     },
+    "server/rpc/revoked_binding.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "a525612d4b106c319bb16046e31043abd3cd6b8d0d1af052b5ff2f23e78a52ea"
+    },
     "server/rpc/revoked_connection.json": {
       "executable": false,
       "owner": "server",
@@ -2032,6 +2042,11 @@
       "executable": false,
       "owner": "server",
       "sha256": "b627f6d73c60d7edd1a80dfc154681274f5a10284a0411826ceb51eb06bedfa1"
+    },
+    "server/rpc/watch_revoked.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "fc2391ccd5740d5fde778e0d564c3b81dec81c9958578393eed20ffa7b4ff583"
     },
     "server/work_session/append.json": {
       "executable": false,
@@ -2926,8 +2941,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 10,
-  "source_commit": "dc6cd16cf6bdd9c85dd446c1e5691a6657cd70a1",
+  "number": 11,
+  "source_commit": "f36fc8e95af376d337ecee4d4818fc812c065993",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

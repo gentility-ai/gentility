@@ -261,9 +261,13 @@
         "not_delegated_by_you",
         "not_found",
         "not_your_child",
+        "revoked",
         "session_archived",
         "session_closed",
         "superseded"
+      ],
+      "x-rpc-only-refusals": [
+        "revoked"
       ]
     },
     {
@@ -351,9 +355,13 @@
       "x-refusals": [
         "forbidden",
         "not_found",
+        "revoked",
         "session_archived",
         "session_closed",
         "superseded"
+      ],
+      "x-rpc-only-refusals": [
+        "revoked"
       ]
     },
     {
@@ -1467,8 +1475,12 @@
         }
       },
       "x-refusals": [
+        "revoked",
         "superseded",
         "unauthorized"
+      ],
+      "x-rpc-only-refusals": [
+        "revoked"
       ]
     },
     {
@@ -1639,8 +1651,12 @@
         }
       },
       "x-refusals": [
+        "revoked",
         "superseded",
         "unauthorized"
+      ],
+      "x-rpc-only-refusals": [
+        "revoked"
       ]
     },
     {
@@ -4783,6 +4799,7 @@
       },
       "x-refusals": [
         "malformed_payload",
+        "revoked",
         "superseded"
       ]
     },
@@ -4902,6 +4919,7 @@
       },
       "x-refusals": [
         "forbidden",
+        "revoked",
         "superseded"
       ]
     },
@@ -5018,6 +5036,7 @@
         "not_a_holder",
         "not_found",
         "replay_mismatch",
+        "revoked",
         "sequence_gap",
         "server_only_event",
         "session_archived",
@@ -5027,6 +5046,9 @@
         "unavailable",
         "unknown_actor",
         "unknown_message"
+      ],
+      "x-rpc-only-refusals": [
+        "revoked"
       ]
     },
     {
@@ -5080,11 +5102,13 @@
         "forbidden",
         "not_bound",
         "pin_mismatch",
+        "revoked",
         "superseded",
         "too_large",
         "unavailable"
       ],
       "x-rpc-only-refusals": [
+        "revoked",
         "unavailable"
       ]
     },
@@ -5107,8 +5131,12 @@
       },
       "x-refusals": [
         "forbidden",
+        "revoked",
         "superseded",
         "unauthorized"
+      ],
+      "x-rpc-only-refusals": [
+        "revoked"
       ]
     },
     {
@@ -6565,9 +6593,13 @@
         "not_a_holder",
         "not_a_machine",
         "not_found",
+        "revoked",
         "stale_epoch",
         "superseded",
         "unknown_actor"
+      ],
+      "x-rpc-only-refusals": [
+        "revoked"
       ]
     },
     {
@@ -8761,7 +8793,7 @@
     },
     {
       "name": "rpc.revoked",
-      "description": "What the connection proved has stopped proving it (`Gentility.Accounts.Revocations`). `scope: \"org\"` names one organization the person no longer reaches, and calls naming it are refused `forbidden`; `scope: \"connection\"` is the credential itself, and the server closes with 4401 (`credential_revoked`) or 4409 (`superseded`, after which a host stops reconnecting).",
+      "description": "What the connection proved has stopped proving it (`Gentility.Accounts.Revocations`). `scope: \"org\"` names one organization the person no longer reaches, and calls naming it are refused `forbidden`; `scope: \"connection\"` is the credential itself, and the server closes with 4401 (`credential_revoked`, or `revoked` for a host whose binding was revoked on purpose) or 4409 (`superseded`, after which a host stops reconnecting); a released core stops dialling `/desk/rpc` on either.",
       "paramStructure": "by-name",
       "params": [
         {
@@ -8791,6 +8823,7 @@
             "enum": [
               "credential_revoked",
               "superseded",
+              "revoked",
               "membership_removed",
               "mcp_disabled"
             ],
@@ -11094,7 +11127,7 @@
     "close": {
       "1009": "message_too_big: a frame past `max_frame` bytes, which the server cannot read, so it closes the connection and every domain on it. A core never sends one: it refuses a request past `max_frame` itself, unsent",
       "1012": "restart: the server is draining for a deploy; reconnect with backoff. Best-effort: behind kamal-proxy a deploy usually shows as 1006, the connection cut with no close frame, because the proxy cuts upgraded connections at its switch, before the old node stops and drains. A core reads 1006 exactly as 1012",
-      "4401": "credential_revoked: the credential is dead. A person's Desk logs in again, and a host is bound again, before reconnecting; neither retries the same credential",
+      "4401": "credential_revoked: the credential is dead. A person's Desk logs in again, and a host is bound again, before reconnecting; neither retries the same credential. A host whose binding was revoked on purpose is closed with it too, its word `revoked`, at once if it is connected and at once after the upgrade if it dials again. A released core stops dialling `/desk/rpc` on 4401; its Phoenix socket stops reconnecting only on `superseded`, so it goes on dialling `/socket` with backoff and is refused 403 `revoked` each time",
       "4409": "superseded"
     }
   }

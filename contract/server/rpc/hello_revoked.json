@@ -1,0 +1,32 @@
+{
+  "request": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "method": "rpc.hello",
+    "params": {
+      "build": "nightly",
+      "features": [
+        "rpc_loopers",
+        "looper_feed"
+      ],
+      "generation": 1,
+      "incarnation": "box-1",
+      "protocol": {
+        "major": 1
+      },
+      "version": "0.1.700"
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32001,
+      "data": {
+        "message": "This host's binding was revoked; stop.",
+        "reason": "revoked"
+      },
+      "message": "This host's binding was revoked; stop."
+    },
+    "id": 1,
+    "jsonrpc": "2.0"
+  }
+}

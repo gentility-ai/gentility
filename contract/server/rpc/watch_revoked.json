@@ -1,0 +1,25 @@
+{
+  "request": {
+    "id": 2,
+    "jsonrpc": "2.0",
+    "method": "rpc.watch",
+    "params": {
+      "org": "00000000-0000-7000-8000-000000000001",
+      "streams": [
+        "machine"
+      ]
+    }
+  },
+  "response": {
+    "error": {
+      "code": -32001,
+      "data": {
+        "message": "This host's binding was revoked; stop.",
+        "reason": "revoked"
+      },
+      "message": "This host's binding was revoked; stop."
+    },
+    "id": 2,
+    "jsonrpc": "2.0"
+  }
+}

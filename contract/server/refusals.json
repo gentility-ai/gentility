@@ -189,11 +189,13 @@
     ],
     "hello": [
       "malformed_payload",
+      "revoked",
       "superseded"
     ],
     "unwatch": [],
     "watch": [
       "forbidden",
+      "revoked",
       "superseded"
     ]
   },
