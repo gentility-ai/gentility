@@ -858,9 +858,10 @@ machine?: string, instructions?: string, };
  */
 export type GroupMemberView = { label: string, model: string | null, harness: string | null, session_id: string, state: string,
 /**
- * Whether its thread ever started: false for a member whose start
- * failed, which has no thread to open. Absent from a server that does
- * not say it.
+ * Whether it has a thread to open: false for a member whose start
+ * failed before its thread opened. One that opened and closed before
+ * its first turn (`closed`) is true: its thread says why. Absent from a
+ * server that does not say it.
  */
 started?: boolean, };
 
