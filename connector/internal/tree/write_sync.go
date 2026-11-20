@@ -211,7 +211,8 @@ func (s *Syncer) onceWritable(ctx context.Context) (result error) {
 // holdLayout keeps a root on its layout while its write journal holds edits,
 // so a pending edit is sent at the path it was made on and never re-pathed
 // (T-155's rule for root moves). Nothing about the hold is persisted: each
-// round asks for layout 3 and decides again, so a crash cannot strand it.
+// round asks for the newest layout and decides again, so a crash cannot
+// strand it.
 // Offered a newer layout, a root asks again for its own and syncs on it while
 // the edits drain; offered an older one (a server rolled back), it applies
 // nothing until then.
@@ -700,7 +701,7 @@ func (s *Syncer) applyWritable(ctx context.Context, source Source, manifest Mani
 		if digest(body) != entry.SHA256 || entry.Size != nil && int64(len(body)) != *entry.Size {
 			return errors.New("tree: blob SHA-256 or size mismatch")
 		}
-		if err := validatePluginBody(entry.Path, body); err != nil {
+		if err := validatePluginBody(entry.Path, body, manifest.layout()); err != nil {
 			return err
 		}
 		// Handle an unmanaged file at a parent path before creating directories.

@@ -89,7 +89,7 @@ func fileMode(entry Entry, manifest Manifest, principal string) os.FileMode {
 
 func notesRoot(name string) bool {
 	parts := strings.Split(name, "/")
-	if parts[0] == "skills" { // layouts 2 and 3: skills/<org> for an org slugged notes
+	if parts[0] == "skills" { // layouts 2 to 4: skills/<org> for an org slugged notes
 		return false
 	}
 	return len(parts) == 2 && parts[1] == "notes" || len(parts) == 3 && parts[1] == "me" && parts[2] == "notes" || len(parts) == 4 && parts[1] == "projects" && parts[3] == "notes"

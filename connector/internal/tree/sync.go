@@ -402,7 +402,7 @@ func (s *Syncer) onceReadOnly(ctx context.Context) error {
 		if entry.Size != nil && int64(len(data)) != *entry.Size {
 			return errors.New("tree: blob size mismatch")
 		}
-		if err := validatePluginBody(entry.Path, data); err != nil {
+		if err := validatePluginBody(entry.Path, data, manifest.layout()); err != nil {
 			return err
 		}
 	}

@@ -111,7 +111,7 @@ func (s *Syncer) directoryIdentity(name string) (unix.Stat_t, error) {
 	return stat, err
 }
 
-// refuseSkillsMove stops a slug change on a layout-2 or layout-3 root, before
+// refuseSkillsMove stops a slug change on a root of layout 2 or later, before
 // any edit is drained: skills/<slug>/ lies outside the organization directory
 // a move renames. Slugs are immutable (T-154), so this guards a case that
 // should not arise rather than carrying skills/ through a move.

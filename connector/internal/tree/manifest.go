@@ -19,7 +19,7 @@ type Organization struct {
 }
 
 type Manifest struct {
-	// Layout is echoed by a server that rendered the requested layout 2 or 3.
+	// Layout is echoed by a server that rendered the requested layout 2, 3 or 4.
 	// An absent field is layout 1, which is all an older server knows.
 	Layout       int           `json:"layout,omitempty"`
 	Organization *Organization `json:"organization,omitempty"`
@@ -66,8 +66,8 @@ func safePath(name string, root bool) error {
 }
 
 // newestLayout is the layout the connector asks for. A server that cannot
-// render it answers layout 1.
-const newestLayout = 3
+// render it answers a lower one, which the connector follows.
+const newestLayout = 4
 
 // The layouts differ only in where skills live. Layout 1 keeps them beside
 // their owner: me/skills/, <org>/skills/ and <org>/projects/<p>/skills/.
@@ -75,15 +75,20 @@ const newestLayout = 3
 // skills/<org>/ and skills/<org>/projects/<p>/, and has no root me/. Layout 3
 // makes each of those sets a read-only plugin a harness loads: skills/me/,
 // skills/<org>/org/ and skills/<org>/projects/<p>/, each holding only
-// .claude-plugin/plugin.json and skills/<slug>/SKILL.md.
+// .claude-plugin/plugin.json and skills/<slug>/SKILL.md. Layout 4 flattens
+// them to one plugin folder per set directly under skills/: skills/_me/,
+// skills/<org>/ and skills/<org>.<project>/, each holding an INDEX.md,
+// .claude-plugin/plugin.json and <slug>/SKILL.md. The server's slugs never
+// hold a dot or start with an underscore, so the names cannot collide;
+// skills/me/ is an organization slugged me.
 func (m Manifest) layout() int {
-	if m.Layout == 2 || m.Layout == 3 {
+	if m.Layout >= 2 && m.Layout <= 4 {
 		return m.Layout
 	}
 	return 1
 }
 
-// layoutRoute asks for layout 2 or 3 explicitly; no parameter is layout 1. A
+// layoutRoute asks for layouts 2 to 4 explicitly; no parameter is layout 1. A
 // blob request carries the layout of the manifest it materialises.
 func layoutRoute(route string, layout int) string {
 	if layout >= 2 {
@@ -106,7 +111,7 @@ func (m Manifest) validate(principal, org string) (string, error) {
 	if len(m.AsOf.Cursors) == 0 || string(m.AsOf.Cursors) == "null" || m.AsOf.RenderedAt == "" {
 		return "", fmt.Errorf("tree: missing as_of")
 	}
-	if m.Layout != 0 && m.Layout != 2 && m.Layout != 3 {
+	if m.Layout != 0 && (m.Layout < 2 || m.Layout > 4) {
 		return "", fmt.Errorf("tree: unsupported manifest layout %d", m.Layout)
 	}
 	if m.Organization != nil {
@@ -131,12 +136,18 @@ func (m Manifest) validate(principal, org string) (string, error) {
 			return nil
 		}
 		// Private to a person: me/ and <org>/me/ in layout 1, skills/me/ and
-		// <org>/me/ in layouts 2 and 3. A node tree never holds any of them,
-		// nor skills/<org>/me/, the layout-2 counterpart of <org>/me/.
-		if principal == "node" && (parts[0] == "me" || len(parts) > 1 && parts[1] == "me" || parts[0] == "skills" && len(parts) > 2 && parts[2] == "me") {
+		// <org>/me/ in layouts 2 and 3, skills/_me/ and <org>/me/ in layout 4.
+		// A node tree never holds any of them, nor skills/<org>/me/, the
+		// layout-2 counterpart of <org>/me/. In layout 4 skills/me/ is an
+		// organization slugged me, and skills/<org>/me/ its skill slugged me.
+		private := parts[0] == "me" || len(parts) > 1 && parts[1] == "me" || parts[0] == "skills" && len(parts) > 2 && parts[2] == "me"
+		if parts[0] == "skills" && m.layout() == 4 {
+			private = len(parts) > 1 && parts[1] == "_me"
+		}
+		if principal == "node" && private {
 			return refuse("tree: private node path refused: %q", name)
 		}
-		owner := parts[0]
+		owner, personal := parts[0], parts[0] == "me"
 		switch {
 		case parts[0] == "me" && m.layout() >= 2:
 			return refuse("tree: root me/ is not part of layout %d: %q", m.layout(), name)
@@ -147,9 +158,14 @@ func (m Manifest) validate(principal, org string) (string, error) {
 			if len(parts) == 1 || name == "skills/INDEX.md" {
 				return nil
 			}
-			owner = parts[1]
+			owner, personal = parts[1], parts[1] == "me"
+			if m.layout() == 4 {
+				// A project's folder belongs to the organization before its dot.
+				owner, _, _ = strings.Cut(parts[1], ".")
+				personal = parts[1] == "_me"
+			}
 		}
-		if owner == "me" {
+		if personal {
 			return nil
 		}
 		if org == "" {
@@ -164,7 +180,7 @@ func (m Manifest) validate(principal, org string) (string, error) {
 		if err := safePath(d.Path, true); err != nil {
 			return "", err
 		}
-		if m.layout() == 3 && !skillPluginPath(d.Path, true) {
+		if !skillPathInLayout(d.Path, true, m.layout()) {
 			return "", refuse("tree: unsupported skill plugin directory %q", d.Path)
 		}
 		if all[strings.ToLower(d.Path)] {
@@ -188,7 +204,7 @@ func (m Manifest) validate(principal, org string) (string, error) {
 		}
 	}
 	check := func(e Entry, index bool) error {
-		if m.layout() == 3 && !skillPluginPath(e.Path, false) {
+		if !skillPathInLayout(e.Path, false, m.layout()) {
 			return refuse("tree: unsupported skill plugin file %q", e.Path)
 		}
 		if err := safePath(e.Path, false); err != nil {
@@ -230,6 +246,18 @@ func (m Manifest) validate(principal, org string) (string, error) {
 	return org, nil
 }
 func (m Manifest) entries() []Entry { return append(append([]Entry{}, m.Files...), m.Indexes...) }
+
+// skillPathInLayout checks a path under skills/ against the plugin shape of
+// layouts 3 and 4. Layouts 1 and 2 have no plugins and are checked by scope.
+func skillPathInLayout(name string, directory bool, layout int) bool {
+	switch layout {
+	case 3:
+		return skillPluginPath(name, directory)
+	case 4:
+		return skillPluginPath4(name, directory)
+	}
+	return true
+}
 
 // Layout 3's containers have indexes, but each plugin contains only its
 // descriptive manifest and skill documents. No hooks, scripts or MCP config.
@@ -280,7 +308,56 @@ func skillPluginPath(name string, directory bool) bool {
 	return len(parts) == 2 && parts[0] == ".claude-plugin" && parts[1] == "plugin.json" || len(parts) == 3 && parts[0] == "skills" && parts[2] == "SKILL.md"
 }
 
-func validatePluginBody(name string, body []byte) error {
+// Layout 4's plugins hold the same: each folder carries its INDEX.md, its
+// manifest, and one directory per skill holding only SKILL.md.
+func skillPluginPath4(name string, directory bool) bool {
+	parts := strings.Split(name, "/")
+	if parts[0] != "skills" {
+		return true
+	}
+	if len(parts) == 1 {
+		return directory
+	}
+	if len(parts) == 2 && parts[1] == "INDEX.md" {
+		return !directory
+	}
+	if !skillFolder(parts[1]) {
+		return false
+	}
+	rest := parts[2:]
+	if directory {
+		return len(rest) == 0 || len(rest) == 1 && (rest[0] == ".claude-plugin" || skillSlug(rest[0]))
+	}
+	return len(rest) == 1 && rest[0] == "INDEX.md" ||
+		len(rest) == 2 && rest[0] == ".claude-plugin" && rest[1] == "plugin.json" ||
+		len(rest) == 2 && skillSlug(rest[0]) && rest[1] == "SKILL.md"
+}
+
+// skillFolder names a layout-4 plugin folder: _me, <org> or <org>.<project>.
+// Which organization may appear is scope's to check.
+func skillFolder(name string) bool {
+	if name == "_me" {
+		return true
+	}
+	org, project, isProject := strings.Cut(name, ".")
+	return skillSlug(org) && (!isProject || skillSlug(project))
+}
+
+// skillSlug is the server's slug shape, [a-z0-9][a-z0-9-]*.
+func skillSlug(name string) bool {
+	for i, c := range name {
+		if !(c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '-' && i > 0) {
+			return false
+		}
+	}
+	return name != ""
+}
+
+// validatePluginBody checks a plugin manifest is only descriptive: a name and
+// a description, and in layout 4 the "skills": "./" that points a harness at
+// the skill directories beside it. Any other key (hooks, MCP servers, a skills
+// path elsewhere) is refused.
+func validatePluginBody(name string, body []byte, layout int) error {
 	if !pluginManifest(name) {
 		return nil
 	}
@@ -291,8 +368,11 @@ func validatePluginBody(name string, body []byte) error {
 	if value, ok := fields["name"].(string); !ok || value == "" {
 		return refuse("tree: skill plugin manifest needs a name: %q", name)
 	}
+	if layout == 4 && fields["skills"] != "./" {
+		return refuse(`tree: layout 4 skill plugin manifest needs "skills": "./": %q`, name)
+	}
 	for key, value := range fields {
-		if key != "name" && key != "description" {
+		if key != "name" && key != "description" && (key != "skills" || layout != 4) {
 			return refuse("tree: unsupported skill plugin manifest key %q", key)
 		}
 		if _, ok := value.(string); !ok {

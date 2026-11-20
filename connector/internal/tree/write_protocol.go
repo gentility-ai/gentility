@@ -67,9 +67,10 @@ func writePath(name string) error {
 func ignoredLocal(name string) bool {
 	parts := strings.Split(name, "/")
 	for i, part := range parts {
-		// Layout 3 renders each plugin's manifest at skills/…/.claude-plugin/
-		// plugin.json: the server's file, not an editor's, in a directory no
-		// manifest lets a person write. Nothing else in that directory is.
+		// Layouts 3 and 4 render each plugin's manifest at skills/…/
+		// .claude-plugin/plugin.json: the server's file, not an editor's, in a
+		// directory no manifest lets a person write. Nothing else in that
+		// directory is.
 		if part == ".claude-plugin" && parts[0] == "skills" && (i == len(parts)-1 || i == len(parts)-2 && parts[i+1] == "plugin.json") {
 			continue
 		}
