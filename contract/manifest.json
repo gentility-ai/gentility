@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "54183f4323f377b737433a1e98229ead0fdc686f93bab057ecb612daa94002b5"
+      "sha256": "7ee29791fc17e986b97128845622b077fb45e349fdb80523fac9dba879b4ad60"
     },
     "config_change/README.md": {
       "executable": false,
@@ -1556,7 +1556,7 @@
     "server/facts.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "26f1085e1c5435812e98fa0bb4742040af4546df4e65e60030a371f00b04ef88"
+      "sha256": "656ef5016721158bdfe7f78171972835a7ac3436eb15db9c5faad8841e48037a"
     },
     "server/looper_threads/changed_loopers.json": {
       "executable": false,
@@ -2496,7 +2496,7 @@
     "server/work_sessions/join.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "4cf7270de0068ec4af3224e8950573bbc074b3c93b8502cc02bae8a4fa6448a3"
+      "sha256": "891d0549ad2d1b933eff52790871b9687f397ac54c0f382c5534bd861f341220"
     },
     "server/work_sessions/lease_take.json": {
       "executable": false,
@@ -3036,13 +3036,13 @@
     "window/protocol.gen.ts": {
       "executable": false,
       "owner": "core",
-      "sha256": "e83b69649a5f1c067ab14758b4d78c37f69ba9bee65994997bcea40ad90f12fc"
+      "sha256": "7c6f8ac758d8edeb306a03a5bae68f503dfe6d23b44a8ecf30647797f90c2358"
     }
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 17,
-  "source_commit": "e5e6286aec833482b220b304fb2c8bbad9963793",
+  "number": 18,
+  "source_commit": "285f0323835087fa6c809b5269994813707ba150",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,
