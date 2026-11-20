@@ -325,12 +325,27 @@ func skillPluginPath4(name string, directory bool) bool {
 		return false
 	}
 	rest := parts[2:]
+	skill := func(name string) bool { return skillSlug(name) && !pluginParts[name] }
 	if directory {
-		return len(rest) == 0 || len(rest) == 1 && (rest[0] == ".claude-plugin" || skillSlug(rest[0]))
+		return len(rest) == 0 || len(rest) == 1 && (rest[0] == ".claude-plugin" || skill(rest[0]))
 	}
 	return len(rest) == 1 && rest[0] == "INDEX.md" ||
 		len(rest) == 2 && rest[0] == ".claude-plugin" && rest[1] == "plugin.json" ||
-		len(rest) == 2 && skillSlug(rest[0]) && rest[1] == "SKILL.md"
+		len(rest) == 2 && skill(rest[0]) && rest[1] == "SKILL.md"
+}
+
+// pluginParts are the folders Claude Code loads at a plugin's root as
+// something other than a skill: commands, agents, hooks, monitors, an output
+// style, a theme, workflows, programs on the Bash PATH, or a skills folder of
+// its own. A layout-4 skill's folder sits at that root ("skills": "./"), so a
+// skill named one of these would load as that part, and its plugin folder is
+// refused. The list is the "Standard layout" table of Claude Code's plugins
+// reference; the server
+// never renders a skill of these names in layout 4, and Desk refuses the same
+// nine, so keep the three lists the same.
+var pluginParts = map[string]bool{
+	"agents": true, "bin": true, "commands": true, "hooks": true, "monitors": true,
+	"output-styles": true, "skills": true, "themes": true, "workflows": true,
 }
 
 // skillFolder names a layout-4 plugin folder: _me, <org> or <org>.<project>.

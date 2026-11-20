@@ -689,6 +689,44 @@ func TestLayoutScopeRefusals(t *testing.T) {
 	}
 }
 
+// A layout-4 skill's folder sits at its plugin's root, where Claude Code loads
+// a folder of one of these names as another part of the plugin: each refuses
+// the manifest, as a folder and as a skill file.
+func TestLayout4RefusesPluginPartSkills(t *testing.T) {
+	want := []string{"agents", "bin", "commands", "hooks", "monitors", "output-styles", "skills", "themes", "workflows"}
+	if len(pluginParts) != len(want) {
+		t.Fatalf("pluginParts holds %d names, want %d", len(pluginParts), len(want))
+	}
+	f := &layoutFixture{principal: "person", skills: map[string]string{"skills/acme/review.md": "org skill"}, revisions: map[string]string{}}
+	size := int64(1)
+	for _, part := range want {
+		if !pluginParts[part] {
+			t.Fatalf("pluginParts lacks %q", part)
+		}
+		for _, folder := range []string{"skills/acme/", "skills/_me/", "skills/acme.web/"} {
+			m, _ := f.render(4)
+			m.Directories = append(m.Directories,
+				Directory{Path: "skills/acme.web", Write: json.RawMessage(`false`)},
+				Directory{Path: folder + part, Write: json.RawMessage(`false`)})
+			if _, err := m.validate("person", ""); err == nil || !strings.Contains(err.Error(), "unsupported skill plugin directory") {
+				t.Errorf("%s%s as a folder: got %v", folder, part, err)
+			}
+		}
+		if skillPluginPath4("skills/acme/"+part+"/SKILL.md", false) {
+			t.Errorf("skills/acme/%s/SKILL.md accepted as a skill file", part)
+		}
+		m, _ := f.render(4)
+		m.Files = append(m.Files, Entry{Path: "skills/acme/" + part + "/SKILL.md", SHA256: digest([]byte("x")), Size: &size})
+		if _, err := m.validate("person", ""); err == nil || !strings.Contains(err.Error(), "unsupported skill plugin file") {
+			t.Errorf("skills/acme/%s/SKILL.md: got %v", part, err)
+		}
+	}
+	// Control: a slug that only begins with one is a skill.
+	if !skillPluginPath4("skills/acme/agents-handbook/SKILL.md", false) || !skillPluginPath4("skills/acme/agents-handbook", true) {
+		t.Fatal("agents-handbook refused")
+	}
+}
+
 // In layout 4 skills/me is the folder of an organization slugged me, so a
 // node tree bound to that organization holds it. The connector reserves the
 // slug me when binding a root (organization.go), so this checks the scope rule
