@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "a1fb50e6c86fae1679ef3351296fd6713411a08cf8dd1790a4fd05fae8688164"
+      "sha256": "1a252402972f6057fa53cc172b52b9ffca698e18311facd0f3b06ecaaef79e17"
     },
     "config_change/README.md": {
       "executable": false,
@@ -1306,7 +1306,7 @@
     "server/README.md": {
       "executable": false,
       "owner": "server",
-      "sha256": "753f00cae80d05a6cd69f7351516417e20862688318960de6581d50cc0625061"
+      "sha256": "c35be23ddb150114cde110897e7553207c85280635a12bf54ad16cfb56efddb8"
     },
     "server/asks.json": {
       "executable": false,
@@ -2047,6 +2047,46 @@
       "executable": false,
       "owner": "server",
       "sha256": "fc2391ccd5740d5fde778e0d564c3b81dec81c9958578393eed20ffa7b4ff583"
+    },
+    "server/share/redeem.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "cdfb4c19dac3c2d29f6ba2799df65fcee18bcb4fd50b8641ab9f1e8fd7dd3e82"
+    },
+    "server/share/redeem_code_expired.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "a54a7fd5bb041f391642ac76a1f003c0fc9f5b9ba4d1a9c9644dfb84b259a78e"
+    },
+    "server/share/redeem_code_spent.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "aa1987ca6dda99ad538842a28fbeccfb479261f3ab4e53577debd2a18658400d"
+    },
+    "server/share/redeem_malformed.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "9372dab79ffef4a59d42bf27dff9fd2db5e782a7996e0db29459a5d76c292620"
+    },
+    "server/share/redeem_not_admin.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "6b49a66dead872945c0e852bf5c164ba937346fd8543a4f05796437e743bdc0f"
+    },
+    "server/share/redeem_organization_closed.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "788e337dc4f099b56be72acd937fca870434be01ddd1170cf06456720169a64a"
+    },
+    "server/share/redeem_unknown_code.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "96dc9c826cb747f1b8adf0dbcd7e80cb67ce3abca1b774e5122228631c0ee91e"
+    },
+    "server/share/redeem_unshared.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "db22b1356ff82c3a8a5cc9a8463f9d54e39c2c912e35c535d6d440b904e9324e"
     },
     "server/work_session/append.json": {
       "executable": false,
@@ -2941,8 +2981,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 12,
-  "source_commit": "e80218168e1d617dfd5259ba7763624c8d9f4717",
+  "number": 13,
+  "source_commit": "d2d8e4094e072efd3617d61d23036baed93735db",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

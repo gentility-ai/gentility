@@ -1,0 +1,11 @@
+{
+  "request": {
+    "body": {},
+    "method": "POST",
+    "path": "/desk/share/redeem"
+  },
+  "response": {
+    "error": "malformed"
+  },
+  "status": 422
+}

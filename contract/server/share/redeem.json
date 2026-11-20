@@ -1,0 +1,33 @@
+{
+  "request": {
+    "body": {
+      "code": "<install_code>"
+    },
+    "method": "POST",
+    "path": "/desk/share/redeem"
+  },
+  "response": {
+    "bind_code": "<bind_code>",
+    "head": "https://gentility.test",
+    "join": {
+      "enrollment_id": "00000000-0000-7000-8000-000000000001",
+      "expires_at": "2026-01-01T00:00:00.000000Z",
+      "gateway_addr": "<gateway_addr>",
+      "gateway_ca": "<gateway_ca>",
+      "gateway_port": 443,
+      "head_url": "<head_url>",
+      "nonce": "<nonce>",
+      "preauth_key": "<preauth_key>"
+    },
+    "machine": {
+      "id": "00000000-0000-7000-8000-000000000002",
+      "slug": "workstation-shared"
+    },
+    "organization": {
+      "id": "00000000-0000-7000-8000-000000000003",
+      "name": "Test Organization",
+      "slug": "<organization_slug>"
+    }
+  },
+  "status": 200
+}

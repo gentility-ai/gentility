@@ -1,0 +1,13 @@
+{
+  "request": {
+    "body": {
+      "code": "<install_code>"
+    },
+    "method": "POST",
+    "path": "/desk/share/redeem"
+  },
+  "response": {
+    "error": "unshared"
+  },
+  "status": 409
+}

@@ -7,6 +7,10 @@ Every file here but this one and `contract.json` is written by the Elixir suite
 change the server, run that test twice locally, commit what it wrote. The
 first run rewrites every stale file a test records and fails that test; the
 second passes. On CI a stale fixture fails and writes nothing.
+`share/` is no channel's: it holds the installer's HTTP exchanges with
+`POST /desk/share/redeem` (`desk_share_controller_test.exs`), each
+`{request, status, response}`, and the installer that shares a Linux machine
+reads them; the schema test and the crate's walkers pass them by.
 `../repository_forms.json`, beside this directory, is kept by hand, written
 by no test, and read by both suites. It holds
 `Gentility.Projects.repository/1` and the core's normaliser to one form.
