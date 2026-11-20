@@ -1,0 +1,191 @@
+{
+  "cut": 5,
+  "last": 2,
+  "mode": "auto_accept_edits",
+  "steps": [
+    {
+      "asked": "first",
+      "answer": {
+        "type": "messages",
+        "messages": [
+          {
+            "id": "h",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": null,
+            "text": "held",
+            "reply_to": null,
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "held",
+            "state_at": "2026-01-01T00:00:00Z",
+            "reason": "this thread runs in full access and the sender in supervised, so its message waits for you",
+            "turn": null,
+            "mid_turn": false,
+            "can_allow_sender": true,
+            "seq": 3
+          },
+          {
+            "id": "a",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": "s-peer",
+            "text": "request a",
+            "reply_to": "s-peer",
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "queued",
+            "state_at": null,
+            "reason": null,
+            "turn": null,
+            "mid_turn": false,
+            "seq": 5
+          },
+          {
+            "id": "b",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": "s-peer",
+            "text": "request b",
+            "reply_to": "s-peer",
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "queued",
+            "state_at": null,
+            "reason": null,
+            "turn": null,
+            "mid_turn": false,
+            "seq": 6
+          }
+        ],
+        "through_seq": 6,
+        "before_seq": 5
+      }
+    },
+    {
+      "asked": "delta",
+      "answer": {
+        "type": "messages",
+        "messages": [
+          {
+            "id": "h",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": null,
+            "text": "held",
+            "reply_to": null,
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "held",
+            "state_at": "2026-01-01T00:00:00Z",
+            "reason": "this thread runs in auto-accept edits and the sender in supervised, so its message waits for you",
+            "turn": null,
+            "mid_turn": false,
+            "can_allow_sender": true,
+            "seq": 3
+          },
+          {
+            "id": "c",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": "s-peer",
+            "text": "request c",
+            "reply_to": "s-peer",
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "queued",
+            "state_at": null,
+            "reason": null,
+            "turn": null,
+            "mid_turn": false,
+            "seq": 8
+          }
+        ],
+        "through_seq": 8
+      }
+    },
+    {
+      "asked": "earlier",
+      "answer": {
+        "type": "messages",
+        "messages": [
+          {
+            "id": "h",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": null,
+            "text": "held",
+            "reply_to": null,
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "held",
+            "state_at": "2026-01-01T00:00:00Z",
+            "reason": "this thread runs in auto-accept edits and the sender in supervised, so its message waits for you",
+            "turn": null,
+            "mid_turn": false,
+            "can_allow_sender": true,
+            "seq": 3
+          }
+        ],
+        "through_seq": 8
+      }
+    }
+  ],
+  "whole": [
+    {
+      "id": "h",
+      "direction": "incoming",
+      "counterpart": "Peer",
+      "counterpart_session_id": null,
+      "text": "held",
+      "reply_to": null,
+      "requested_at": "2026-01-01T00:00:00Z",
+      "state": "held",
+      "state_at": "2026-01-01T00:00:00Z",
+      "reason": "this thread runs in auto-accept edits and the sender in supervised, so its message waits for you",
+      "turn": null,
+      "mid_turn": false,
+      "can_allow_sender": true,
+      "seq": 3
+    },
+    {
+      "id": "a",
+      "direction": "incoming",
+      "counterpart": "Peer",
+      "counterpart_session_id": "s-peer",
+      "text": "request a",
+      "reply_to": "s-peer",
+      "requested_at": "2026-01-01T00:00:00Z",
+      "state": "queued",
+      "state_at": null,
+      "reason": null,
+      "turn": null,
+      "mid_turn": false,
+      "seq": 5
+    },
+    {
+      "id": "b",
+      "direction": "incoming",
+      "counterpart": "Peer",
+      "counterpart_session_id": "s-peer",
+      "text": "request b",
+      "reply_to": "s-peer",
+      "requested_at": "2026-01-01T00:00:00Z",
+      "state": "queued",
+      "state_at": null,
+      "reason": null,
+      "turn": null,
+      "mid_turn": false,
+      "seq": 6
+    },
+    {
+      "id": "c",
+      "direction": "incoming",
+      "counterpart": "Peer",
+      "counterpart_session_id": "s-peer",
+      "text": "request c",
+      "reply_to": "s-peer",
+      "requested_at": "2026-01-01T00:00:00Z",
+      "state": "queued",
+      "state_at": null,
+      "reason": null,
+      "turn": null,
+      "mid_turn": false,
+      "seq": 8
+    }
+  ]
+}

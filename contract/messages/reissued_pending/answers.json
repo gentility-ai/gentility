@@ -1,0 +1,157 @@
+{
+  "cut": 3,
+  "last": 2,
+  "mode": "supervised",
+  "steps": [
+    {
+      "asked": "first",
+      "answer": {
+        "type": "messages",
+        "messages": [
+          {
+            "id": "m1",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": "s-peer",
+            "text": "request m1",
+            "reply_to": "s-peer",
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "queued",
+            "state_at": null,
+            "reason": null,
+            "turn": null,
+            "mid_turn": false,
+            "seq": 2
+          },
+          {
+            "id": "m2",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": "s-peer",
+            "text": "request m2",
+            "reply_to": "s-peer",
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "queued",
+            "state_at": null,
+            "reason": null,
+            "turn": null,
+            "mid_turn": false,
+            "seq": 3
+          },
+          {
+            "id": "m3",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": "s-peer",
+            "text": "request m3",
+            "reply_to": "s-peer",
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "queued",
+            "state_at": null,
+            "reason": null,
+            "turn": null,
+            "mid_turn": false,
+            "seq": 4
+          }
+        ],
+        "through_seq": 4,
+        "before_seq": 3
+      }
+    },
+    {
+      "asked": "delta",
+      "answer": {
+        "type": "messages",
+        "messages": [
+          {
+            "id": "m2",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": "s-peer",
+            "text": "request m2",
+            "reply_to": "s-peer",
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "delivered",
+            "state_at": "2026-01-01T00:00:00Z",
+            "reason": null,
+            "turn": 1,
+            "mid_turn": false,
+            "seq": 3
+          }
+        ],
+        "through_seq": 6
+      }
+    },
+    {
+      "asked": "earlier",
+      "answer": {
+        "type": "messages",
+        "messages": [
+          {
+            "id": "m1",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": "s-peer",
+            "text": "request m1",
+            "reply_to": "s-peer",
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "queued",
+            "state_at": null,
+            "reason": null,
+            "turn": null,
+            "mid_turn": false,
+            "seq": 2
+          }
+        ],
+        "through_seq": 6
+      }
+    }
+  ],
+  "whole": [
+    {
+      "id": "m1",
+      "direction": "incoming",
+      "counterpart": "Peer",
+      "counterpart_session_id": "s-peer",
+      "text": "request m1",
+      "reply_to": "s-peer",
+      "requested_at": "2026-01-01T00:00:00Z",
+      "state": "queued",
+      "state_at": null,
+      "reason": null,
+      "turn": null,
+      "mid_turn": false,
+      "seq": 2
+    },
+    {
+      "id": "m2",
+      "direction": "incoming",
+      "counterpart": "Peer",
+      "counterpart_session_id": "s-peer",
+      "text": "request m2",
+      "reply_to": "s-peer",
+      "requested_at": "2026-01-01T00:00:00Z",
+      "state": "delivered",
+      "state_at": "2026-01-01T00:00:00Z",
+      "reason": null,
+      "turn": 1,
+      "mid_turn": false,
+      "seq": 3
+    },
+    {
+      "id": "m3",
+      "direction": "incoming",
+      "counterpart": "Peer",
+      "counterpart_session_id": "s-peer",
+      "text": "request m3",
+      "reply_to": "s-peer",
+      "requested_at": "2026-01-01T00:00:00Z",
+      "state": "queued",
+      "state_at": null,
+      "reason": null,
+      "turn": null,
+      "mid_turn": false,
+      "seq": 4
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "cut": 4,
+  "last": 2,
+  "mode": "supervised",
+  "steps": [
+    {
+      "asked": "first",
+      "answer": {
+        "type": "messages",
+        "messages": [
+          {
+            "id": "o1",
+            "direction": "outgoing",
+            "counterpart": "s-peer",
+            "counterpart_session_id": "s-peer",
+            "text": "the body of o1",
+            "reply_to": null,
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "received",
+            "state_at": "2026-01-01T00:00:00Z",
+            "reason": null,
+            "turn": null,
+            "mid_turn": false,
+            "seq": 3
+          }
+        ],
+        "through_seq": 5
+      }
+    },
+    {
+      "asked": "delta",
+      "answer": {
+        "type": "messages",
+        "messages": [
+          {
+            "id": "o2",
+            "direction": "outgoing",
+            "counterpart": "s-peer",
+            "counterpart_session_id": "s-peer",
+            "text": "",
+            "reply_to": null,
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "received",
+            "state_at": "2026-01-01T00:00:00Z",
+            "reason": null,
+            "turn": null,
+            "mid_turn": false,
+            "seq": 6
+          }
+        ],
+        "through_seq": 8
+      }
+    }
+  ],
+  "whole": [
+    {
+      "id": "o1",
+      "direction": "outgoing",
+      "counterpart": "s-peer",
+      "counterpart_session_id": "s-peer",
+      "text": "the body of o1",
+      "reply_to": null,
+      "requested_at": "2026-01-01T00:00:00Z",
+      "state": "received",
+      "state_at": "2026-01-01T00:00:00Z",
+      "reason": null,
+      "turn": null,
+      "mid_turn": false,
+      "seq": 3
+    },
+    {
+      "id": "o2",
+      "direction": "outgoing",
+      "counterpart": "s-peer",
+      "counterpart_session_id": "s-peer",
+      "text": "",
+      "reply_to": null,
+      "requested_at": "2026-01-01T00:00:00Z",
+      "state": "received",
+      "state_at": "2026-01-01T00:00:00Z",
+      "reason": null,
+      "turn": null,
+      "mid_turn": false,
+      "seq": 6
+    }
+  ]
+}

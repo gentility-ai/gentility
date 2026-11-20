@@ -1,0 +1,5 @@
+{"event_type":"message_requested","payload":{"id":"m1","sender":"Peer","text":"request m1","from":"s-peer","reply_to":"s-peer"}}
+{"event_type":"message_requested","payload":{"id":"m2","sender":"Peer","text":"request m2","from":"s-peer","reply_to":"s-peer"}}
+{"event_type":"message_requested","payload":{"id":"m3","sender":"Peer","text":"request m3","from":"s-peer","reply_to":"s-peer"}}
+{"event_type":"message_requested","payload":{"id":"m1","sender":"Peer","text":"request m1","from":"s-peer","reply_to":"s-peer"}}
+{"event_type":"message_delivered","payload":{"id":"m2","turn":1}}

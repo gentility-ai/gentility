@@ -1,0 +1,159 @@
+{
+  "cut": 3,
+  "last": 2,
+  "mode": "supervised",
+  "steps": [
+    {
+      "asked": "first",
+      "answer": {
+        "type": "messages",
+        "messages": [
+          {
+            "id": "p1",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": "s-peer",
+            "text": "request p1",
+            "reply_to": "s-peer",
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "queued",
+            "state_at": null,
+            "reason": null,
+            "turn": null,
+            "mid_turn": false,
+            "seq": 2
+          },
+          {
+            "id": "p2",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": null,
+            "text": "held",
+            "reply_to": null,
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "held",
+            "state_at": "2026-01-01T00:00:00Z",
+            "reason": "its sender has less permission than this thread, so you decide whether it goes",
+            "turn": null,
+            "mid_turn": false,
+            "can_allow_sender": true,
+            "seq": 3
+          }
+        ],
+        "through_seq": 4
+      }
+    },
+    {
+      "asked": "delta",
+      "answer": {
+        "type": "messages",
+        "messages": [
+          {
+            "id": "p2",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": null,
+            "text": "held",
+            "reply_to": null,
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "held",
+            "state_at": "2026-01-01T00:00:00Z",
+            "reason": "its sender has less permission than this thread, so you decide whether it goes",
+            "turn": null,
+            "mid_turn": false,
+            "seq": 3
+          },
+          {
+            "id": "p3",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": "s-peer",
+            "text": "request p3",
+            "reply_to": "s-peer",
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "queued",
+            "state_at": null,
+            "reason": null,
+            "turn": null,
+            "mid_turn": false,
+            "seq": 6
+          }
+        ],
+        "through_seq": 6,
+        "before_seq": 3,
+        "reset": true
+      }
+    },
+    {
+      "asked": "earlier",
+      "answer": {
+        "type": "messages",
+        "messages": [
+          {
+            "id": "p1",
+            "direction": "incoming",
+            "counterpart": "Peer",
+            "counterpart_session_id": "s-peer",
+            "text": "request p1",
+            "reply_to": "s-peer",
+            "requested_at": "2026-01-01T00:00:00Z",
+            "state": "queued",
+            "state_at": null,
+            "reason": null,
+            "turn": null,
+            "mid_turn": false,
+            "seq": 2
+          }
+        ],
+        "through_seq": 6
+      }
+    }
+  ],
+  "whole": [
+    {
+      "id": "p1",
+      "direction": "incoming",
+      "counterpart": "Peer",
+      "counterpart_session_id": "s-peer",
+      "text": "request p1",
+      "reply_to": "s-peer",
+      "requested_at": "2026-01-01T00:00:00Z",
+      "state": "queued",
+      "state_at": null,
+      "reason": null,
+      "turn": null,
+      "mid_turn": false,
+      "seq": 2
+    },
+    {
+      "id": "p2",
+      "direction": "incoming",
+      "counterpart": "Peer",
+      "counterpart_session_id": null,
+      "text": "held",
+      "reply_to": null,
+      "requested_at": "2026-01-01T00:00:00Z",
+      "state": "held",
+      "state_at": "2026-01-01T00:00:00Z",
+      "reason": "its sender has less permission than this thread, so you decide whether it goes",
+      "turn": null,
+      "mid_turn": false,
+      "seq": 3
+    },
+    {
+      "id": "p3",
+      "direction": "incoming",
+      "counterpart": "Peer",
+      "counterpart_session_id": "s-peer",
+      "text": "request p3",
+      "reply_to": "s-peer",
+      "requested_at": "2026-01-01T00:00:00Z",
+      "state": "queued",
+      "state_at": null,
+      "reason": null,
+      "turn": null,
+      "mid_turn": false,
+      "seq": 6
+    }
+  ]
+}

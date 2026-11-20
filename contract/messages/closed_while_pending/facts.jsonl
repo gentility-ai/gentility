@@ -1,0 +1,5 @@
+{"event_type":"message_requested","payload":{"id":"p1","sender":"Peer","text":"request p1","from":"s-peer","reply_to":"s-peer"}}
+{"event_type":"message_requested","payload":{"id":"p2","sender":"Peer","text":"held","from":"s-peer","from_mode":"supervised"}}
+{"event_type":"message_held","payload":{"id":"p2","reason":"mode"}}
+{"event_type":"closed","payload":{}}
+{"event_type":"message_requested","payload":{"id":"p3","sender":"Peer","text":"request p3","from":"s-peer","reply_to":"s-peer"}}

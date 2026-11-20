@@ -1179,6 +1179,15 @@ sampler?: Sampled,
  */
 hellos_without_unknown_words?: Array<HellosWithout> | null,
 /**
+ * Every kind of connection that asked `Request::SessionMessages` with
+ * none of `last`, `before_seq` and `after_seq` — the legacy whole read,
+ * which retires at major 2 (T-633 2b) — by the same words as
+ * `hellos_without_unknown_words`' `reason`, with how many such reads and
+ * the first and the last, in the order first asked. This incarnation's.
+ * Absent from a core from before `messages_paging`.
+ */
+messages_whole_reads?: Array<HellosWithout> | null,
+/**
  * Every field in which this core withheld a word the server said that
  * this build does not know, rather than tell its clients `unknown`, in
  * the order first withheld. Empty where it has withheld nothing. Absent
@@ -1729,7 +1738,13 @@ can_allow_sender?: boolean,
  * thread names itself in `counterpart_session_id`, and a socket peer
  * names neither.
  */
-group?: string, };
+group?: string,
+/**
+ * The seq of the fact that opened this row: its place among the rows, on
+ * the store of the core that answered (T-633 2b). A reader merging pages
+ * orders by it. Absent from a core from before `messages_paging`.
+ */
+seq?: number, };
 
 /**
  * A pairing on the wire, to the window that asked for it and to nobody else
@@ -2764,7 +2779,26 @@ op?: string | null, } | { "type": "attachment_put", name: string, mime?: string 
 /**
  * The bytes, standard base64.
  */
-bytes_b64: string, } | { "type": "attachment_describe", paths: Array<string>, } | { "type": "attachment_read", path: string, } | { "type": "image_import", session_id: string, path: string, } | { "type": "url_open", session_id: string, url: string, } | { "type": "file_download", session_id: string, path: string, } | { "type": "file_image_read", session_id: string, path: string, } | { "type": "session_withdraw", session_id: string, queue_id: string, } | { "type": "session_steer", session_id: string, queue_id: string, } | { "type": "session_resend", session_id: string, queue_id: string, } | { "type": "session_message", session_id: string, from_session_id: string, text: string, } | { "type": "session_release_message", session_id: string, message_id: string, } | { "type": "session_allow_message_sender", session_id: string, message_id: string, } | { "type": "session_decline_message", session_id: string, message_id: string, } | { "type": "session_set_availability", session_id: string, availability: Availability, } | { "type": "wake_me", session_id: string, after_minutes: number | null, at: string | null, note: string, } | { "type": "wait_for_command", session_id: string, command: string, description: string, timeout_minutes: number | null, } | { "type": "session_waits", session_id: string, } | { "type": "wait_cancel", session_id: string, wait_id: string, by: Canceller, } | { "type": "wait_release", session_id: string, wait_id: string, } | { "type": "subscribe", session_id: string, topic: string | null, where?: JsonValue | null, pull_request: string | null, what: string | null, } | { "type": "unsubscribe", session_id: string, subscription_id: string, by: Ender, } | { "type": "session_subscriptions", session_id: string, } | { "type": "session_messages", session_id: string, } | { "type": "session_inspect", session_id: string, } | { "type": "session_rehome", environment_id: string, session_id: string, } | { "type": "peers_list", session_id: string, } | { "type": "open_asks", session_id: string, } | { "type": "sessions_find", session_id: string, filters: JsonValue, } | { "type": "sessions_locate", environment_id: string, organization_id: string, words: string, } | { "type": "thread_brief_options", environment_id: string, organization_id: string, } | { "type": "server_tools_list", session_id: string, } | { "type": "server_tool_call", session_id: string, name: string, arguments: JsonValue, } | { "type": "session_instructions_recorded", session_id: string, source: string, brief_revision_id?: string | null, } | { "type": "looper_runs_list", environment_id: string, } | { "type": "loopers_list", environment_id: string, } | { "type": "looper_run_read", environment_id: string, run_id: string, organization_id?: string | null, } | { "type": "looper_run_mark_read", environment_id: string, run_id: string, } | { "type": "looper_request_resolve", environment_id: string, request_id: string, decision: JsonValue, organization_id?: string | null, } | { "type": "looper_update", environment_id: string, looper_id: string, changes: JsonValue, } | { "type": "looper_run", environment_id: string, looper_id: string, } | { "type": "looper_history", environment_id: string, looper_id: string, } | { "type": "network_read", session_id: string, } | { "type": "node_read", session_id: string, } | { "type": "session_inbox", session_id: string, } | { "type": "peer_send", session_id: string, address: string, text: string, fyi?: boolean,
+bytes_b64: string, } | { "type": "attachment_describe", paths: Array<string>, } | { "type": "attachment_read", path: string, } | { "type": "image_import", session_id: string, path: string, } | { "type": "url_open", session_id: string, url: string, } | { "type": "file_download", session_id: string, path: string, } | { "type": "file_image_read", session_id: string, path: string, } | { "type": "session_withdraw", session_id: string, queue_id: string, } | { "type": "session_steer", session_id: string, queue_id: string, } | { "type": "session_resend", session_id: string, queue_id: string, } | { "type": "session_message", session_id: string, from_session_id: string, text: string, } | { "type": "session_release_message", session_id: string, message_id: string, } | { "type": "session_allow_message_sender", session_id: string, message_id: string, } | { "type": "session_decline_message", session_id: string, message_id: string, } | { "type": "session_set_availability", session_id: string, availability: Availability, } | { "type": "wake_me", session_id: string, after_minutes: number | null, at: string | null, note: string, } | { "type": "wait_for_command", session_id: string, command: string, description: string, timeout_minutes: number | null, } | { "type": "session_waits", session_id: string, } | { "type": "wait_cancel", session_id: string, wait_id: string, by: Canceller, } | { "type": "wait_release", session_id: string, wait_id: string, } | { "type": "subscribe", session_id: string, topic: string | null, where?: JsonValue | null, pull_request: string | null, what: string | null, } | { "type": "unsubscribe", session_id: string, subscription_id: string, by: Ender, } | { "type": "session_subscriptions", session_id: string, } | { "type": "session_messages", session_id: string,
+/**
+ * The newest this-many rows by opening, with every pending and
+ * every held-for-mode row besides. Clamped to 1..=500, never
+ * refused; 50 where a page is asked with none.
+ */
+last?: number | null,
+/**
+ * "Load earlier": the `last` rows opened before this seq, the
+ * `before_seq` of the answer it continues.
+ */
+before_seq?: number | null,
+/**
+ * The rows a fact changed after this seq (the `through_seq` of the
+ * reader's last first page or delta), and every held-for-mode row.
+ * Answered `reset` with a first page of `last` where it cannot be:
+ * a seq past this store's log, a `closed` past it, or more past it
+ * than a page. A seq is this machine's store's.
+ */
+after_seq?: number | null, } | { "type": "session_inspect", session_id: string, } | { "type": "session_rehome", environment_id: string, session_id: string, } | { "type": "peers_list", session_id: string, } | { "type": "open_asks", session_id: string, } | { "type": "sessions_find", session_id: string, filters: JsonValue, } | { "type": "sessions_locate", environment_id: string, organization_id: string, words: string, } | { "type": "thread_brief_options", environment_id: string, organization_id: string, } | { "type": "server_tools_list", session_id: string, } | { "type": "server_tool_call", session_id: string, name: string, arguments: JsonValue, } | { "type": "session_instructions_recorded", session_id: string, source: string, brief_revision_id?: string | null, } | { "type": "looper_runs_list", environment_id: string, } | { "type": "loopers_list", environment_id: string, } | { "type": "looper_run_read", environment_id: string, run_id: string, organization_id?: string | null, } | { "type": "looper_run_mark_read", environment_id: string, run_id: string, } | { "type": "looper_request_resolve", environment_id: string, request_id: string, decision: JsonValue, organization_id?: string | null, } | { "type": "looper_update", environment_id: string, looper_id: string, changes: JsonValue, } | { "type": "looper_run", environment_id: string, looper_id: string, } | { "type": "looper_history", environment_id: string, looper_id: string, } | { "type": "network_read", session_id: string, } | { "type": "node_read", session_id: string, } | { "type": "session_inbox", session_id: string, } | { "type": "peer_send", session_id: string, address: string, text: string, fyi?: boolean,
 /**
  * The operation this send is, as `Request::SessionPrompt`'s `op`,
  * chosen by the agent, whose retry is a new call to the tool: the
@@ -3023,7 +3057,24 @@ host?: HostInfo | null, } | { "type": "pairing_minted", minted: MintedView, } | 
  * Empty only when decoding a legacy core's answer. Positioned reads
  * require index_follow; never treat a legacy answer as a delta.
  */
-position?: string, removed?: Array<string>, whole?: boolean, } | { "type": "session", session: SessionView, } | { "type": "usage_turns", turns: Array<TurnSpend>, } | { "type": "limits", limits: Array<HarnessLimitsView>, } | { "type": "peers", peers: Array<Peer>, } | { "type": "open_asks", questions: Array<OpenQuestion>, threads: Array<Peer>, } | { "type": "sessions_found", sessions: JsonValue, } | { "type": "sessions_located", run_id: string, model: string, picks: Array<LocatedPick>, } | { "type": "server_tools", tools: JsonValue, } | { "type": "thread_brief_options", briefs: Array<BriefOption>, } | { "type": "server_tool_result", result: JsonValue, } | { "type": "looper_runs", runs: Array<SessionView>, } | { "type": "loopers", loopers: Array<LooperView>, } | { "type": "looper_run", read: JsonValue, } | { "type": "looper_request_resolved", resolution: Resolution, } | { "type": "looper_updated", outcome: LooperOutcome, } | { "type": "looper_ran", outcome: LooperOutcome, } | { "type": "looper_history", runs: Array<SessionView>, } | { "type": "peer_inbox", address: string, } | { "type": "network", network: NetworkView, } | { "type": "machines", machines: Array<JsonValue>, } | { "type": "node" } & NodeView | { "type": "peer_sent", message_id: string, state: MessageState, } | { "type": "messages", messages: Array<MessageView>, } | { "type": "wait_set", id: string, state: WaitState, due_at: string | null, } | { "type": "command_set", id: string, state: CommandState, log: string, } | { "type": "waits", waits: Array<WaitView>, } | { "type": "subscribed", subscription: SubscriptionView, note: string, } | { "type": "subscriptions", subscriptions: Array<SubscriptionView>, } | { "type": "inspected", inspection: Inspection, } | { "type": "rehomed", session: SessionView, } | { "type": "queued", queue_id: string, } | { "type": "session_started", session_id: string,
+position?: string, removed?: Array<string>, whole?: boolean, } | { "type": "session", session: SessionView, } | { "type": "usage_turns", turns: Array<TurnSpend>, } | { "type": "limits", limits: Array<HarnessLimitsView>, } | { "type": "peers", peers: Array<Peer>, } | { "type": "open_asks", questions: Array<OpenQuestion>, threads: Array<Peer>, } | { "type": "sessions_found", sessions: JsonValue, } | { "type": "sessions_located", run_id: string, model: string, picks: Array<LocatedPick>, } | { "type": "server_tools", tools: JsonValue, } | { "type": "thread_brief_options", briefs: Array<BriefOption>, } | { "type": "server_tool_result", result: JsonValue, } | { "type": "looper_runs", runs: Array<SessionView>, } | { "type": "loopers", loopers: Array<LooperView>, } | { "type": "looper_run", read: JsonValue, } | { "type": "looper_request_resolved", resolution: Resolution, } | { "type": "looper_updated", outcome: LooperOutcome, } | { "type": "looper_ran", outcome: LooperOutcome, } | { "type": "looper_history", runs: Array<SessionView>, } | { "type": "peer_inbox", address: string, } | { "type": "network", network: NetworkView, } | { "type": "machines", machines: Array<JsonValue>, } | { "type": "node" } & NodeView | { "type": "peer_sent", message_id: string, state: MessageState, } | { "type": "messages", messages: Array<MessageView>,
+/**
+ * The session's newest fact seq when this was read: the rows are
+ * current through it, and it is the next delta's `after_seq`.
+ * Absent (0) on the answer to an ask without paging, and from a core
+ * before `messages_paging`: a reader replaces everything.
+ */
+through_seq?: number,
+/**
+ * The cursor for an earlier page, where rows opened before the
+ * earliest answered. Absent when nothing is earlier.
+ */
+before_seq?: number,
+/**
+ * Not the page asked: a first page, or every message where the kept
+ * view is behind its log. The reader replaces what it holds.
+ */
+reset?: boolean, } | { "type": "wait_set", id: string, state: WaitState, due_at: string | null, } | { "type": "command_set", id: string, state: CommandState, log: string, } | { "type": "waits", waits: Array<WaitView>, } | { "type": "subscribed", subscription: SubscriptionView, note: string, } | { "type": "subscriptions", subscriptions: Array<SubscriptionView>, } | { "type": "inspected", inspection: Inspection, } | { "type": "rehomed", session: SessionView, } | { "type": "queued", queue_id: string, } | { "type": "session_started", session_id: string,
 /**
  * Its page on the web, as `SessionView::url` says it.
  */
@@ -4349,12 +4400,12 @@ export const PROTOCOL: Protocol = { major: 1, minor: 55 };
  * What this build's core can do that an older one would silently not:
  * `desk_core::api::FEATURES`. A core's hello says which it has.
  */
-export const FEATURES = ["brief_body", "thread_briefs", "thread_settle_finished", "questions_list", "hello_wants", "machine_confirmation", "shell_models", "frame_trace", "transcript_paging", "hello_host", "start_later", "thread_traffic", "index_follow", "host_upgrade", "steer_injects", "model_catalog", "project_agent_defaults", "inherited_turns", "upgrade_wait", "phone_pairing", "hosts_everywhere", "transcript_brief", "transcript_seq", "transcript_copy", "session_get", "lease_routing", "start_on_host", "titled_open", "named_models", "host_diagnostics", "rehome", "harness_capabilities", "assign_elsewhere", "harness_driver_selection", "native_codex_selection", "unknown_words", "upgrade_following", "repository_store", "repo_warm_base", "fork_review", "transcript_find", "session_star", "machines_read", "session_reopen", "thread_delegate", "groups"] as const;
+export const FEATURES = ["brief_body", "thread_briefs", "thread_settle_finished", "questions_list", "hello_wants", "machine_confirmation", "shell_models", "frame_trace", "transcript_paging", "hello_host", "start_later", "thread_traffic", "index_follow", "host_upgrade", "steer_injects", "model_catalog", "project_agent_defaults", "inherited_turns", "upgrade_wait", "phone_pairing", "hosts_everywhere", "transcript_brief", "transcript_seq", "transcript_copy", "session_get", "lease_routing", "start_on_host", "titled_open", "named_models", "host_diagnostics", "rehome", "harness_capabilities", "assign_elsewhere", "harness_driver_selection", "native_codex_selection", "unknown_words", "upgrade_following", "repository_store", "repo_warm_base", "fork_review", "transcript_find", "session_star", "machines_read", "session_reopen", "thread_delegate", "groups", "messages_paging"] as const;
 
 export type Feature = (typeof FEATURES)[number];
 
 /** Contract vocabulary; not a core's advertisement. */
-export const FEATURE_VOCABULARY = ["brief_body", "thread_briefs", "thread_settle_finished", "questions_list", "hello_wants", "machine_confirmation", "shell_models", "frame_trace", "transcript_paging", "hello_host", "start_later", "thread_traffic", "index_follow", "host_upgrade", "steer_injects", "model_catalog", "project_agent_defaults", "inherited_turns", "upgrade_wait", "phone_pairing", "hosts_everywhere", "transcript_brief", "transcript_seq", "transcript_copy", "session_get", "lease_routing", "start_on_host", "titled_open", "named_models", "host_diagnostics", "rehome", "harness_capabilities", "assign_elsewhere", "harness_driver_selection", "native_codex_selection", "unknown_words", "upgrade_following", "repository_store", "repo_warm_base", "fork_review", "transcript_find", "session_star", "machines_read", "session_reopen", "thread_delegate", "groups", "families", "family_thread", "family_checkout", "family_tools", "family_minders", "family_terminals", "family_files", "family_bound_host", "family_network", "family_home"] as const;
+export const FEATURE_VOCABULARY = ["brief_body", "thread_briefs", "thread_settle_finished", "questions_list", "hello_wants", "machine_confirmation", "shell_models", "frame_trace", "transcript_paging", "hello_host", "start_later", "thread_traffic", "index_follow", "host_upgrade", "steer_injects", "model_catalog", "project_agent_defaults", "inherited_turns", "upgrade_wait", "phone_pairing", "hosts_everywhere", "transcript_brief", "transcript_seq", "transcript_copy", "session_get", "lease_routing", "start_on_host", "titled_open", "named_models", "host_diagnostics", "rehome", "harness_capabilities", "assign_elsewhere", "harness_driver_selection", "native_codex_selection", "unknown_words", "upgrade_following", "repository_store", "repo_warm_base", "fork_review", "transcript_find", "session_star", "machines_read", "session_reopen", "thread_delegate", "groups", "messages_paging", "families", "family_thread", "family_checkout", "family_tools", "family_minders", "family_terminals", "family_files", "family_bound_host", "family_network", "family_home"] as const;
 
 export type FeatureWord = (typeof FEATURE_VOCABULARY)[number];
 

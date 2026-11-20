@@ -1,0 +1,7 @@
+{"event_type":"message_body","payload":{"id":"o1","text":"the body of o1"}}
+{"event_type":"message_sent","payload":{"id":"o1","to":"s-peer"}}
+{"event_type":"message_receipt","payload":{"id":"o1","status":"delivered"}}
+{"event_type":"peer_submitted","payload":{"id":"o1"}}
+{"event_type":"message_sent","payload":{"id":"o2","to":"s-peer"}}
+{"event_type":"message_receipt","payload":{"id":"o2","status":"held","reason":"mode"}}
+{"event_type":"message_receipt","payload":{"id":"o2","status":"delivered"}}

@@ -56,7 +56,8 @@
       "machines_read",
       "session_reopen",
       "thread_delegate",
-      "groups"
+      "groups",
+      "messages_paging"
     ],
     "host": {
       "account": "recorded",

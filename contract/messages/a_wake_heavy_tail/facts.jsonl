@@ -1,0 +1,23 @@
+{"event_type":"message_requested","payload":{"id":"m1","sender":"Peer","text":"request m1","from":"s-peer","reply_to":"s-peer"}}
+{"event_type":"message_requested","payload":{"id":"m2","sender":"Peer","text":"request m2","from":"s-peer","reply_to":"s-peer"}}
+{"event_type":"message_requested","payload":{"id":"wake-0","sender":"desk","text":"wake","wait_id":"w"}}
+{"event_type":"message_delivered","payload":{"id":"wake-0","turn":0}}
+{"event_type":"message_requested","payload":{"id":"wake-1","sender":"desk","text":"wake","wait_id":"w"}}
+{"event_type":"message_delivered","payload":{"id":"wake-1","turn":1}}
+{"event_type":"message_requested","payload":{"id":"wake-2","sender":"desk","text":"wake","wait_id":"w"}}
+{"event_type":"message_delivered","payload":{"id":"wake-2","turn":2}}
+{"event_type":"message_requested","payload":{"id":"wake-3","sender":"desk","text":"wake","wait_id":"w"}}
+{"event_type":"message_delivered","payload":{"id":"wake-3","turn":3}}
+{"event_type":"message_requested","payload":{"id":"wake-4","sender":"desk","text":"wake","wait_id":"w"}}
+{"event_type":"message_delivered","payload":{"id":"wake-4","turn":4}}
+{"event_type":"message_requested","payload":{"id":"wake-5","sender":"desk","text":"wake","wait_id":"w"}}
+{"event_type":"message_delivered","payload":{"id":"wake-5","turn":5}}
+{"event_type":"message_requested","payload":{"id":"wake-6","sender":"desk","text":"wake","wait_id":"w"}}
+{"event_type":"message_delivered","payload":{"id":"wake-6","turn":6}}
+{"event_type":"message_requested","payload":{"id":"wake-7","sender":"desk","text":"wake","wait_id":"w"}}
+{"event_type":"message_delivered","payload":{"id":"wake-7","turn":7}}
+{"event_type":"message_requested","payload":{"id":"wake-8","sender":"desk","text":"wake","wait_id":"w"}}
+{"event_type":"message_delivered","payload":{"id":"wake-8","turn":8}}
+{"event_type":"message_requested","payload":{"id":"wake-9","sender":"desk","text":"wake","wait_id":"w"}}
+{"event_type":"message_delivered","payload":{"id":"wake-9","turn":9}}
+{"event_type":"message_requested","payload":{"id":"m3","sender":"Peer","text":"request m3","from":"s-peer","reply_to":"s-peer"}}

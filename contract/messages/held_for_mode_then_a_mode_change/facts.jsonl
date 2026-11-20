@@ -1,0 +1,7 @@
+{"event_type":"mode_changed","payload":{"mode":"full_access"}}
+{"event_type":"message_requested","payload":{"id":"h","sender":"Peer","text":"held","from":"s-peer","from_mode":"supervised"}}
+{"event_type":"message_held","payload":{"id":"h","reason":"mode"}}
+{"event_type":"message_requested","payload":{"id":"a","sender":"Peer","text":"request a","from":"s-peer","reply_to":"s-peer"}}
+{"event_type":"message_requested","payload":{"id":"b","sender":"Peer","text":"request b","from":"s-peer","reply_to":"s-peer"}}
+{"event_type":"mode_changed","payload":{"mode":"auto_accept_edits"}}
+{"event_type":"message_requested","payload":{"id":"c","sender":"Peer","text":"request c","from":"s-peer","reply_to":"s-peer"}}
