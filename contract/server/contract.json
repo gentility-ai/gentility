@@ -2108,7 +2108,7 @@
     },
     {
       "name": "machine.join",
-      "description": "The Phoenix framing's join of `desk:<org>:<machine>`: the core's hello, answered with the socket's person, null for a bound host. It holds the machine live (`Gentility.Desk.Live`) while it lasts. On `/desk/rpc` the connection's `hello` says the same.",
+      "description": "The Phoenix framing's join of `desk:<org>:<machine>`: the core's hello, answered with the socket's person, null for a bound host. It holds the machine live (`Gentility.Desk.Live`) while it lasts. On `/desk/rpc` the connection's `hello` says the same. A person's join of a closed organization is `unauthorized`, the membership's word, which the close made true: a core files the machine under the login's next organization on it, so the person's other organizations go on hearing the machine, and after a reopen the machine stays where it moved, which carries it for the reopened organization too. A bound host, which is never moved, is told `organization_closed`, which it asks again after, and it joins again once the organization is reopened. Session topics say `organization_closed` to a person too, which is not final.",
       "x-phoenix": {
         "channel": "desk",
         "event": "join"
@@ -11149,6 +11149,7 @@
       "1012": "restart: the server is draining for a deploy; reconnect with backoff. Best-effort: behind kamal-proxy a deploy usually shows as 1006, the connection cut with no close frame, because the proxy cuts upgraded connections at its switch, before the old node stops and drains. A core reads 1006 exactly as 1012",
       "1013": "organization_closed: a host's hello met an organization closed since the upgrade. The hello is not answered, so a core reads the close as a dropped transport and reconnects with backoff; the upgrade then refuses it 403 `organization_closed`, which it also reconnects after, so a reopen lets it back in with the same credential",
       "4401": "credential_revoked: the credential is dead. A person's Desk logs in again, and a host is bound again, before reconnecting; neither retries the same credential. A host whose binding was revoked on purpose is closed with it too, its word `revoked`, at once if it is connected and at once after the upgrade if it dials again. A released core stops dialling `/desk/rpc` on 4401; its Phoenix socket stops reconnecting only on `superseded`, so it goes on dialling `/socket` with backoff and is refused 403 `revoked` each time",
+      "4403": "organization_closed: the organization the connection acts for was closed. Not final: the credential is untouched, so a core dials again with backoff, is refused at the upgrade 403 `organization_closed` while it stays closed, and is let in with the same credential once it is reopened",
       "4409": "superseded"
     }
   }
