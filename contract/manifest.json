@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "e6c21e8d260fe71882debdb339d2402a2ca7648529bc2303f48649bce0380017"
+      "sha256": "54183f4323f377b737433a1e98229ead0fdc686f93bab057ecb612daa94002b5"
     },
     "config_change/README.md": {
       "executable": false,
@@ -3041,8 +3041,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 16,
-  "source_commit": "7f3e67ce7235fb7756aeba9c2d8b2b9b52e2f360",
+  "number": 17,
+  "source_commit": "e5e6286aec833482b220b304fb2c8bbad9963793",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,
