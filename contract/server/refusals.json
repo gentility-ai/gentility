@@ -47,6 +47,7 @@
     ],
     "heartbeat": [],
     "join": [
+      "organization_closed",
       "unauthorized"
     ],
     "phone_claim_mint": [
@@ -90,6 +91,7 @@
     "feed": [],
     "history": [],
     "join": [
+      "organization_closed",
       "superseded",
       "unauthorized"
     ],
@@ -161,11 +163,13 @@
       "forbidden",
       "hello_required",
       "malformed_payload",
+      "organization_closed",
       "unknown_event"
     ],
     "groups.convene": [
       "forbidden",
       "invalid",
+      "organization_closed",
       "outcome_unknown",
       "unavailable"
     ],
@@ -173,10 +177,12 @@
       "forbidden",
       "invalid",
       "not_found",
+      "organization_closed",
       "unavailable"
     ],
     "groups.list": [
       "forbidden",
+      "organization_closed",
       "unavailable"
     ],
     "groups.stop": [
@@ -184,6 +190,7 @@
       "forbidden",
       "not_convener",
       "not_found",
+      "organization_closed",
       "outcome_unknown",
       "unavailable"
     ],
@@ -213,6 +220,7 @@
       "malformed_batch",
       "not_a_holder",
       "not_found",
+      "organization_closed",
       "replay_mismatch",
       "sequence_gap",
       "server_only_event",
@@ -227,12 +235,14 @@
     "brief": [
       "forbidden",
       "not_bound",
+      "organization_closed",
       "pin_mismatch",
       "superseded",
       "too_large"
     ],
     "join": [
       "forbidden",
+      "organization_closed",
       "superseded",
       "unauthorized"
     ]
@@ -319,7 +329,8 @@
       "forbidden"
     ],
     "desk_models": [
-      "forbidden"
+      "forbidden",
+      "organization_closed"
     ],
     "desk_peer": [
       "forbidden",
@@ -386,6 +397,7 @@
       "session_running"
     ],
     "join": [
+      "organization_closed",
       "superseded",
       "unauthorized"
     ],
@@ -421,25 +433,30 @@
       "invalid_switch",
       "no_membership",
       "not_found",
+      "organization_closed",
       "project_mismatch"
     ],
     "mcp_servers": [
       "forbidden",
-      "invalid_project"
+      "invalid_project",
+      "organization_closed"
     ],
     "models_seen": [
       "forbidden",
       "invalid",
+      "organization_closed",
       "unavailable"
     ],
     "omp_access": [
       "no_credit",
       "no_gateway",
+      "organization_closed",
       "route_unavailable"
     ],
     "omp_route": [
       "no_credit",
       "no_gateway",
+      "organization_closed",
       "route_unavailable"
     ],
     "open": [
@@ -522,6 +539,7 @@
       "forbidden",
       "no_host",
       "not_found",
+      "organization_closed",
       "unavailable"
     ],
     "question_dismiss": [
@@ -530,10 +548,12 @@
       "forbidden",
       "no_host",
       "not_found",
+      "organization_closed",
       "unavailable"
     ],
     "questions_list": [
       "forbidden",
+      "organization_closed",
       "unavailable"
     ],
     "refusal_allow": [

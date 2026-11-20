@@ -567,6 +567,7 @@
       "x-refusals": [
         "forbidden",
         "invalid",
+        "organization_closed",
         "outcome_unknown",
         "unavailable"
       ],
@@ -617,6 +618,7 @@
         "forbidden",
         "invalid",
         "not_found",
+        "organization_closed",
         "unavailable"
       ]
     },
@@ -677,6 +679,7 @@
       },
       "x-refusals": [
         "forbidden",
+        "organization_closed",
         "unavailable"
       ]
     },
@@ -723,6 +726,7 @@
         "forbidden",
         "not_convener",
         "not_found",
+        "organization_closed",
         "outcome_unknown",
         "unavailable"
       ],
@@ -1475,6 +1479,7 @@
         }
       },
       "x-refusals": [
+        "organization_closed",
         "revoked",
         "superseded",
         "unauthorized"
@@ -1651,6 +1656,7 @@
         }
       },
       "x-refusals": [
+        "organization_closed",
         "revoked",
         "superseded",
         "unauthorized"
@@ -2136,6 +2142,7 @@
         }
       },
       "x-refusals": [
+        "organization_closed",
         "unauthorized"
       ]
     },
@@ -2395,6 +2402,7 @@
       "x-refusals": [
         "forbidden",
         "invalid_project",
+        "organization_closed",
         "unavailable"
       ],
       "x-rpc-only-refusals": [
@@ -2451,6 +2459,7 @@
         "invalid_switch",
         "no_membership",
         "not_found",
+        "organization_closed",
         "outcome_unknown",
         "project_mismatch",
         "unavailable"
@@ -2732,6 +2741,7 @@
       },
       "x-refusals": [
         "forbidden",
+        "organization_closed",
         "unavailable"
       ],
       "x-rpc-only-refusals": [
@@ -2768,6 +2778,7 @@
       "x-refusals": [
         "no_credit",
         "no_gateway",
+        "organization_closed",
         "route_unavailable",
         "unavailable"
       ],
@@ -2831,6 +2842,7 @@
       "x-refusals": [
         "no_credit",
         "no_gateway",
+        "organization_closed",
         "outcome_unknown",
         "route_unavailable",
         "unavailable"
@@ -2893,6 +2905,7 @@
       "x-refusals": [
         "forbidden",
         "invalid",
+        "organization_closed",
         "outcome_unknown",
         "unavailable"
       ],
@@ -3836,6 +3849,7 @@
         "forbidden",
         "no_host",
         "not_found",
+        "organization_closed",
         "outcome_unknown",
         "unavailable"
       ],
@@ -3904,6 +3918,7 @@
         "forbidden",
         "no_host",
         "not_found",
+        "organization_closed",
         "outcome_unknown",
         "unavailable"
       ],
@@ -4178,6 +4193,7 @@
       },
       "x-refusals": [
         "forbidden",
+        "organization_closed",
         "unavailable"
       ]
     },
@@ -4656,7 +4672,7 @@
     },
     {
       "name": "rpc.hello",
-      "description": "The first request on `/desk/rpc`, and the only one served before it: the core's hello (`GentilityWeb.DeskHello`) and, for a bound host, the generation it holds, fenced here as a connect was (`Bindings.fence/2`); a person's Desk names its machine to be registered. Answers who the credential is, the server's feature words, and the organizations it reaches. Said once.",
+      "description": "The first request on `/desk/rpc`, and the only one served before it: the core's hello (`GentilityWeb.DeskHello`) and, for a bound host, the generation it holds, fenced here as a connect was (`Bindings.fence/2`); a person's Desk names its machine to be registered. Answers who the credential is, the server's feature words, and the organizations it reaches. Said once. A host whose organization closed since the upgrade gets no answer: the connection closes 1013 (`x-rpc`'s `close`), because a refused hello stops a core for good.",
       "paramStructure": "by-name",
       "params": [
         {
@@ -5035,6 +5051,7 @@
         "malformed_batch",
         "not_a_holder",
         "not_found",
+        "organization_closed",
         "replay_mismatch",
         "revoked",
         "sequence_gap",
@@ -5101,6 +5118,7 @@
       "x-refusals": [
         "forbidden",
         "not_bound",
+        "organization_closed",
         "pin_mismatch",
         "revoked",
         "superseded",
@@ -5114,7 +5132,7 @@
     },
     {
       "name": "session.join",
-      "description": "The Phoenix framing's join of `work_session:<session>`, from Desk only (`forbidden` to any other client) and only for a session the socket may read. A session that does not exist and one this socket may not read are both `unauthorized`, so naming a session says nothing of whether it exists. A bound host whose binding moved on is `superseded`.",
+      "description": "The Phoenix framing's join of `work_session:<session>`, from Desk only (`forbidden` to any other client) and only for a session the socket may read. A session that does not exist and one this socket may not read are both `unauthorized`, so naming a session says nothing of whether it exists. A bound host whose binding moved on is `superseded`. A session of a closed organization, to a socket that may otherwise read it, is `organization_closed`, which is not final: a reopen admits the same credential again.",
       "x-phoenix": {
         "channel": "work_session",
         "event": "join"
@@ -5131,6 +5149,7 @@
       },
       "x-refusals": [
         "forbidden",
+        "organization_closed",
         "revoked",
         "superseded",
         "unauthorized"
@@ -11071,7 +11090,7 @@
     }
   },
   "x-rpc": {
-    "description": "The same methods as JSON-RPC 2.0 over one WebSocket (plan 2026-11-08, section 3). A method without `x-phoenix` is served there only. Auth is at the upgrade, `Authorization: Bearer <token>` or `Authorization: Desk-Host <credential>`, refused with a 403 whose JSON body names the word. `rpc.hello` is the first request. A domain in `scope` takes that field beside its params, and its notifications carry it, except `person`: phone methods act as the authenticated person with no scope parameter, rechecking liveness on every call and refusing bound hosts; a `machine` method acts for the machine the connection's hello named; a `session` method writes the session its `session` names, passing that session's door on every call as a join of `work_session:<session>` did once, and a session not there or not this connection's to write is `forbidden`; the server serves a domain once it advertises `rpc_<domain>`, the word `features` names by method-name domain; a deprecated method is not served here. A refusal is an `error` whose `data` is the refusal as the Phoenix framing answers it (`reason`, and `message` or `event` where it has them) and whose `code` is by its word.",
+    "description": "The same methods as JSON-RPC 2.0 over one WebSocket (plan 2026-11-08, section 3). A method without `x-phoenix` is served there only. Auth is at the upgrade, `Authorization: Bearer <token>` or `Authorization: Desk-Host <credential>`, refused with a 403 whose JSON body names the word. `rpc.hello` is the first request. A domain in `scope` takes that field beside its params, and its notifications carry it, except `person`: phone methods act as the authenticated person with no scope parameter, rechecking liveness on every call and refusing bound hosts; a `machine` method acts for the machine the connection's hello named; a `session` method writes the session its `session` names, passing that session's door on every call as a join of `work_session:<session>` did once, and a session not there or not this connection's to write is `forbidden`, and one of a closed organization, or an `org` that is closed, is `organization_closed`, which a core asks again after; the server serves a domain once it advertises `rpc_<domain>`, the word `features` names by method-name domain; a deprecated method is not served here. A refusal is an `error` whose `data` is the refusal as the Phoenix framing answers it (`reason`, and `message` or `event` where it has them) and whose `code` is by its word.",
     "path": "/desk/rpc",
     "scope": {
       "machine": "org",
@@ -11121,12 +11140,14 @@
     },
     "x-common-refusals": [
       "forbidden",
-      "hello_required"
+      "hello_required",
+      "organization_closed"
     ],
     "max_frame": 16777216,
     "close": {
       "1009": "message_too_big: a frame past `max_frame` bytes, which the server cannot read, so it closes the connection and every domain on it. A core never sends one: it refuses a request past `max_frame` itself, unsent",
       "1012": "restart: the server is draining for a deploy; reconnect with backoff. Best-effort: behind kamal-proxy a deploy usually shows as 1006, the connection cut with no close frame, because the proxy cuts upgraded connections at its switch, before the old node stops and drains. A core reads 1006 exactly as 1012",
+      "1013": "organization_closed: a host's hello met an organization closed since the upgrade. The hello is not answered, so a core reads the close as a dropped transport and reconnects with backoff; the upgrade then refuses it 403 `organization_closed`, which it also reconnects after, so a reopen lets it back in with the same credential",
       "4401": "credential_revoked: the credential is dead. A person's Desk logs in again, and a host is bound again, before reconnecting; neither retries the same credential. A host whose binding was revoked on purpose is closed with it too, its word `revoked`, at once if it is connected and at once after the upgrade if it dials again. A released core stops dialling `/desk/rpc` on 4401; its Phoenix socket stops reconnecting only on `superseded`, so it goes on dialling `/socket` with backoff and is refused 403 `revoked` each time",
       "4409": "superseded"
     }
