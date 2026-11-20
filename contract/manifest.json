@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "1a252402972f6057fa53cc172b52b9ffca698e18311facd0f3b06ecaaef79e17"
+      "sha256": "9a92adbc0cee38ef658c71ce1b1bf8c65668f166bfb213644c895ccb1ad07a25"
     },
     "config_change/README.md": {
       "executable": false,
@@ -146,7 +146,7 @@
     "connector/capvers.md": {
       "executable": false,
       "owner": "server",
-      "sha256": "48e2c7ec0039c03e1bb747676d054c3a1af49fca96d53ac04003a0e9f39d9f4b"
+      "sha256": "bcf737c8235b56c7f0a651cc35840af000dda6dba7d0e2ae15690766ea1b6144"
     },
     "connector/login_origins.json": {
       "executable": false,
@@ -2981,8 +2981,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 13,
-  "source_commit": "d2d8e4094e072efd3617d61d23036baed93735db",
+  "number": 14,
+  "source_commit": "66d1b98e7f6e6a596a30c057d3444cc1e7dcf3ef",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

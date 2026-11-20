@@ -8,7 +8,7 @@ capver and is listed here so the three are found in one place:
 
 | Register | Between | Source of truth | Current | Floor |
 |---|---|---|---|---|
-| **agent capver** | the Crystal agent and the Phoenix app, over `wss /agent` | `Gentility.Connector.Protocol` (`lib/gentility/connector/protocol.ex`) | 4 | 2 |
+| **agent capver** | the Crystal agent and the Phoenix app, over `wss /agent` | `Gentility.Connector.Protocol` (`lib/gentility/connector/protocol.ex`) | 5 | 2 |
 | **`node_capver`** | the Go Connector and the mothership, over the overlay | `Gentility.Overlay.Capver` (`lib/gentility/overlay/capver.ex`) | 1 | 1 |
 | **Desk protocol** | the Desk window, `desk call` and `desk mcp`, and the Desk core, over the control socket and a pairing | `desk_core::api::PROTOCOL` (`desk/core/src/api.rs`), snapshot `desk/core/protocol/released.json` | 1.1 | 1 |
 
@@ -33,7 +33,7 @@ This document is the **shared reference** for the server (Elixir) and the
 agent (Crystal). When you add or change a capver, update this file in the
 same change.
 
-> **Current capver:** **4**
+> **Current capver:** **5**
 > **Server source of truth:** `Gentility.Connector.Protocol` (`lib/gentility/connector/protocol.ex`)
 > **Historical AsyncAPI source:** `agent-protocol.asyncapi.yaml` in the server
 > repository; not bundled in this contract. The history below describes the
@@ -349,6 +349,38 @@ authoritative provisioning version negotiated by the server.
   `agent.status` payload schema, remove `v` from the message envelopes,
   rename provisioning request `v` → `pv`. (Not blocking the agent — the
   wire format above is the contract.)
+
+---
+
+### Capver 5 — read-only queries
+
+Capver 5 adds one parameter and changes no event name, frame or reply.
+
+- **Server → agent:** every read the server sends an agent at capver 5 or
+  above carries `"read_only": true` in the params of `psql_query`,
+  `mysql_query`, `psql_query_encrypted` or `mysql_query_encrypted`
+  (`Gentility.DB.Transport.Agent.put_read_only/3`). A write never carries
+  the key; it is left out, not sent as `false`. An agent below 5 never sees
+  it.
+- **The promise:** an agent that declares 5 starts a `read_only` query
+  read-only, so an accidental single-statement write on the read path is
+  refused by the database. It is not a boundary: a query can switch it off
+  (`SET transaction_read_only = off`, `BEGIN READ WRITE`). The server's read
+  classifier, which refuses SET, BEGIN and multi-statement SQL on reads, and
+  the target's database role are what hold. The Crystal agent sets
+  `PGOPTIONS=-c default_transaction_read_only=on` for `psql` and
+  `--init-command=SET SESSION TRANSACTION READ ONLY` for `mysql`, the same
+  settings the server's direct pools connect with
+  (`Gentility.DB.PoolRegistry`). The database's refusal comes back on the
+  ordinary failure path (`success: false`, `error`).
+- **Which machines read as 5:** the live registration, through
+  `Gentility.Connector.capver/1`. A Go Connector node always registers as 5,
+  because `node.sql` takes `read_only` (`protocol/node-rpc.md`).
+- **Below 5:** a read on a `write_protected` target is still allowed and
+  logged (the grace in `Gentility.DB.Transport.Agent`). The grace is meant
+  to come out once the fleet speaks 5.
+
+Agent change: gentility-ai/agent#7.
 
 ---
 
