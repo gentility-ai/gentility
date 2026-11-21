@@ -613,6 +613,7 @@
     "HarnessCapabilities.steer": "boolean",
     "HarnessCapabilities.subagent_lineage": "boolean",
     "HarnessCapabilities.version": "? string",
+    "HarnessKind.antigravity": "variant",
     "HarnessKind.claude": "variant",
     "HarnessKind.codex": "variant",
     "HarnessKind.fake": "variant",

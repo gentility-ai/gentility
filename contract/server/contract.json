@@ -7979,6 +7979,7 @@
             "description": "Open: a core answers a kind it does not read `unsupported`, once (`a_kind_this_build_does_not_read_is_recorded_and_reads_as_unsupported`, `desk/core/src/reactors/asks.rs`), and only a core reads asks. A kind a released core would misread still waits for a hello word.",
             "type": "string",
             "enum": [
+              "adapter_update",
               "computer_screenshot",
               "host_upgrade",
               "host_upgrade_cancel",
@@ -8014,6 +8015,49 @@
         }
       ],
       "x-kinds": {
+        "adapter_update": {
+          "payload": {
+            "type": "object",
+            "properties": {
+              "package": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "lock_sha256": {
+                "type": "string"
+              },
+              "by": {
+                "$ref": "#/components/schemas/Asker"
+              }
+            },
+            "required": [
+              "by",
+              "lock_sha256",
+              "package",
+              "version"
+            ],
+            "additionalProperties": false
+          },
+          "decisions": [
+            "current",
+            "refused",
+            "updating"
+          ],
+          "refusals": [
+            "busy",
+            "core_too_old",
+            "expired",
+            "held",
+            "malformed",
+            "store",
+            "unknown_package",
+            "unsupported",
+            "unverifiable",
+            "withdrawn"
+          ]
+        },
         "host_upgrade": {
           "payload": {
             "type": "object",

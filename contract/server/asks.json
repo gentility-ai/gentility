@@ -1,4 +1,29 @@
 {
+  "adapter_update": {
+    "decisions": [
+      "current",
+      "refused",
+      "updating"
+    ],
+    "payload": [
+      "by",
+      "lock_sha256",
+      "package",
+      "version"
+    ],
+    "refusals": [
+      "busy",
+      "core_too_old",
+      "expired",
+      "held",
+      "malformed",
+      "store",
+      "unknown_package",
+      "unsupported",
+      "unverifiable",
+      "withdrawn"
+    ]
+  },
   "computer_screenshot": {
     "decisions": [
       "cancelled",
