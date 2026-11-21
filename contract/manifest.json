@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "54183f4323f377b737433a1e98229ead0fdc686f93bab057ecb612daa94002b5"
+      "sha256": "7ee29791fc17e986b97128845622b077fb45e349fdb80523fac9dba879b4ad60"
     },
     "config_change/README.md": {
       "executable": false,
@@ -1371,12 +1371,12 @@
     "server/asks.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "5a2cb6a3990397e4b9eb796dadafd2189a6c7a10298c395793743676464f04df"
+      "sha256": "3cf09fe09c5ae8bdd10886f748e4f0e7d8fc8909c0391021a3680d62cfbd09b7"
     },
     "server/contract.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "a95b6e03768787b714f7810fd0db916335631d99f962995ed0d7bdff55adeeb3"
+      "sha256": "e406b1b38d00a6868a5adb22adffcc627c90c09640a39fab80bc5a6bfc120473"
     },
     "server/desk/answer.json": {
       "executable": false,
@@ -1397,6 +1397,11 @@
       "executable": false,
       "owner": "server",
       "sha256": "f84a747598cf2a2a7a1c9f448a8a8ec16e394066be7c20086d76613999c60f01"
+    },
+    "server/desk/ask_adapter_update.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "7cca0a3dbbffbed981200ca05cf120a41008642fc0a741379c8f32dc08fe525b"
     },
     "server/desk/ask_computer_screenshot.json": {
       "executable": false,
@@ -1556,7 +1561,7 @@
     "server/facts.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "26f1085e1c5435812e98fa0bb4742040af4546df4e65e60030a371f00b04ef88"
+      "sha256": "656ef5016721158bdfe7f78171972835a7ac3436eb15db9c5faad8841e48037a"
     },
     "server/looper_threads/changed_loopers.json": {
       "executable": false,
@@ -2496,7 +2501,7 @@
     "server/work_sessions/join.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "4cf7270de0068ec4af3224e8950573bbc074b3c93b8502cc02bae8a4fa6448a3"
+      "sha256": "891d0549ad2d1b933eff52790871b9687f397ac54c0f382c5534bd861f341220"
     },
     "server/work_sessions/lease_take.json": {
       "executable": false,
@@ -3036,13 +3041,13 @@
     "window/protocol.gen.ts": {
       "executable": false,
       "owner": "core",
-      "sha256": "e83b69649a5f1c067ab14758b4d78c37f69ba9bee65994997bcea40ad90f12fc"
+      "sha256": "8023fc6753da24a467da5ae8e360010747f8f227f17974be88cde517fd42d9f6"
     }
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 17,
-  "source_commit": "e5e6286aec833482b220b304fb2c8bbad9963793",
+  "number": 18,
+  "source_commit": "f60dc61c8d167465c8cb36458ac294d39aa6b0d8",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,
