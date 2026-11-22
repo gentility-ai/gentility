@@ -7,8 +7,16 @@ final class FakeClaims: ClaimTransport, @unchecked Sendable {
     var answers: [PollAnswer]
     /// Thrown by the next polls, before any answer is given.
     var pollFailures: [Error] = []
-    private(set) var names: [String] = []
-    private(set) var polls = 0
+    /// A reply for one phone name alone, in place of `reply`.
+    var replies: [String: ClaimReply] = [:]
+    /// Answers for one poll secret alone, in place of `answers`: what a
+    /// second claim hears, which the first's poll, still out, cannot take.
+    var answersFor: [String: [PollAnswer]] = [:]
+    private let lock = NSLock()
+    private var _names: [String] = []
+    private var _polls = 0
+    var names: [String] { lock.withLock { _names } }
+    var polls: Int { lock.withLock { _polls } }
 
     init(reply: Result<ClaimReply, Error>, answers: [PollAnswer] = []) {
         self.reply = reply
@@ -16,14 +24,19 @@ final class FakeClaims: ClaimTransport, @unchecked Sendable {
     }
 
     func claim(code: String, phoneName: String) async throws -> ClaimReply {
-        names.append(phoneName)
-        return try reply.get()
+        try lock.withLock {
+            _names.append(phoneName)
+            return try replies[phoneName] ?? reply.get()
+        }
     }
 
     func poll(secret: String) async throws -> PollAnswer {
-        polls += 1
-        if !pollFailures.isEmpty { throw pollFailures.removeFirst() }
-        return answers.isEmpty ? .waiting("pending") : answers.removeFirst()
+        try lock.withLock {
+            _polls += 1
+            if !pollFailures.isEmpty { throw pollFailures.removeFirst() }
+            if answersFor[secret]?.isEmpty == false { return answersFor[secret]!.removeFirst() }
+            return answers.isEmpty ? .waiting("pending") : answers.removeFirst()
+        }
     }
 }
 
@@ -56,8 +69,8 @@ final class PairingFlowTests: XCTestCase {
         states = []
     }
 
-    private func reply(expiresAt: String = "2099-01-01T00:00:00.000000Z") -> ClaimReply {
-        ClaimReply(claimID: "c-1", machineLabel: "Morgan's MacBook Pro", expiresAt: expiresAt, pollSecret: "ps", match: "47")
+    private func reply(expiresAt: String = "2099-01-01T00:00:00.000000Z", pollSecret: String = "ps") -> ClaimReply {
+        ClaimReply(claimID: "c-1", machineLabel: "Morgan's MacBook Pro", expiresAt: expiresAt, pollSecret: pollSecret, match: "47")
     }
 
     private func granted() throws -> PollAnswer {
@@ -179,10 +192,14 @@ final class PairingFlowTests: XCTestCase {
     func testASecondScanCallsOffTheFirstsPoll() async throws {
         let store = MemoryStore()
         let claims = FakeClaims(reply: .success(reply()))
+        // The denial is the second claim's own. Handed to whichever poll asked
+        // next, the first's poll, still out when it is called off, took it
+        // about one run in forty-five, and the second then polled until 2099.
+        claims.replies["second"] = reply(pollSecret: "ps-second")
+        claims.answersFor["ps-second"] = [.denied]
         let pairing = flow(store, claims)
         let first = Task { await pairing.begin(link, phoneName: "first") }
         while claims.polls < 3 { await Task.yield() }
-        claims.answers = [.denied]
         await pairing.begin(link, phoneName: "second")
         await first.value
         XCTAssertEqual(claims.names, ["first", "second"])
