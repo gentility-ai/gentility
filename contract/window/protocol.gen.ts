@@ -858,9 +858,10 @@ machine?: string, instructions?: string, };
  */
 export type GroupMemberView = { label: string, model: string | null, harness: string | null, session_id: string, state: string,
 /**
- * Whether its thread ever started: false for a member whose start
- * failed, which has no thread to open. Absent from a server that does
- * not say it.
+ * Whether it has a thread to open: false for a member whose start
+ * failed before its thread opened. One that opened and closed before
+ * its first turn (`closed`) is true: its thread says why. Absent from a
+ * server that does not say it.
  */
 started?: boolean, };
 
@@ -999,7 +1000,7 @@ subagent_lineage: boolean, };
  * It travels as that word, a string, and the window's `HarnessKind` is these
  * same words: the one list a window keeps names for.
  */
-export type HarnessKind = "claude" | "codex" | "omp" | "fake";
+export type HarnessKind = "claude" | "codex" | "omp" | "antigravity" | "fake";
 
 /**
  * The rate windows of the account one harness runs under, as its sessions
@@ -2632,7 +2633,8 @@ export type RefusedPrompt = {
  */
 id: string, text: string, attachments?: Array<AttachmentRef>,
 /**
- * Why, in Desk's words.
+ * Why: Desk's words, or the agent's own where it answered the prompt
+ * with an error (`crate::harness::HarnessError::Answered`).
  */
 reason: string, };
 

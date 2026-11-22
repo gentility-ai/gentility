@@ -1,0 +1,18 @@
+{
+  "event": "ask",
+  "payload": {
+    "expires_at": "2026-01-01T00:00:00.000000Z",
+    "id": "00000000-0000-7000-8000-000000000001",
+    "kind": "adapter_update",
+    "payload": {
+      "by": {
+        "id": "automatic-adapter-updates",
+        "name": "Automatic adapter updates"
+      },
+      "lock_sha256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "package": "@agentclientprotocol/claude-agent-acp",
+      "version": "0.105.0"
+    }
+  },
+  "topic": "desk:<org>:<machine>"
+}

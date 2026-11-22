@@ -16,8 +16,10 @@
     ],
     "ask_answered": [
       "already_decided",
+      "busy",
       "expired",
       "feed_unreachable",
+      "held",
       "malformed",
       "management_grant_required",
       "no_feed",
@@ -34,9 +36,12 @@
       "stale_epoch",
       "too_late",
       "unknown_organization",
+      "unknown_package",
       "unknown_repository",
       "unsupported",
+      "unverifiable",
       "verify_failed",
+      "withdrawn",
       "wrong_channel"
     ],
     "fact": [
