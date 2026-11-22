@@ -1,0 +1,5 @@
+{"client_seq":null,"event_type":"opened","inserted_at":"2026-01-01T00:00:01.000000Z","internal":false,"payload":{"harness":"looper","id":"0199f000-0000-7000-8000-0000000000f1","looper_id":"0199f000-0000-7000-8000-0000000000f2","mode":null,"task_id":null,"title":"Bangkok Watch run #59"},"seq":1}
+{"client_seq":null,"event_type":"turn_started","inserted_at":"2026-01-01T00:00:02.000000Z","internal":false,"payload":{},"seq":2}
+{"client_seq":null,"event_type":"transcript_updated","inserted_at":"2026-01-01T00:00:03.000000Z","internal":false,"payload":{"complete":true,"content":"","id":"0199f000-0000-7000-8000-0000000000b1","kind":"message","operation":"replace","position":2,"role":"user","turn":1,"withheld":true},"seq":3}
+{"client_seq":null,"event_type":"turn_completed","inserted_at":"2026-01-01T00:00:04.000000Z","internal":false,"payload":{"origin":"looper"},"seq":4}
+{"client_seq":null,"event_type":"closed","inserted_at":"2026-01-01T00:00:05.000000Z","internal":false,"payload":{"reason":"finished"},"seq":5}

@@ -13,7 +13,8 @@
     "tool_call_pending_then_executed",
     "turn_body_parts",
     "two_turns",
-    "unseen_words"
+    "unseen_words",
+    "withheld_user_message"
   ],
   "desk_cases": [
     "start"
@@ -26,7 +27,8 @@
     "status": "A tool call still pending when its turn ends, or the session closes, is cancelled on both sides. One refused at its permission question and then settled without running is recorded declined by the Desk, which alone hears both the answer and the settling; every reader takes the word as said.",
     "stored": "The Elixir check holds the fold (SessionStream.reduce/1), not the table it is projected into (Transcripts.project_session_item/4), which adds doors and cuts of its own: a message whose role changes between two facts is refused (invalid_role); a private call's arguments and result are withheld to stubs; an empty message content is stored as null. None is a disagreement a server stream can hold — a refused fact never lands — so none is fixtured; the Desk's projection keeps the first role and ordinal of a row it has, and the fold takes the last. A tool call heard again keeps the message it was first heard under and its first parent once it has one, in the server's fold and projection as in the Desk's projection: a sub-agent's call can be heard again under a message begun after its turn ended (tool_call_heard_under_later_message). One difference is recorded, not fixtured: a call first heard with no parent and then given one keeps none in the Desk's projection and takes the one given on the server. Only streams from 2026-10-10 to 2026-10-15 hold that, and today's Desk does not send it.",
     "tool_kind": "A tool_call fact with no tool_kind key is accepted by the server and folded; the Desk's projection writes no row for it. Today's Desk always sends the key, so no stream holds one; recorded here, not fixtured.",
-    "unseen_words": "An operation or a status this build has not heard of moves nothing, a kind is no item, and a role or a tool kind stays as said in the fold; the server's rows cut those two (see `stored`), and no reader may take either for a word it knows."
+    "unseen_words": "An operation or a status this build has not heard of moves nothing, a kind is no item, and a role or a tool kind stays as said in the fold; the server's rows cut those two (see `stored`), and no reader may take either for a word it knows.",
+    "withheld": "A user message the organization may not read (a person's turn on a looper's run, which is the run's owner's alone) crosses as an empty user message with withheld: true, its turn started with no prompt. Every reader stores and draws it as an empty user message; none reads withheld. The owner reads the turn on the run's own pages, never from the thread. The server's mirror says no turn number on a row; the case carries one so the window's fold, which places a row by it, draws the shape too: an empty prompt in a turn with no reply. The window reads a looper's run from the looper channel's read, not from the thread."
   },
   "transcript_fold_version": 1
 }

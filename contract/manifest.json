@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "a9742eb8ee320e006666aef25ae9aeed948247f3125c9cafa7cf97b7e7467dd5"
+      "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3"
     },
     "config_change/README.md": {
       "executable": false,
@@ -2836,7 +2836,7 @@
     "transcript/manifest.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "09a31ff4c5c1946b1670cd119c7f8a120cacaf68de78f91917e8b1debd489674"
+      "sha256": "e43013dedfe635315010137ae7ef4ebdf41e2b28d40f5a367c0435b3ca3c130b"
     },
     "transcript/message_replaced/facts.jsonl": {
       "executable": false,
@@ -3028,6 +3028,21 @@
       "owner": "core",
       "sha256": "0a0e0167080bae5642f33c205a4fabd1adb4f7e294c7f3b18ad4a408bb933819"
     },
+    "transcript/withheld_user_message/facts.jsonl": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "9e27e16ddc634bf9dfe5bfa2f5dcfbfb0839631f6bad6ea0b78f645dacc321f5"
+    },
+    "transcript/withheld_user_message/items.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "74013a04d91424c3029fe54302b87de1f078d03bfe6b3579dab05529ec461f22"
+    },
+    "transcript/withheld_user_message/turns.json": {
+      "executable": false,
+      "owner": "core",
+      "sha256": "877e3e82471c704788faab1fce3e0f3d761ce5222f7899bc6d394ab52d8954f3"
+    },
     "window/README.md": {
       "executable": false,
       "owner": "core",
@@ -3046,8 +3061,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 19,
-  "source_commit": "85d2867cb324ac9f3500a526d42592fdbe4fcadd",
+  "number": 20,
+  "source_commit": "bfc6b14f18330403d0143c64723af5f05a1e9b3e",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,
