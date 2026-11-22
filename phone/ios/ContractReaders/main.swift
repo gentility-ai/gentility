@@ -71,6 +71,14 @@ let readers: [String: Read] = [
     // `Lobby.register` and the join of `phone:<user>` read the status alone.
     "phone.join": { reply in guard case .object = reply else { throw Unread("not an object") } },
     "phone.register": { reply in guard case .object = reply else { throw Unread("not an object") } },
+    "phone.mute": { reply in guard case .object = reply else { throw Unread("not an object") } },
+    "phone.mutes": { _ = try $0.decode(PhoneMutes.self) },
+    "loopers.list_owned": { _ = try $0.decode(LoopersReply.self) },
+    "loopers.history": { _ = try $0.decode(LooperRunsReply.self) },
+    "loopers.read_run": { _ = try $0.decode(LooperRunRead.self) },
+    "loopers.run_now": { _ = try $0.decode(LooperRunStarted.self) },
+    "loopers.update": { _ = try $0.decode(LooperUpdated.self) },
+    "loopers.resolve_request": { _ = try $0.decode(LooperResolved.self) },
 ]
 
 struct Unread: Error, CustomStringConvertible {

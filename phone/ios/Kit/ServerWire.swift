@@ -289,3 +289,216 @@ public struct InboxReply: Decodable, Equatable, Sendable {
         self.stale = stale
     }
 }
+
+// MARK: loopers (`looper_threads:<org>`, rpc `loopers.*`)
+
+/// A looper as `loopers.list_owned` and `loopers.update` send it.
+public struct LooperRow: Decodable, Equatable, Hashable, Sendable, Identifiable {
+    public struct Schedule: Decodable, Equatable, Hashable, Sendable {
+        public let cron: String?
+        public let enabled: Bool
+        public let timezone: String?
+
+        public init(cron: String?, enabled: Bool, timezone: String?) {
+            self.cron = cron
+            self.enabled = enabled
+            self.timezone = timezone
+        }
+    }
+
+    public let id: String
+    public let name: String
+    public let systemPrompt: String?
+    public let schedule: Schedule
+    public let nextRunAt: String?
+    public let notifyHandle: String?
+    /// Woken by its triggers. Absent from a server older than the word.
+    public let responder: Bool?
+    /// `private` or `public`.
+    public let visibility: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, schedule, responder, visibility
+        case systemPrompt = "system_prompt"
+        case nextRunAt = "next_run_at"
+        case notifyHandle = "notify_handle"
+    }
+
+    public init(id: String, name: String, systemPrompt: String? = nil, schedule: Schedule, nextRunAt: String? = nil, notifyHandle: String? = nil, responder: Bool? = nil, visibility: String? = nil) {
+        self.id = id
+        self.name = name
+        self.systemPrompt = systemPrompt
+        self.schedule = schedule
+        self.nextRunAt = nextRunAt
+        self.notifyHandle = notifyHandle
+        self.responder = responder
+        self.visibility = visibility
+    }
+}
+
+public struct LoopersReply: Decodable, Equatable, Sendable {
+    public let loopers: [LooperRow]
+}
+
+public struct LooperUpdated: Decodable, Equatable, Sendable {
+    public let looper: LooperRow
+}
+
+/// What a run asks of a person. Only a question is answered from the phone;
+/// the rest are read and answered on the web.
+public struct LooperRequest: Decodable, Equatable, Hashable, Sendable, Identifiable {
+    public let id: String
+    public let kind: String
+    public let kindLabel: String?
+    /// The request as the server words it for a person.
+    public let rendered: String?
+    public let body: String?
+    /// `open`, `answered`, and the server's other words.
+    public let status: String
+    public let canResolve: Bool?
+    public let expired: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case id, kind, rendered, body, status, expired
+        case kindLabel = "kind_label"
+        case canResolve = "can_resolve"
+    }
+
+    public init(id: String, kind: String, kindLabel: String? = nil, rendered: String? = nil, body: String? = nil, status: String, canResolve: Bool? = nil, expired: Bool? = nil) {
+        self.id = id
+        self.kind = kind
+        self.kindLabel = kindLabel
+        self.rendered = rendered
+        self.body = body
+        self.status = status
+        self.canResolve = canResolve
+        self.expired = expired
+    }
+}
+
+/// One run, as `loopers.history` rows it and `loopers.read_run` heads it.
+public struct LooperRunRow: Decodable, Equatable, Hashable, Sendable, Identifiable {
+    public struct Wake: Decodable, Equatable, Hashable, Sendable {
+        public let by: String?
+        public let source: String?
+
+        public init(by: String?, source: String?) {
+            self.by = by
+            self.source = source
+        }
+    }
+
+    public struct Owner: Decodable, Equatable, Hashable, Sendable {
+        public let id: String
+        public let name: String
+    }
+
+    public let id: String
+    public let number: Int?
+    public let title: String?
+    /// `queued`, `running`, `completed`, `failed`, `stopped`, and others.
+    public let status: String
+    public let startedAt: String?
+    public let endedAt: String?
+    public let wake: Wake?
+    public let requests: [LooperRequest]?
+    public let looper: Owner?
+    /// On a read alone: why it failed, and its last word.
+    public let error: String?
+    public let resultText: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, number, title, status, wake, requests, looper, error
+        case startedAt = "started_at"
+        case endedAt = "ended_at"
+        case resultText = "result_text"
+    }
+
+    public init(id: String, number: Int? = nil, title: String? = nil, status: String, startedAt: String? = nil, endedAt: String? = nil, wake: Wake? = nil, requests: [LooperRequest]? = nil, looper: Owner? = nil, error: String? = nil, resultText: String? = nil) {
+        self.id = id
+        self.number = number
+        self.title = title
+        self.status = status
+        self.startedAt = startedAt
+        self.endedAt = endedAt
+        self.wake = wake
+        self.requests = requests
+        self.looper = looper
+        self.error = error
+        self.resultText = resultText
+    }
+}
+
+public struct LooperRunsReply: Decodable, Equatable, Sendable {
+    public let runs: [LooperRunRow]
+}
+
+/// One turn of a run's transcript.
+public struct LooperTurn: Decodable, Equatable, Sendable, Identifiable {
+    public struct ToolCall: Decodable, Equatable, Sendable, Identifiable {
+        public let id: String
+        public let name: String?
+        public let status: String?
+
+        public init(id: String, name: String?, status: String?) {
+            self.id = id
+            self.name = name
+            self.status = status
+        }
+    }
+
+    public let id: String
+    public let position: Int
+    public let role: String
+    /// Nil on a turn withheld from this reader.
+    public let content: String?
+    public let isPrivate: Bool?
+    public let toolCalls: [ToolCall]?
+
+    enum CodingKeys: String, CodingKey {
+        case id, position, role, content
+        case isPrivate = "private"
+        case toolCalls = "tool_calls"
+    }
+
+    public init(id: String, position: Int, role: String, content: String?, isPrivate: Bool? = nil, toolCalls: [ToolCall]? = nil) {
+        self.id = id
+        self.position = position
+        self.role = role
+        self.content = content
+        self.isPrivate = isPrivate
+        self.toolCalls = toolCalls
+    }
+}
+
+public struct LooperRunRead: Decodable, Equatable, Sendable {
+    public let run: LooperRunRow
+    public let turns: [LooperTurn]
+    public let requests: [LooperRequest]
+
+    public init(run: LooperRunRow, turns: [LooperTurn], requests: [LooperRequest]) {
+        self.run = run
+        self.turns = turns
+        self.requests = requests
+    }
+}
+
+public struct LooperRunStarted: Decodable, Equatable, Sendable {
+    public let runID: String
+
+    enum CodingKeys: String, CodingKey { case runID = "run_id" }
+}
+
+public struct LooperResolved: Decodable, Equatable, Sendable {
+    public let request: LooperRequest
+}
+
+/// What this phone is muted for (`phone.mutes`).
+public struct PhoneMutes: Decodable, Equatable, Sendable {
+    public struct Lists: Decodable, Equatable, Sendable {
+        public let loopers: [String]
+        public let sessions: [String]
+    }
+
+    public let mutes: Lists
+}

@@ -23,11 +23,27 @@ public protocol Lobby: Sendable {
     func register(personID: String, name: String, enrollmentID: String?, pushToken: String?, environment: String?) async -> Bool
 }
 
+/// What the Loopers tab asks the mothership. Every check is the server's:
+/// a refusal comes back as `LobbyError.refused` with its reason.
+public protocol LooperLobby: Sendable {
+    func organizations() async throws -> Organizations
+    func loopers(organizationID: String) async throws -> [LooperRow]
+    func runs(organizationID: String, looperID: String) async throws -> [LooperRunRow]
+    func run(organizationID: String, runID: String) async throws -> LooperRunRead
+    /// Run now, or with `message` a run that opens with the person's words.
+    /// The run's id.
+    func start(organizationID: String, looperID: String, message: String?) async throws -> String
+    func update(organizationID: String, looperID: String, changes: [String: JSONValue]) async throws -> LooperRow
+    func answer(organizationID: String, requestID: String, answer: String) async throws -> LooperRequest
+    func mutedLoopers(personID: String) async throws -> Set<String>
+    func mute(personID: String, looperID: String, muted: Bool) async throws
+}
+
 /// The mothership on the API origin: organisations over HTTP, the rest over
 /// one socket, made again whenever the last one has closed. A topic is
 /// joined when an ask finds it not joined on the socket, so a channel the
 /// server ended is joined again by the next ask.
-public actor ServerLobby: Lobby {
+public actor ServerLobby: Lobby, LooperLobby {
     private let credential: Credential
     private let http: URLSession
     private let makeTransport: @Sendable () -> WebSocketTransport
@@ -71,7 +87,7 @@ public actor ServerLobby: Lobby {
         hello = .object([
             "version": .string(version), "build": .string(PhoneBuild.stamp),
             "protocol": .object(["major": .number(1)]),
-            "features": .array(["rpc_sessions", "rpc_hosts", "rpc_inbox", "rpc_phone", "inbox"].map(JSONValue.string)),
+            "features": .array(["rpc_sessions", "rpc_hosts", "rpc_inbox", "rpc_phone", "rpc_loopers", "inbox"].map(JSONValue.string)),
         ])
     }
 
@@ -160,6 +176,53 @@ public actor ServerLobby: Lobby {
         }
     }
 
+    // MARK: loopers
+
+    public func loopers(organizationID: String) async throws -> [LooperRow] {
+        let reply: LoopersReply = try read(await ask("looper_threads:\(organizationID)", "loopers", .object([:])), "loopers")
+        return reply.loopers
+    }
+
+    public func runs(organizationID: String, looperID: String) async throws -> [LooperRunRow] {
+        let reply: LooperRunsReply = try read(await ask("looper_threads:\(organizationID)", "history", .object(["looper_id": .string(looperID)])), "history")
+        return reply.runs
+    }
+
+    public func run(organizationID: String, runID: String) async throws -> LooperRunRead {
+        try read(await ask("looper_threads:\(organizationID)", "read", .object(["run_id": .string(runID)])), "read")
+    }
+
+    public func start(organizationID: String, looperID: String, message: String?) async throws -> String {
+        var payload: [String: JSONValue] = ["looper_id": .string(looperID)]
+        if let message { payload["message"] = .string(message) }
+        let reply: LooperRunStarted = try read(await ask("looper_threads:\(organizationID)", "looper_run", .object(payload)), "looper_run")
+        return reply.runID
+    }
+
+    public func update(organizationID: String, looperID: String, changes: [String: JSONValue]) async throws -> LooperRow {
+        let payload: JSONValue = .object(["looper_id": .string(looperID), "changes": .object(changes)])
+        let reply: LooperUpdated = try read(await ask("looper_threads:\(organizationID)", "looper_update", payload), "looper_update")
+        return reply.looper
+    }
+
+    public func answer(organizationID: String, requestID: String, answer: String) async throws -> LooperRequest {
+        let payload: JSONValue = .object([
+            "request_id": .string(requestID),
+            "decision": .object(["status": .string("answered"), "answer": .string(answer)]),
+        ])
+        let reply: LooperResolved = try read(await ask("looper_threads:\(organizationID)", "resolve", payload), "resolve")
+        return reply.request
+    }
+
+    public func mutedLoopers(personID: String) async throws -> Set<String> {
+        let reply: PhoneMutes = try read(await ask("phone:\(personID)", "mutes", .object([:])), "mutes")
+        return Set(reply.mutes.loopers)
+    }
+
+    public func mute(personID: String, looperID: String, muted: Bool) async throws {
+        _ = try await ask("phone:\(personID)", "mute", .object(["looper_id": .string(looperID), "muted": .bool(muted)]))
+    }
+
     /// Whether the socket is open now. For the tests.
     var isConnected: Bool {
         get async { await socket?.isOpen ?? false }
@@ -190,6 +253,14 @@ public actor ServerLobby: Lobby {
             case "machines": (domain, method) = ("hosts", "hosts.machines")
             case "inbox": (domain, method) = ("inbox", "inbox.command")
             case "register": (domain, method) = ("phone", "phone.register")
+            case "mute": (domain, method) = ("phone", "phone.mute")
+            case "mutes": (domain, method) = ("phone", "phone.mutes")
+            case "loopers": (domain, method) = ("loopers", "loopers.list_owned")
+            case "history": (domain, method) = ("loopers", "loopers.history")
+            case "read": (domain, method) = ("loopers", "loopers.read_run")
+            case "looper_run": (domain, method) = ("loopers", "loopers.run_now")
+            case "looper_update": (domain, method) = ("loopers", "loopers.update")
+            case "resolve": (domain, method) = ("loopers", "loopers.resolve_request")
             default: preconditionFailure("undeclared phone call")
             }
             let pin = "\(domain):\(topic)"
@@ -202,7 +273,9 @@ public actor ServerLobby: Lobby {
                         throw LobbyError.refused("inbox_unsupported")
                     }
                     guard case .object(var params) = payload else { preconditionFailure("phone params must be objects") }
-                    if topic.hasPrefix("work_sessions:") { params["org"] = .string(String(topic.dropFirst("work_sessions:".count))) }
+                    for prefix in ["work_sessions:", "looper_threads:"] where topic.hasPrefix(prefix) {
+                        params["org"] = .string(String(topic.dropFirst(prefix.count)))
+                    }
                     return try await rpc.call(method, .object(params))
                 }
                 phoenixPins.insert(pin)
@@ -231,8 +304,8 @@ public actor ServerLobby: Lobby {
             revokedOrganizations.formUnion(await rpc.revokedOrganizations)
         }
         guard !unauthorized else { throw LobbyError.unauthorized }
-        if topic.hasPrefix("work_sessions:"), revokedOrganizations.contains(String(topic.dropFirst("work_sessions:".count))) {
-            throw LobbyError.refused("forbidden")
+        for prefix in ["work_sessions:", "looper_threads:"] where topic.hasPrefix(prefix) {
+            if revokedOrganizations.contains(String(topic.dropFirst(prefix.count))) { throw LobbyError.refused("forbidden") }
         }
     }
 
