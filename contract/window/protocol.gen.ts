@@ -1499,10 +1499,10 @@ wakes: number, passes: number, wakes_last_minute: number, passes_last_minute: nu
 slow_count: number, };
 
 /**
- * What the server said to an edit or a wake of a looper: done, or why not
- * in the server's own words, which the page shows as they are.
+ * What the server said to an edit, a wake or a reply: done, or why not in
+ * the server's own words, which the page shows as they are.
  */
-export type LooperOutcome = { "type": "done" } | { "type": "refused", reason: string, message: string, } | { "type": "unknown" };
+export type LooperOutcome = { "type": "done", run_id?: string | null, turn?: number | null, } | { "type": "refused", reason: string, message: string, } | { "type": "unknown" };
 
 /**
  * A looper's schedule, as its page shows it: the cron line, its zone and
@@ -2800,7 +2800,7 @@ before_seq?: number | null,
  * a seq past this store's log, a `closed` past it, or more past it
  * than a page. A seq is this machine's store's.
  */
-after_seq?: number | null, } | { "type": "session_inspect", session_id: string, } | { "type": "session_rehome", environment_id: string, session_id: string, } | { "type": "peers_list", session_id: string, } | { "type": "open_asks", session_id: string, } | { "type": "sessions_find", session_id: string, filters: JsonValue, } | { "type": "sessions_locate", environment_id: string, organization_id: string, words: string, } | { "type": "thread_brief_options", environment_id: string, organization_id: string, } | { "type": "server_tools_list", session_id: string, } | { "type": "server_tool_call", session_id: string, name: string, arguments: JsonValue, } | { "type": "session_instructions_recorded", session_id: string, source: string, brief_revision_id?: string | null, } | { "type": "looper_runs_list", environment_id: string, } | { "type": "loopers_list", environment_id: string, } | { "type": "looper_run_read", environment_id: string, run_id: string, organization_id?: string | null, } | { "type": "looper_run_mark_read", environment_id: string, run_id: string, } | { "type": "looper_request_resolve", environment_id: string, request_id: string, decision: JsonValue, organization_id?: string | null, } | { "type": "looper_update", environment_id: string, looper_id: string, changes: JsonValue, } | { "type": "looper_run", environment_id: string, looper_id: string, } | { "type": "looper_history", environment_id: string, looper_id: string, } | { "type": "network_read", session_id: string, } | { "type": "node_read", session_id: string, } | { "type": "session_inbox", session_id: string, } | { "type": "peer_send", session_id: string, address: string, text: string, fyi?: boolean,
+after_seq?: number | null, } | { "type": "session_inspect", session_id: string, } | { "type": "session_rehome", environment_id: string, session_id: string, } | { "type": "peers_list", session_id: string, } | { "type": "open_asks", session_id: string, } | { "type": "sessions_find", session_id: string, filters: JsonValue, } | { "type": "sessions_locate", environment_id: string, organization_id: string, words: string, } | { "type": "thread_brief_options", environment_id: string, organization_id: string, } | { "type": "server_tools_list", session_id: string, } | { "type": "server_tool_call", session_id: string, name: string, arguments: JsonValue, } | { "type": "session_instructions_recorded", session_id: string, source: string, brief_revision_id?: string | null, } | { "type": "looper_runs_list", environment_id: string, } | { "type": "loopers_list", environment_id: string, } | { "type": "looper_run_read", environment_id: string, run_id: string, organization_id?: string | null, } | { "type": "looper_run_mark_read", environment_id: string, run_id: string, } | { "type": "looper_request_resolve", environment_id: string, request_id: string, decision: JsonValue, organization_id?: string | null, } | { "type": "looper_update", environment_id: string, looper_id: string, changes: JsonValue, } | { "type": "looper_run", environment_id: string, looper_id: string, message?: string | null, message_id?: string | null, } | { "type": "looper_say", environment_id: string, run_id: string, message: string, message_id: string, organization_id?: string | null, } | { "type": "looper_history", environment_id: string, looper_id: string, } | { "type": "network_read", session_id: string, } | { "type": "node_read", session_id: string, } | { "type": "session_inbox", session_id: string, } | { "type": "peer_send", session_id: string, address: string, text: string, fyi?: boolean,
 /**
  * The operation this send is, as `Request::SessionPrompt`'s `op`,
  * chosen by the agent, whose retry is a new call to the tool: the
@@ -4402,12 +4402,12 @@ export const PROTOCOL: Protocol = { major: 1, minor: 55 };
  * What this build's core can do that an older one would silently not:
  * `desk_core::api::FEATURES`. A core's hello says which it has.
  */
-export const FEATURES = ["brief_body", "thread_briefs", "thread_settle_finished", "questions_list", "hello_wants", "machine_confirmation", "shell_models", "frame_trace", "transcript_paging", "hello_host", "start_later", "thread_traffic", "index_follow", "host_upgrade", "steer_injects", "model_catalog", "project_agent_defaults", "inherited_turns", "upgrade_wait", "phone_pairing", "hosts_everywhere", "transcript_brief", "transcript_seq", "transcript_copy", "session_get", "lease_routing", "start_on_host", "titled_open", "named_models", "host_diagnostics", "rehome", "harness_capabilities", "assign_elsewhere", "harness_driver_selection", "native_codex_selection", "unknown_words", "upgrade_following", "repository_store", "repo_warm_base", "fork_review", "transcript_find", "session_star", "machines_read", "session_reopen", "thread_delegate", "groups", "messages_paging", "agents_restart"] as const;
+export const FEATURES = ["brief_body", "thread_briefs", "thread_settle_finished", "questions_list", "hello_wants", "machine_confirmation", "shell_models", "frame_trace", "transcript_paging", "hello_host", "start_later", "thread_traffic", "index_follow", "host_upgrade", "steer_injects", "model_catalog", "project_agent_defaults", "inherited_turns", "upgrade_wait", "phone_pairing", "hosts_everywhere", "transcript_brief", "transcript_seq", "transcript_copy", "session_get", "lease_routing", "start_on_host", "titled_open", "named_models", "host_diagnostics", "rehome", "harness_capabilities", "assign_elsewhere", "harness_driver_selection", "native_codex_selection", "unknown_words", "upgrade_following", "repository_store", "repo_warm_base", "fork_review", "transcript_find", "session_star", "machines_read", "session_reopen", "thread_delegate", "groups", "messages_paging", "agents_restart", "looper_chat"] as const;
 
 export type Feature = (typeof FEATURES)[number];
 
 /** Contract vocabulary; not a core's advertisement. */
-export const FEATURE_VOCABULARY = ["brief_body", "thread_briefs", "thread_settle_finished", "questions_list", "hello_wants", "machine_confirmation", "shell_models", "frame_trace", "transcript_paging", "hello_host", "start_later", "thread_traffic", "index_follow", "host_upgrade", "steer_injects", "model_catalog", "project_agent_defaults", "inherited_turns", "upgrade_wait", "phone_pairing", "hosts_everywhere", "transcript_brief", "transcript_seq", "transcript_copy", "session_get", "lease_routing", "start_on_host", "titled_open", "named_models", "host_diagnostics", "rehome", "harness_capabilities", "assign_elsewhere", "harness_driver_selection", "native_codex_selection", "unknown_words", "upgrade_following", "repository_store", "repo_warm_base", "fork_review", "transcript_find", "session_star", "machines_read", "session_reopen", "thread_delegate", "groups", "messages_paging", "agents_restart", "families", "family_thread", "family_checkout", "family_tools", "family_minders", "family_terminals", "family_files", "family_bound_host", "family_network", "family_home"] as const;
+export const FEATURE_VOCABULARY = ["brief_body", "thread_briefs", "thread_settle_finished", "questions_list", "hello_wants", "machine_confirmation", "shell_models", "frame_trace", "transcript_paging", "hello_host", "start_later", "thread_traffic", "index_follow", "host_upgrade", "steer_injects", "model_catalog", "project_agent_defaults", "inherited_turns", "upgrade_wait", "phone_pairing", "hosts_everywhere", "transcript_brief", "transcript_seq", "transcript_copy", "session_get", "lease_routing", "start_on_host", "titled_open", "named_models", "host_diagnostics", "rehome", "harness_capabilities", "assign_elsewhere", "harness_driver_selection", "native_codex_selection", "unknown_words", "upgrade_following", "repository_store", "repo_warm_base", "fork_review", "transcript_find", "session_star", "machines_read", "session_reopen", "thread_delegate", "groups", "messages_paging", "agents_restart", "looper_chat", "families", "family_thread", "family_checkout", "family_tools", "family_minders", "family_terminals", "family_files", "family_bound_host", "family_network", "family_home"] as const;
 
 export type FeatureWord = (typeof FEATURE_VOCABULARY)[number];
 
@@ -4472,6 +4472,7 @@ export const ANSWERS = {
   looper_run_mark_read: ["ok"],
   looper_run_read: ["looper_run"],
   looper_runs_list: ["looper_runs"],
+  looper_say: ["looper_ran"],
   looper_update: ["looper_updated"],
   loopers_list: ["loopers"],
   machine_read: ["machine"],
@@ -4682,6 +4683,7 @@ export const REQUEST_CLASS: Record<Request["type"], "inbox" | "run" | "host_loca
   looper_run_mark_read: "home",
   looper_run_read: "home",
   looper_runs_list: "home",
+  looper_say: "home",
   looper_update: "home",
   loopers_list: "home",
   machine_read: "host_local",

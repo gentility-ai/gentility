@@ -58,7 +58,8 @@
       "thread_delegate",
       "groups",
       "messages_paging",
-      "agents_restart"
+      "agents_restart",
+      "looper_chat"
     ],
     "host": {
       "account": "recorded",
