@@ -42,8 +42,7 @@ struct ApprovalCard: View {
                     .buttonStyle(.borderedProminent)
             } else {
                 Button { onAnswer(.option(option.id)) } label: { Text(option.label).lineLimit(1).frame(maxWidth: .infinity) }
-                    .buttonStyle(.bordered)
-                    .tint(option.rejects ? Theme.bad : Theme.inkSoft)
+                    .buttonStyle(QuietButtonStyle(tone: option.rejects ? Theme.bad : Theme.inkSoft))
             }
         }
     }
@@ -176,7 +175,7 @@ struct QuestionCard: View {
         case .url:
             HStack(spacing: 8) {
                 Button("Done") { onAnswer(.accept(nil)) }.buttonStyle(.borderedProminent)
-                Button("Decline") { onAnswer(.decline) }.buttonStyle(.bordered)
+                Button("Decline") { onAnswer(.decline) }.buttonStyle(QuietButtonStyle())
             }
         case .form where draft.answerableHere:
             HStack(spacing: 8) {
@@ -185,10 +184,10 @@ struct QuestionCard: View {
                     if let content = draft.content() { onAnswer(.accept(content)) }
                 }
                 .buttonStyle(.borderedProminent)
-                Button("Decline") { onAnswer(.decline) }.buttonStyle(.bordered)
+                Button("Decline") { onAnswer(.decline) }.buttonStyle(QuietButtonStyle())
             }
         default:
-            Button("Decline") { onAnswer(.decline) }.buttonStyle(.bordered)
+            Button("Decline") { onAnswer(.decline) }.buttonStyle(QuietButtonStyle())
         }
     }
 

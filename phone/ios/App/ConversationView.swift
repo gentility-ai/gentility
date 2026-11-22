@@ -221,7 +221,9 @@ private struct StripView: View {
                 .contentShape(Capsule())
             }
             .buttonStyle(.plain)
-            .disabled(atEnd)
+            // At the end there is nowhere to jump. Not `disabled`, which dims the words.
+            .allowsHitTesting(!atEnd)
+            .accessibilityRemoveTraits(atEnd ? .isButton : [])
             .accessibilityLabel(atEnd ? "" : "Jump to latest")
             .transition(.opacity.combined(with: .scale(scale: 0.9)))
         }
@@ -369,7 +371,9 @@ private struct ToolRunView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .disabled(!several)
+            // One call has nothing to open. Not `disabled`, which dims the words.
+            .allowsHitTesting(several)
+            .accessibilityRemoveTraits(several ? [] : .isButton)
             .accessibilityLabel(several ? "\(run.headline), \(open ? "open" : "closed")" : run.headline)
             if open, several {
                 VStack(alignment: .leading, spacing: 6) {

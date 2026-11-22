@@ -20,17 +20,18 @@ enum Theme {
     static let ink = dynamic(light: 0x16171A, dark: 0xF2F3F5)
     /// What supports the words: a caption, a tool call.
     static let inkSoft = dynamic(light: 0x5C5F66, dark: 0xA4A7AE)
-    /// What can be found but does not ask to be read: a count, a chevron.
-    static let inkFaint = dynamic(light: 0x8A8D94, dark: 0x70737B)
+    /// What can be found but does not ask to be read: a count, an age. It
+    /// still reads at 4.5:1 on every ground, as all ink here does.
+    static let inkFaint = dynamic(light: 0x696C73, dark: 0x90939B)
 
     // MARK: meaning
 
     /// What the person can do: the send button, a link, a picked option.
     static let accent = dynamic(light: 0x4F5BD5, dark: 0x7C87F2)
     /// Something waits on the person.
-    static let attention = dynamic(light: 0xC2710C, dark: 0xF0A24B)
-    static let good = dynamic(light: 0x1F8A4C, dark: 0x4CC38A)
-    static let bad = dynamic(light: 0xD1343F, dark: 0xF2686F)
+    static let attention = dynamic(light: 0x9E5800, dark: 0xF0A24B)
+    static let good = dynamic(light: 0x1A7A42, dark: 0x4CC38A)
+    static let bad = dynamic(light: 0xC22833, dark: 0xF2686F)
 
     // MARK: measure
 
@@ -71,6 +72,24 @@ private extension UIColor {
             red: CGFloat((hex >> 16) & 0xff) / 255, green: CGFloat((hex >> 8) & 0xff) / 255,
             blue: CGFloat(hex & 0xff) / 255, alpha: alpha
         )
+    }
+}
+
+/// A button that does not lead: its words in their tone on a plain fill, so
+/// they read the same on a card in light and in dark.
+struct QuietButtonStyle: ButtonStyle {
+    var tone: Color = Theme.inkSoft
+    @Environment(\.isEnabled) private var enabled
+    @Environment(\.controlSize) private var size
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body)
+            .foregroundStyle(tone)
+            .padding(.horizontal, size == .large ? Theme.Space.l : Theme.Space.m)
+            .frame(minHeight: size == .large ? 50 : 34)
+            .background(Theme.field, in: Capsule())
+            .opacity(configuration.isPressed ? 0.6 : enabled ? 1 : 0.5)
     }
 }
 

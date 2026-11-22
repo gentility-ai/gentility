@@ -106,8 +106,8 @@ public struct TurnEnd: Equatable, Sendable {
 }
 
 /// Where the working caret is drawn: at the end of the agent's last words,
-/// or alone after any other last line. Nowhere while a compaction runs: its
-/// line is the live sign, and the agent is not about to write.
+/// or alone after any other last line. Nowhere while a compaction or a tool
+/// call runs: its line is the live sign, and the agent is not about to write.
 public enum Caret: Equatable, Sendable {
     case none
     /// At the end of this line, the agent's.
@@ -120,7 +120,12 @@ public enum Caret: Equatable, Sendable {
             self = .none
             return
         }
-        if case .agent(let id, _)? = turns.last?.lines.last { self = .inLine(id) } else { self = .alone }
+        switch turns.last?.lines.last {
+        case .agent(let id, _)?: self = .inLine(id)
+        // A call that is running draws its own live sign.
+        case .tool(let id, let text)? where TranscriptRow.step(id: id, text: text).state == .running: self = .none
+        default: self = .alone
+        }
     }
 }
 

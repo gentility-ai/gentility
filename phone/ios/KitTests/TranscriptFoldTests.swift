@@ -106,6 +106,13 @@ final class TranscriptFoldTests: XCTestCase {
         XCTAssertEqual(Caret(turns: writing, working: false, compacting: false), .none)
     }
 
+    func testARunningToolCallIsItsOwnLiveSign() {
+        let running = [Turn(number: 1, lines: [.you(id: "u", text: "go on"), .tool(id: "c", text: "… Bash mix test")])]
+        XCTAssertEqual(Caret(turns: running, working: true, compacting: false), .none, "the running row spins")
+        let ran = [Turn(number: 1, lines: [.you(id: "u", text: "go on"), .tool(id: "c", text: "✓ Bash mix test")])]
+        XCTAssertEqual(Caret(turns: ran, working: true, compacting: false), .alone, "between calls the caret shows the turn is alive")
+    }
+
     func testACompactionSaysWhatWasMeasured() {
         XCTAssertEqual(TranscriptFold.words(Compaction(status: "completed", before: 213_000)), "Context compacted from 213K tokens")
         XCTAssertEqual(TranscriptFold.words(Compaction(status: "completed", after: 14_600)), "Context compacted to 14.6K tokens")
