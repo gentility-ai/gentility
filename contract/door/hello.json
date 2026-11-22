@@ -57,7 +57,8 @@
       "session_reopen",
       "thread_delegate",
       "groups",
-      "messages_paging"
+      "messages_paging",
+      "agents_restart"
     ],
     "host": {
       "account": "recorded",
