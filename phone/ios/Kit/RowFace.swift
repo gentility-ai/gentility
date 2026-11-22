@@ -37,8 +37,6 @@ public enum HomeMenuItem: Equatable, Sendable {
     /// Snooze, offering these times.
     case snooze([SnoozePreset])
     case wake, archive
-    /// A looper run: one disabled line saying where it is managed.
-    case managedOnMac
 
     /// The action's name, for comparing with the swipes; nil for none.
     var kind: String? {
@@ -48,7 +46,7 @@ public enum HomeMenuItem: Equatable, Sendable {
         case .snooze: "snooze"
         case .wake: "wake"
         case .archive: "archive"
-        case .copy, .managedOnMac: nil
+        case .copy: nil
         }
     }
 }

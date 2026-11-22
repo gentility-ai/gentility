@@ -82,7 +82,7 @@ private extension Character {
 
 /// The colour a looper's state word is drawn in.
 public enum LooperTone: Equatable, Sendable {
-    case asking, working, faint
+    case asking, working, faint, bad
 }
 
 /// One looper on the Loopers tab: its row from the server, whose it is, and
@@ -150,7 +150,7 @@ public struct RunFace: Equatable, Sendable {
         case _ where asking && Self.going(run.status): (word, tone) = ("Asking", .asking)
         case "queued", "pending": (word, tone) = ("Queued", .faint)
         case "running": (word, tone) = ("Running", .working)
-        case "failed": (word, tone) = ("Failed", .asking)
+        case "failed": (word, tone) = ("Failed", .bad)
         case "stopped", "cancelled": (word, tone) = ("Stopped", .faint)
         default: (word, tone) = (nil, .faint)
         }

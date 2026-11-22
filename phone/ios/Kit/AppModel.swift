@@ -28,6 +28,8 @@ public final class AppModel: ObservableObject {
     @Published public private(set) var route: Route = .launching
     @Published public private(set) var nodeState: NodeState = .down
     @Published public private(set) var home: HomeModel?
+    /// The Loopers tab; nil until paired, and against a lobby without them.
+    @Published public private(set) var loopers: LoopersModel?
     /// Home's footer: notifications are denied in Settings.
     @Published public private(set) var notificationsOff = false
     /// Home's navigation; a tap on a notification sets it.
@@ -373,6 +375,7 @@ public final class AppModel: ObservableObject {
         guard route != .home else { return }
         let lobby = makeLobby(credential)
         self.lobby = lobby
+        loopers = (lobby as? LooperLobby).map { LoopersModel(lobby: $0) }
         let home = HomeModel(lobby: lobby)
         home.onUnauthorized = { [weak self, weak home] in
             home?.disappear()
@@ -422,6 +425,7 @@ public final class AppModel: ObservableObject {
         nodeTries = 0
         home?.disappear()
         home = nil
+        loopers = nil
         kept = []
         credential = nil
         lobby = nil

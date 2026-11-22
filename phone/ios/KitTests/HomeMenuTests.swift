@@ -45,8 +45,8 @@ final class HomeMenuTests: XCTestCase {
         XCTAssertEqual(HomeModel.menu(for: row(tagged: true), now: now), [copy, .settle, .snooze(SnoozePresets.at(now)), .archive])
     }
 
-    func testALooperRunOffersCopyAndSaysItIsManagedOnTheMac() {
-        XCTAssertEqual(HomeModel.menu(for: row(looper: true), now: now), [copy, .managedOnMac])
+    func testALooperRunOffersTheCopiesAlone() {
+        XCTAssertEqual(HomeModel.menu(for: row(looper: true), now: now), [copy])
     }
 
     func testTheMenuAgreesWithTheSwipes() {

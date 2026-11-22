@@ -13,7 +13,7 @@ struct RootView: View {
                 PairingView(app: app, pairing: app.pairing, scanner: app.scanner)
             case .home:
                 if let home = app.home {
-                    HomeView(app: app, home: home)
+                    TabsView(app: app, home: home)
                 }
             case .failure(let failure):
                 FailureView(failure: failure) { app.again() }

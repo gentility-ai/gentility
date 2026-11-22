@@ -61,7 +61,7 @@ struct PictureShowcase: View {
     private func conversation(_ acting: Acting, turns: [Turn] = Showcase.turns, atEnd: Bool = true, strip: StatusStrip? = nil) -> some View {
         NavigationStack(path: .constant(NavigationPath(["s"]))) {
             Color.clear
-                .navigationTitle("Home")
+                .navigationTitle("Threads")
                 .navigationDestination(for: String.self) { _ in
                     TranscriptScreen(turns: turns, phase: .open, asleepLines: [], acting: acting, strip: strip, onRetry: {}, atEnd: atEnd)
                         .threadChrome(title: "Fix the login layout", branch: "fix-login-layout", machine: nil, menu: HomeModel.menu(for: Showcase.rows[2]), onAct: { _ in })

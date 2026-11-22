@@ -13,7 +13,7 @@ private struct HomeMenuShowcase: View {
         ZStack {
             NavigationStack {
                 HomeList(rows: rows, line: nil, empty: false, joining: false, notificationsOff: false, preset: HomeListPreset(project: ""))
-                    .navigationTitle("Home")
+                    .navigationTitle("Threads")
             }
             .blur(radius: 12)
             Color.black.opacity(0.18).ignoresSafeArea()
@@ -47,6 +47,31 @@ private struct HomeMenuShowcase: View {
     }
 }
 
+/// A tab's root, drawn under the tab bar as the app draws it.
+private struct ShowcaseTabs<Page: View>: View {
+    let tab: TabsView.Tab
+    @ViewBuilder let page: () -> Page
+
+    var body: some View {
+        TabView(selection: .constant(tab)) {
+            root(.threads).tabItem { Label("Threads", systemImage: "bubble.left.and.text.bubble.right") }.tag(TabsView.Tab.threads)
+            root(.loopers).tabItem { Label("Loopers", systemImage: "arrow.triangle.2.circlepath") }.tag(TabsView.Tab.loopers)
+            root(.search).tabItem { Label("Search", systemImage: "magnifyingglass") }.tag(TabsView.Tab.search)
+        }
+        .tint(Theme.accent)
+    }
+
+    @ViewBuilder private func root(_ which: TabsView.Tab) -> some View {
+        if which == tab {
+            NavigationStack {
+                page().toolbar { ToolbarItem(placement: .topBarLeading) { SettingsGear {} } }
+            }
+        } else {
+            Color.clear
+        }
+    }
+}
+
 /// A conversation whose turns land just after it draws, as an open's first
 /// read does: the screen follows them to the end, as the app does.
 private struct ArrivingTranscript: View {
@@ -58,7 +83,7 @@ private struct ArrivingTranscript: View {
     var body: some View {
         NavigationStack(path: .constant(NavigationPath(["s"]))) {
             Color.clear
-                .navigationTitle("Home")
+                .navigationTitle("Threads")
                 .navigationDestination(for: String.self) { _ in
                     TranscriptScreen(turns: shown, phase: .open, asleepLines: [], acting: acting, strip: strip, onRetry: {})
                         .navigationTitle("Phone pairing spec")
@@ -105,14 +130,57 @@ struct Showcase: View {
                 acting: Self.acting(open: false, working: false), onRetry: {}), "Phone pairing spec")
         case "home-siblings", "home-sibling-unavailable": NavigationStack {
             HomeList(rows: Self.siblingRows(secondReachable: screen == "home-siblings"), line: nil, empty: false, joining: false, notificationsOff: false, preset: HomeListPreset(project: ""))
-                .navigationTitle("Home")
+                .navigationTitle("Threads")
         }
         case "home-presence": NavigationStack {
             HomeList(rows: Self.presenceRows, line: nil, empty: false, joining: false, notificationsOff: false, preset: HomeListPreset(project: ""))
-                .navigationTitle("Home")
+                .navigationTitle("Threads")
         }
         case "home-off": home(notificationsOff: true)
-        case "home-search": home(notificationsOff: false, query: "recap")
+        case "home-search", "search": ShowcaseTabs(tab: .search) {
+            SearchResults(rows: Self.rows, loopers: Self.loopers, query: "re")
+                .navigationTitle("Search")
+                .searchable(text: .constant("re"), placement: .navigationBarDrawer(displayMode: .always), prompt: "Threads and loopers")
+        }
+        case "search-empty": ShowcaseTabs(tab: .search) {
+            SearchResults(rows: Self.rows, loopers: Self.loopers, query: "")
+                .navigationTitle("Search")
+                .searchable(text: .constant(""), placement: .navigationBarDrawer(displayMode: .always), prompt: "Threads and loopers")
+        }
+        case "loopers": ShowcaseTabs(tab: .loopers) {
+            LoopersList(loopers: Self.loopers, loaded: true, line: nil).navigationTitle("Loopers")
+        }
+        case "loopers-empty": ShowcaseTabs(tab: .loopers) {
+            LoopersList(loopers: [], loaded: true, line: nil).navigationTitle("Loopers")
+        }
+        case "looper", "looper-asking", "looper-refused", "looper-new":
+            pushed(Self.loopers[screen == "looper-asking" ? 0 : 2].name, from: "Loopers") {
+                LooperPage(
+                    looper: Self.loopers[screen == "looper-asking" ? 0 : 2],
+                    runs: screen == "looper-new" ? [] : screen == "looper-asking" ? Self.runs : Array(Self.runs.dropFirst()),
+                    loaded: true,
+                    open: screen == "looper-asking" ? [WaitingRequest(run: Self.runs[0], request: Self.question)] : [],
+                    runBlocked: screen == "looper-asking" ? "Running…" : nil, busy: false,
+                    notice: nil, failure: screen == "looper-refused" ? "Add funds to run" : nil,
+                    message: .constant("")
+                )
+            }
+        case "run", "run-asking":
+            pushed("Run #\(screen == "run" ? 41 : 42)", from: "Morning triage") {
+                LooperRunPage(
+                    run: Self.runs[screen == "run" ? 1 : 0], items: screen == "run" ? Self.runItems : Array(Self.runItems.prefix(3)),
+                    open: screen == "run" ? [] : [Self.question], loaded: true, failure: nil, notice: nil
+                )
+            }
+        case "looper-edit":
+            NavigationStack {
+                LooperEditForm(draft: .constant(LooperDraft(Self.loopers[2].row)), nextRun: "next run in 3 h", failure: nil)
+                    .navigationTitle("Edit").navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) { Button("Cancel") {} }
+                        ToolbarItem(placement: .confirmationAction) { Button("Save") {}.disabled(true) }
+                    }
+            }
         case "home-settled": home(notificationsOff: false, open: [.settled])
         case "home-snooze": home(notificationsOff: false, snoozing: Self.rows[2])
         case "home-undo": home(notificationsOff: false, undo: Undo(words: "Snoozed until Tue 09:00", rowID: "s-2", organizationID: "o-1", inverse: .wake))
@@ -122,7 +190,7 @@ struct Showcase: View {
         case "home-waiting": home(notificationsOff: false, preset: HomeListPreset(project: "", waitingOnly: true))
         case "home-empty": NavigationStack {
             HomeList(rows: [], line: nil, empty: true, joining: false, notificationsOff: false, preset: HomeListPreset(project: ""))
-                .navigationTitle("Home")
+                .navigationTitle("Threads")
         }
         case "home-nomatch": home(notificationsOff: false, query: "zebra")
         case "home-starred": home(notificationsOff: false, preset: HomeListPreset(project: "", hidden: [], starredOnly: true))
@@ -215,11 +283,50 @@ struct Showcase: View {
     }
 
     private func home(notificationsOff: Bool, query: String = "", open: Set<Shelf> = [], snoozing: HomeRow? = nil, undo: Undo? = nil, preset: HomeListPreset = HomeListPreset(project: "")) -> some View {
-        NavigationStack {
-            HomeList(rows: Self.rows, line: nil, empty: false, joining: false, notificationsOff: notificationsOff, undo: undo, onCompose: {}, query: query, open: open, snoozing: snoozing, preset: preset)
-                .navigationTitle("Home")
+        ShowcaseTabs(tab: .threads) {
+            HomeList(rows: Self.rows, line: nil, empty: false, joining: false, notificationsOff: notificationsOff, undo: undo, onCompose: {}, searches: false, headsThreads: false, query: query, open: open, snoozing: snoozing, preset: preset)
+                .navigationTitle("Threads")
         }
     }
+
+    /// A page pushed onto `from`, so the back button draws.
+    private func pushed<Page: View>(_ title: String, from: String, @ViewBuilder _ page: @escaping () -> Page) -> some View {
+        NavigationStack(path: .constant(NavigationPath(["s"]))) {
+            Color.clear
+                .navigationTitle(from)
+                .navigationDestination(for: String.self) { _ in
+                    page().navigationTitle(title).navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarTrailing) { Button {} label: { Label("Actions", systemImage: "ellipsis") } }
+                        }
+                }
+        }
+    }
+
+    static let question = LooperRequest(id: "q-1", kind: "question", kindLabel: "Question", rendered: "Two issues look like the same bug. Close the older one as a duplicate, or keep both?", status: "open", canResolve: true)
+
+    static let loopers: [Looper] = [
+        Looper(row: LooperRow(id: "l-1", name: "Morning triage", systemPrompt: "Label new issues and say which need a person.", schedule: .init(cron: "0 9 * * 1-5", enabled: true, timezone: "Europe/London"), notifyHandle: "@morgan", visibility: "private"), organizationID: "o-1", working: true, asking: true),
+        Looper(row: LooperRow(id: "l-2", name: "Dependency watch", schedule: .init(cron: "0 */4 * * *", enabled: true, timezone: "UTC")), organizationID: "o-1", working: true),
+        Looper(row: LooperRow(id: "l-3", name: "Release notes", systemPrompt: "Write the week's release notes from merged pull requests, in plain words.", schedule: .init(cron: "30 16 * * 5", enabled: true, timezone: "Europe/London"), nextRunAt: ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: 3 * 3600 + 600)), notifyHandle: "@morgan", visibility: "private"), organizationID: "o-1"),
+        Looper(row: LooperRow(id: "l-4", name: "Support inbox", schedule: .init(cron: nil, enabled: false, timezone: nil), responder: true), organizationID: "o-1", muted: true),
+        Looper(row: LooperRow(id: "l-5", name: "Billing reconcile", schedule: .init(cron: "0 2 1 * *", enabled: false, timezone: "UTC")), organizationID: "o-1"),
+        Looper(row: LooperRow(id: "l-6", name: "Changelog check", schedule: .init(cron: nil, enabled: false, timezone: nil)), organizationID: "o-1"),
+    ]
+
+    static let runs: [LooperRunRow] = [
+        LooperRunRow(id: "r-42", number: 42, status: "running", startedAt: ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: -240)), wake: .init(by: "scheduled", source: nil), requests: [question]),
+        LooperRunRow(id: "r-41", number: 41, status: "completed", startedAt: ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: -86_400)), wake: .init(by: "scheduled", source: nil)),
+        LooperRunRow(id: "r-40", number: 40, status: "failed", startedAt: ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: -2 * 86_400)), wake: .init(by: "task", source: nil)),
+        LooperRunRow(id: "r-39", number: 39, status: "completed", startedAt: ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: -3 * 86_400)), wake: .init(by: "manual", source: nil)),
+    ]
+
+    static let runItems: [RunItem] = [
+        .said(id: "t1", text: "Include the deploy queue this morning."),
+        .words(id: "t2", text: "Reading the open issues and the deploy queue."),
+        .tools(id: "t3", names: ["task_list", "web_fetch", "task_comment"], failed: 0),
+        .words(id: "t4", text: "Seven new issues since yesterday:\n\n- **3** labelled `bug`, one of them a regression in pairing\n- **4** labelled `question`\n\nThe deploy queue is empty. The pairing regression needs a person."),
+    ]
 
     /// An open conversation, with `acting` at its foot.
     private func conversation(_ acting: Acting, _ title: String) -> some View {
@@ -230,7 +337,7 @@ struct Showcase: View {
     private func conversation(_ screen: TranscriptScreen, _ title: String) -> some View {
         NavigationStack(path: .constant(NavigationPath(["s"]))) {
             Color.clear
-                .navigationTitle("Home")
+                .navigationTitle("Threads")
                 .navigationDestination(for: String.self) { _ in
                     screen
                         .threadChrome(title: title, branch: "feat-phone-pairing", machine: "Morgan's MacBook Pro", menu: HomeModel.menu(for: Self.rows[2]), onAct: { _ in })

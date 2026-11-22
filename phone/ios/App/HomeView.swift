@@ -17,19 +17,24 @@ struct HomeView: View {
                 undo: home.undo,
                 onAct: { action, row in Task { await home.act(action, on: row) } },
                 onUndo: { Task { await home.undoLast() } },
-                onSettings: { settings = true },
                 // A new thread starts on a Mac one of the person's threads
                 // names, so an empty Home has none to offer. With threads but
                 // no Mac awake the button stays, and its sheet says why.
-                onCompose: home.loaded && !home.rows.isEmpty ? { composing = true } : nil
+                onCompose: home.loaded && !home.rows.isEmpty ? { composing = true } : nil,
+                searches: false, headsThreads: false
             )
-                .navigationTitle("Home")
+                .navigationTitle("Threads")
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) { SettingsGear { settings = true } }
+                }
                 .navigationDestination(for: HomeRow.self) { row in
-                    if let conversation = app.conversation(for: row) {
-                        ConversationView(app: app, conversation: conversation)
+                    if row.looper {
+                        LooperRunLanding(app: app, row: row).toolbar(.hidden, for: .tabBar)
+                    } else if let conversation = app.conversation(for: row) {
+                        ConversationView(app: app, conversation: conversation).toolbar(.hidden, for: .tabBar)
                     }
                 }
-                .navigationDestination(isPresented: $settings) { SettingsView(app: app) }
+                .navigationDestination(isPresented: $settings) { SettingsView(app: app).toolbar(.hidden, for: .tabBar) }
                 .refreshable { await home.refresh() }
                 .task { await app.homeAppeared() }
         }
@@ -61,6 +66,11 @@ struct HomeList: View {
     let onSettings: (() -> Void)?
     /// Nil on an empty Home, which knows no Mac: the button is not drawn.
     let onCompose: (() -> Void)?
+    /// Whether the list carries its own search field; the Search tab does
+    /// when the list is under the tab bar.
+    let searches: Bool
+    /// Whether the live shelf is headed "Threads"; not under that title.
+    let headsThreads: Bool
     /// Set by Showcase: the filter to draw with, in place of the remembered one.
     private let preset: HomeListPreset?
     private let tip = HomeActionsTip()
@@ -79,7 +89,9 @@ struct HomeList: View {
     /// The row whose snooze times are being offered.
     @State private var snoozing: HomeRow?
 
-    init(rows: [HomeRow], line: String?, empty: Bool, joining: Bool, notificationsOff: Bool, undo: Undo? = nil, onAct: @escaping (HomeAction, HomeRow) -> Void = { _, _ in }, onUndo: @escaping () -> Void = {}, onSettings: (() -> Void)? = nil, onCompose: (() -> Void)? = nil, query: String = "", open: Set<Shelf> = [], snoozing: HomeRow? = nil, preset: HomeListPreset? = nil) {
+    init(rows: [HomeRow], line: String?, empty: Bool, joining: Bool, notificationsOff: Bool, undo: Undo? = nil, onAct: @escaping (HomeAction, HomeRow) -> Void = { _, _ in }, onUndo: @escaping () -> Void = {}, onSettings: (() -> Void)? = nil, onCompose: (() -> Void)? = nil, searches: Bool = true, headsThreads: Bool = true, query: String = "", open: Set<Shelf> = [], snoozing: HomeRow? = nil, preset: HomeListPreset? = nil) {
+        self.searches = searches
+        self.headsThreads = headsThreads
         self.rows = rows
         self.line = line
         self.empty = empty
@@ -196,7 +208,7 @@ struct HomeList: View {
                 Section {
                     rows(live.rows, now: now, showsMac: showsMac, tipOnFirst: true)
                 } header: {
-                    ShelfHeader(title: "Threads", count: nil)
+                    if headsThreads { ShelfHeader(title: "Threads", count: nil) }
                 }
             }
             if !later.isEmpty {
@@ -278,7 +290,7 @@ struct HomeList: View {
           .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .animation(.default, value: undo)
-        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Title, branch or project")
+        .modifier(Searches(on: searches, query: $query))
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
@@ -415,9 +427,6 @@ extension HomeList {
             case .archive:
                 Divider()
                 Button(role: .destructive) { act(.archive, row) } label: { Label("Archive", systemImage: "archivebox") }
-            case .managedOnMac:
-                Button {} label: { Label("Looper runs are managed on your Mac", systemImage: "laptopcomputer") }
-                    .disabled(true)
             }
         }
     }
@@ -436,7 +445,6 @@ extension HomeList {
             }
         case .wake: Button("Wake") { act(.wake, row) }
         case .archive: Button("Archive") { act(.archive, row) }
-        case .managedOnMac: EmptyView()
         }
     }
 }
@@ -459,6 +467,29 @@ extension HomeCopy {
     @MainActor func toPasteboard() {
         UIPasteboard.general.string = text
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+}
+
+/// Home's own search field, where the list is not under the Search tab.
+private struct Searches: ViewModifier {
+    let on: Bool
+    @Binding var query: String
+
+    func body(content: Content) -> some View {
+        if on {
+            content.searchable(text: $query, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Title, branch or project")
+        } else {
+            content
+        }
+    }
+}
+
+/// Settings, at the leading edge of every tab's title bar.
+struct SettingsGear: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) { Label("Settings", systemImage: "gearshape") }
     }
 }
 
@@ -663,7 +694,7 @@ extension StatusTone {
 }
 
 /// An empty list: what is missing and how it fills.
-private struct Vacant: View {
+struct Vacant: View {
     let glyph: String
     let title: String
     let line: String

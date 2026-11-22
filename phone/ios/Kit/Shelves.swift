@@ -41,8 +41,8 @@ public enum ThreadKind: String, CaseIterable, Sendable {
         case .thread: "Threads"
         case .supervisor: "Supervisors"
         case .coordinator: "Coordinators"
-        case .looper: "Loopers"
-        case .responder: "Responders"
+        case .looper: "Looper runs"
+        case .responder: "Responder runs"
         }
     }
 

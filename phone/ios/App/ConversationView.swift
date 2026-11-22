@@ -537,9 +537,6 @@ struct ThreadChrome: ViewModifier {
         case .archive:
             Divider()
             Button(role: .destructive) { onAct(.archive) } label: { Label("Archive", systemImage: "archivebox") }
-        case .managedOnMac:
-            Button {} label: { Label("Looper runs are managed on your Mac", systemImage: "laptopcomputer") }
-                .disabled(true)
         }
     }
 }
