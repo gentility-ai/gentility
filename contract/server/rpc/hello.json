@@ -4,6 +4,7 @@
     "jsonrpc": "2.0",
     "method": "rpc.hello",
     "params": {
+      "arch": "x86_64",
       "build": "nightly",
       "features": [
         "rpc_loopers",
@@ -11,6 +12,7 @@
       ],
       "machine_id": "00000000-0000-7000-8000-000000000001",
       "machine_label": "test-desktop",
+      "os": "linux",
       "protocol": {
         "major": 1
       },

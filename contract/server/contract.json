@@ -4759,7 +4759,7 @@
     },
     {
       "name": "rpc.hello",
-      "description": "The first request on `/desk/rpc`, and the only one served before it: the core's hello (`GentilityWeb.DeskHello`) and, for a bound host, the generation it holds, fenced here as a connect was (`Bindings.fence/2`); a person's Desk names its machine to be registered. Answers who the credential is, the server's feature words, and the organizations it reaches. Said once. A host whose organization closed since the upgrade gets no answer: the connection closes 1013 (`x-rpc`'s `close`), because a refused hello stops a core for good.",
+      "description": "The first request on `/desk/rpc`, and the only one served before it: the core's hello (`GentilityWeb.DeskHello`) and, for a bound host, the generation it holds, fenced here as a connect was (`Bindings.fence/2`); a person's Desk names its machine, and the os and arch of the box it runs on, to be registered (`Machines.register/4`); a Desk too old to say them leaves the install's unknown. Answers who the credential is, the server's feature words, and the organizations it reaches. Said once. A host whose organization closed since the upgrade gets no answer: the connection closes 1013 (`x-rpc`'s `close`), because a refused hello stops a core for good.",
       "paramStructure": "by-name",
       "params": [
         {
