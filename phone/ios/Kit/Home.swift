@@ -388,9 +388,10 @@ public final class HomeModel: ObservableObject {
     /// looper run says it is managed on the Mac, so a press never does
     /// nothing.
     public static func menu(for row: HomeRow, now: Date = Date()) -> [HomeMenuItem] {
-        if row.looper { return [.managedOnMac] }
+        let copy = HomeMenuItem.copy([.threadID(row.id)] + (row.branch.map { [.branch($0)] } ?? []) + [.title(row.title)])
+        if row.looper { return [copy, .managedOnMac] }
         let swipes = actions(for: row, now: now)
-        return (swipes.leading + swipes.trailing).compactMap { action in
+        return [copy] + (swipes.leading + swipes.trailing).compactMap { action in
             switch action {
             case .settle: .settle
             case .unsettle: .unsettle

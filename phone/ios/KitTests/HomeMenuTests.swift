@@ -5,36 +5,48 @@ import XCTest
 final class HomeMenuTests: XCTestCase {
     private let now = WireDate.parse("2026-01-01T12:00:00.000000Z")!
 
-    private func row(attention: RowAttention = .none, settled: Bool = false, snoozedFor: Double? = nil, looper: Bool = false, tagged: Bool = false) -> HomeRow {
+    private func row(attention: RowAttention = .none, settled: Bool = false, snoozedFor: Double? = nil, branch: String? = nil, looper: Bool = false, tagged: Bool = false) -> HomeRow {
         HomeRow(id: "s", organizationID: "o", title: "T", state: "idle", ago: "", machineID: nil, macLabel: "mbp", recapLine: nil,
                 lastEventAt: now, settledAt: settled ? now : nil, snoozedUntil: snoozedFor.map { now.addingTimeInterval($0 * 60) },
-                looper: looper, attention: attention, waitingOn: tagged ? "person" : nil, waitingReason: tagged ? "Which branch?" : nil)
+                branch: branch, looper: looper, attention: attention, waitingOn: tagged ? "person" : nil, waitingReason: tagged ? "Which branch?" : nil)
     }
 
-    func testAnIdleRowOffersSettleSnoozeAndArchive() {
-        XCTAssertEqual(HomeModel.menu(for: row(), now: now), [.settle, .snooze(SnoozePresets.at(now)), .archive])
+    /// What every row without a branch offers to copy.
+    private let copy = HomeMenuItem.copy([.threadID("s"), .title("T")])
+
+    func testAnIdleRowOffersCopySettleSnoozeAndArchive() {
+        XCTAssertEqual(HomeModel.menu(for: row(), now: now), [copy, .settle, .snooze(SnoozePresets.at(now)), .archive])
+    }
+
+    func testARowWithABranchOffersItBetweenTheIDAndTheTitle() {
+        XCTAssertEqual(HomeModel.menu(for: row(branch: "fix-login"), now: now).first, .copy([.threadID("s"), .branch("fix-login"), .title("T")]))
+    }
+
+    func testACopyNamesWhatItCopiesAndCarriesTheText() {
+        XCTAssertEqual([HomeCopy.threadID("s"), .branch("b"), .title("T")].map(\.label), ["Copy thread id", "Copy branch", "Copy title"])
+        XCTAssertEqual([HomeCopy.threadID("s"), .branch("b"), .title("T")].map(\.text), ["s", "b", "T"])
     }
 
     func testASettledRowOffersUnsettle() {
-        XCTAssertEqual(HomeModel.menu(for: row(settled: true), now: now).first, .unsettle)
+        XCTAssertEqual(HomeModel.menu(for: row(settled: true), now: now).dropFirst().first, .unsettle)
     }
 
     func testASnoozedRowOffersWake() {
-        XCTAssertEqual(HomeModel.menu(for: row(snoozedFor: 30), now: now), [.settle, .wake, .archive])
+        XCTAssertEqual(HomeModel.menu(for: row(snoozedFor: 30), now: now), [copy, .settle, .wake, .archive])
     }
 
     func testAWaitingRowCannotBeSnoozed() {
-        XCTAssertEqual(HomeModel.menu(for: row(attention: .question), now: now), [.settle, .archive])
+        XCTAssertEqual(HomeModel.menu(for: row(attention: .question), now: now), [copy, .settle, .archive])
     }
 
     /// A thread the server tags as waiting on you sits on Needs you
     /// but is no ask: it can still be put off.
     func testATaggedRowCanStillBeSnoozed() {
-        XCTAssertEqual(HomeModel.menu(for: row(tagged: true), now: now), [.settle, .snooze(SnoozePresets.at(now)), .archive])
+        XCTAssertEqual(HomeModel.menu(for: row(tagged: true), now: now), [copy, .settle, .snooze(SnoozePresets.at(now)), .archive])
     }
 
-    func testALooperRunSaysItIsManagedOnTheMac() {
-        XCTAssertEqual(HomeModel.menu(for: row(looper: true), now: now), [.managedOnMac])
+    func testALooperRunOffersCopyAndSaysItIsManagedOnTheMac() {
+        XCTAssertEqual(HomeModel.menu(for: row(looper: true), now: now), [copy, .managedOnMac])
     }
 
     func testTheMenuAgreesWithTheSwipes() {

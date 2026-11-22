@@ -517,6 +517,8 @@ struct ThreadChrome: ViewModifier {
 
     @ViewBuilder private func item_(_ item: HomeMenuItem) -> some View {
         switch item {
+        case .copy(let copies):
+            CopyItems(copies: copies)
         case .settle:
             Button { onAct(.settle) } label: { Label("Settle", systemImage: "checkmark.circle") }
         case .unsettle:

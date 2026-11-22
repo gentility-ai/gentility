@@ -385,6 +385,8 @@ extension HomeList {
     func menuItems(_ menu: [HomeMenuItem], _ row: HomeRow) -> some View {
         ForEach(Array(menu.enumerated()), id: \.offset) { _, item in
             switch item {
+            case .copy(let copies):
+                CopyItems(copies: copies)
             case .settle:
                 Button { act(.settle, row) } label: { Label("Settle", systemImage: "checkmark.circle") }
             case .unsettle:
@@ -413,6 +415,8 @@ extension HomeList {
     @ViewBuilder
     private func accessibilityItems(_ item: HomeMenuItem, _ row: HomeRow) -> some View {
         switch item {
+        case .copy(let copies):
+            ForEach(copies, id: \.label) { copy in Button(copy.label) { copy.toPasteboard() } }
         case .settle: Button("Settle") { act(.settle, row) }
         case .unsettle: Button("Unsettle") { act(.unsettle, row) }
         case .snooze(let presets):
@@ -423,6 +427,27 @@ extension HomeList {
         case .archive: Button("Archive") { act(.archive, row) }
         case .managedOnMac: EmptyView()
         }
+    }
+}
+
+/// The copy lines of a thread's menu, in a section of their own.
+struct CopyItems: View {
+    let copies: [HomeCopy]
+
+    var body: some View {
+        Section {
+            ForEach(copies, id: \.label) { copy in
+                Button { copy.toPasteboard() } label: { Label(copy.label, systemImage: copy.symbol) }
+            }
+        }
+    }
+}
+
+extension HomeCopy {
+    /// Puts the text on the pasteboard, with a light tap to say so.
+    @MainActor func toPasteboard() {
+        UIPasteboard.general.string = text
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 }
 

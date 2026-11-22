@@ -1,7 +1,38 @@
 import Foundation
 
+/// Something of a thread's the menu copies to the pasteboard.
+public enum HomeCopy: Equatable, Sendable {
+    case threadID(String), branch(String), title(String)
+
+    /// The menu line, worded as Desk words it on the Mac.
+    public var label: String {
+        switch self {
+        case .threadID: "Copy thread id"
+        case .branch: "Copy branch"
+        case .title: "Copy title"
+        }
+    }
+
+    public var symbol: String {
+        switch self {
+        case .threadID: "number"
+        case .branch: "arrow.triangle.branch"
+        case .title: "textformat"
+        }
+    }
+
+    /// What lands on the pasteboard.
+    public var text: String {
+        switch self {
+        case .threadID(let text), .branch(let text), .title(let text): text
+        }
+    }
+}
+
 /// An item of a Home row's long-press menu (`HomeModel.menu(for:now:)`).
 public enum HomeMenuItem: Equatable, Sendable {
+    /// What the thread offers to copy, first in every menu.
+    case copy([HomeCopy])
     case settle, unsettle
     /// Snooze, offering these times.
     case snooze([SnoozePreset])
@@ -17,7 +48,7 @@ public enum HomeMenuItem: Equatable, Sendable {
         case .snooze: "snooze"
         case .wake: "wake"
         case .archive: "archive"
-        case .managedOnMac: nil
+        case .copy, .managedOnMac: nil
         }
     }
 }
