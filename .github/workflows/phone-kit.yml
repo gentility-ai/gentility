@@ -56,6 +56,12 @@ jobs:
             [.devices | to_entries[] | select(.key | contains("iOS")) | .value[]
              | select(.name | startswith("iPhone"))] | last | .udid')
           test -n "$device" && test "$device" != null
+          # Booted, and waited for, before the build: a simulator that
+          # xcodebuild boots itself is still settling when the first suite
+          # runs, and that suite's two-second waits then time out (its 61
+          # tests took 64 s on such a run, against 10 s on one that passed).
+          xcrun simctl boot "$device"
+          xcrun simctl bootstatus "$device"
           xcodebuild test -project DeskPhone.xcodeproj -scheme DeskPhoneKit \
             -destination "id=$device" -derivedDataPath ../build/kit-tests \
             CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=
