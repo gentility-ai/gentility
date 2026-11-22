@@ -1,0 +1,16 @@
+{
+  "event": "looper_say",
+  "payload": {
+    "message": "And the closed ones.",
+    "message_id": "00000000-0000-7000-8000-000000000001",
+    "run_id": "00000000-0000-7000-8000-000000000002"
+  },
+  "reply": {
+    "response": {
+      "run_id": "00000000-0000-7000-8000-000000000002",
+      "turn": 2
+    },
+    "status": "ok"
+  },
+  "topic": "looper_threads:<org>"
+}

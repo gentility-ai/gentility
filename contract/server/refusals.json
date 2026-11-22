@@ -104,10 +104,30 @@
     "looper_run": [
       "blank_message",
       "failed",
+      "looper_busy",
+      "message_id_taken",
+      "no_owner",
       "not_found",
       "not_funded",
+      "not_owner",
       "paused",
       "run_in_flight"
+    ],
+    "looper_say": [
+      "blank_message",
+      "failed",
+      "forked",
+      "looper_busy",
+      "message_id_taken",
+      "model_retired",
+      "no_owner",
+      "not_found",
+      "not_funded",
+      "not_owner",
+      "not_run_owner",
+      "paused",
+      "too_long",
+      "turn_running"
     ],
     "looper_update": [
       "invalid",

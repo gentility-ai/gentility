@@ -1759,6 +1759,9 @@
               "items": {
                 "$ref": "#/components/schemas/LooperRequest"
               }
+            },
+            "chat": {
+              "$ref": "#/components/schemas/LooperChat"
             }
           },
           "required": [
@@ -1834,7 +1837,7 @@
     },
     {
       "name": "loopers.run_now",
-      "description": "Wakes an owned looper now (`CloudLoop.run_owned_looper_now/3`). With a `message`, the person's words are the run's first turn; with none, or null, it is the page's Run now. The run's row reaches the desk on the next `loopers.changed`.",
+      "description": "Wakes an owned looper now (`CloudLoop.run_owned_looper_now/3`). With a `message`, the person's words are the run's first turn, a chat (`CloudLoop.Chat.open/4`), and `message_id` is the id the client minted for them, so a send repeated after a lost answer is answered from the first; with none, or null, it is the page's Run now. The run's row reaches the desk on the next `loopers.changed`.",
       "x-phoenix": {
         "channel": "looper_threads",
         "event": "looper_run"
@@ -1850,6 +1853,16 @@
         },
         {
           "name": "message",
+          "required": false,
+          "schema": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        {
+          "name": "message_id",
           "required": false,
           "schema": {
             "type": [
@@ -1877,10 +1890,84 @@
       "x-refusals": [
         "blank_message",
         "failed",
+        "looper_busy",
+        "message_id_taken",
+        "no_owner",
         "not_found",
         "not_funded",
+        "not_owner",
         "paused",
         "run_in_flight"
+      ]
+    },
+    {
+      "name": "loopers.say",
+      "description": "A person's reply on a finished run of a looper they own (`CloudLoop.Chat.say/4`): the run carries on with one more turn, numbered `turn`. `message_id` is the id the client minted for the person's words, so a reply repeated after a lost answer is answered from the first. An older server answers `unknown_event`. The run's row reaches the desk on the next `loopers.changed`.",
+      "x-phoenix": {
+        "channel": "looper_threads",
+        "event": "looper_say"
+      },
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "run_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "message",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "message_id",
+          "required": false,
+          "schema": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      ],
+      "result": {
+        "name": "replied",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "run_id": {
+              "type": "string"
+            },
+            "turn": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "run_id",
+            "turn"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "x-refusals": [
+        "blank_message",
+        "failed",
+        "forked",
+        "looper_busy",
+        "message_id_taken",
+        "model_retired",
+        "no_owner",
+        "not_found",
+        "not_funded",
+        "not_owner",
+        "not_run_owner",
+        "paused",
+        "too_long",
+        "turn_running"
       ]
     },
     {
@@ -9576,6 +9663,74 @@
         ],
         "additionalProperties": false
       },
+      "LooperChat": {
+        "description": "What the reader may do with a run's reply composer now (`Gentility.CloudLoop.Chat.run_state/2`), and the server's sentence for why not (`GentilityWeb.LooperChat`). `reason` is one of `looper_say`'s refusal words; `busy_run` names the run holding the looper's slot when it is `looper_busy`, and `forked_to` the thread a forked run carried on in.",
+        "type": "object",
+        "properties": {
+          "can": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "message": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "busy_run": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "number": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "started_at": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "number",
+              "reason",
+              "started_at"
+            ],
+            "additionalProperties": false
+          },
+          "forked_to": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "can",
+          "reason",
+          "message",
+          "busy_run",
+          "forked_to"
+        ],
+        "additionalProperties": false
+      },
       "LooperModel": {
         "description": "A run's or looper's model (`LoopSerializer.serialize_assoc_model/1`), or null when none is loaded. `display_name` is null until the catalog knows it.",
         "type": [
@@ -10818,6 +10973,26 @@
             "items": {
               "$ref": "#/components/schemas/TranscriptCompaction"
             }
+          },
+          "author": {
+            "description": "Who typed the row, on a row a person typed (T-713): their id, and their name, null for a user who is gone. Absent on every other row.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [

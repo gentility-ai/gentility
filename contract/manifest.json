@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3"
+      "sha256": "6e2ae11dad0616f66bbb2b6e6556f580bb987fd911d7132aa6bee2bfc7cc7b52"
     },
     "config_change/README.md": {
       "executable": false,
@@ -528,10 +528,20 @@
       "owner": "server",
       "sha256": "fa12c63a1d26505096ec8ccffa9788ef25652c0cd455907d024ee377424bf96b"
     },
+    "fold/looper_reopened_for_a_person_turn/facts.jsonl": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "ef1a06fe870110c4a73a6bece715686455bab075de0ed9d74afed5abf033e972"
+    },
+    "fold/looper_reopened_for_a_person_turn/row.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "6ca23f07198ccf13e7fd7275c64bd6b523a6ada79a8e5e51cfdd1d5c17289281"
+    },
     "fold/manifest.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "f14c06b337b43e3fe4c323244a8c8eb3aec5b5b3f9cf6a45f56aceb913337d33"
+      "sha256": "13378ff2b6c489946f4c688b37df433a54025bc71aa7f43838dc087800318553"
     },
     "fold/mode_unseen/facts.jsonl": {
       "executable": false,
@@ -1376,7 +1386,7 @@
     "server/contract.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "88d73ff75193a14fcabcefb93a2386ba1a4f6bfd5c35f9660d7dbb84394d66aa"
+      "sha256": "19d444772e864f7c10cb17b8ba698d928b86202a11985d736a768bfa535d8159"
     },
     "server/desk/answer.json": {
       "executable": false,
@@ -1613,6 +1623,11 @@
       "owner": "server",
       "sha256": "8fde8f339a184f84f615fea9d32e1d4e48a5707c484d7c040c5b0002d5f4194c"
     },
+    "server/looper_threads/looper_say.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "7cdb3ceb585692fe8be29c10ee4b8a268281f221e5d16202acee6877ba51a519"
+    },
     "server/looper_threads/looper_update.json": {
       "executable": false,
       "owner": "server",
@@ -1626,7 +1641,7 @@
     "server/looper_threads/read.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "91d679bfd86cf2196d5f6295435d75e4f24fd485fa3aeef877036a405b544b2f"
+      "sha256": "3932a27a0894f731cf9db463fc84b065d17c82a43f8223404a715ffa0d2da30f"
     },
     "server/looper_threads/resolve.json": {
       "executable": false,
@@ -1671,12 +1686,12 @@
     "server/refusals.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "7db695e85280f116ac90e197145bbfa3c7f53adac566475cb78181b0c7590806"
+      "sha256": "bc6b0f4be4fa13c35615ba60037e74c5d907496297187e1797a748802f91b138"
     },
     "server/refused.jsonl": {
       "executable": false,
       "owner": "server",
-      "sha256": "2cd4acc1d4657cc33c8b742aa1f5e08e5e46234b853489ddaa8df41ae6ad8aeb"
+      "sha256": "a1b5ccb1003272e1af8252372d867e66c71850e6c8580aae328522834add4d9d"
     },
     "server/rows/feed.json": {
       "executable": false,
@@ -3061,8 +3076,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 20,
-  "source_commit": "bfc6b14f18330403d0143c64723af5f05a1e9b3e",
+  "number": 21,
+  "source_commit": "46056e2ed720884ba6cda383b2a4f1f534d91b1a",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

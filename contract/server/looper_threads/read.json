@@ -5,6 +5,13 @@
   },
   "reply": {
     "response": {
+      "chat": {
+        "busy_run": null,
+        "can": false,
+        "forked_to": null,
+        "message": "The looper is still answering.",
+        "reason": "turn_running"
+      },
       "requests": [],
       "run": {
         "ended_at": null,

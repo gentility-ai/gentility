@@ -20,6 +20,7 @@
     "fork",
     "keep_open_blocks_settle",
     "keep_open_removed",
+    "looper_reopened_for_a_person_turn",
     "mode_unseen",
     "mode_unseen_on_opening",
     "native_approval",
