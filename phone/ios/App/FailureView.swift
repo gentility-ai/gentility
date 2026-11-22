@@ -20,7 +20,7 @@ struct FailureView: View {
                     .frame(maxWidth: .infinity)
             }
             Button(action: onAction) {
-                Text(failure.action).frame(maxWidth: .infinity)
+                Text(failure.action).foregroundStyle(Theme.onAccent).frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)

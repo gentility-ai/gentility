@@ -28,6 +28,9 @@ enum Theme {
 
     /// What the person can do: the send button, a link, a picked option.
     static let accent = dynamic(light: 0x4F5BD5, dark: 0x7C87F2)
+    /// Words on the accent: white on the light accent, the page's own colour
+    /// on the dark one, where white would read at 3.2:1.
+    static let onAccent = dynamic(light: 0xFFFFFF, dark: 0x0E0F11)
     /// Something waits on the person.
     static let attention = dynamic(light: 0x9E5800, dark: 0xF0A24B)
     static let good = dynamic(light: 0x1A7A42, dark: 0x4CC38A)

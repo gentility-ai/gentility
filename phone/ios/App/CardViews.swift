@@ -38,7 +38,7 @@ struct ApprovalCard: View {
     @ViewBuilder private var buttons: some View {
         ForEach(request.options) { option in
             if option.kind == "allow_once" {
-                Button { onAnswer(.option(option.id)) } label: { Text(option.label).lineLimit(1).fixedSize().frame(maxWidth: .infinity) }
+                Button { onAnswer(.option(option.id)) } label: { Text(option.label).foregroundStyle(Theme.onAccent).lineLimit(1).fixedSize().frame(maxWidth: .infinity) }
                     .buttonStyle(.borderedProminent)
             } else {
                 Button { onAnswer(.option(option.id)) } label: { Text(option.label).lineLimit(1).frame(maxWidth: .infinity) }
@@ -174,14 +174,16 @@ struct QuestionCard: View {
         switch mode {
         case .url:
             HStack(spacing: 8) {
-                Button("Done") { onAnswer(.accept(nil)) }.buttonStyle(.borderedProminent)
+                Button { onAnswer(.accept(nil)) } label: { Text("Done").foregroundStyle(Theme.onAccent) }.buttonStyle(.borderedProminent)
                 Button("Decline") { onAnswer(.decline) }.buttonStyle(QuietButtonStyle())
             }
         case .form where draft.answerableHere:
             HStack(spacing: 8) {
-                Button("Submit") {
+                Button {
                     tried = true
                     if let content = draft.content() { onAnswer(.accept(content)) }
+                } label: {
+                    Text("Submit").foregroundStyle(Theme.onAccent)
                 }
                 .buttonStyle(.borderedProminent)
                 Button("Decline") { onAnswer(.decline) }.buttonStyle(QuietButtonStyle())

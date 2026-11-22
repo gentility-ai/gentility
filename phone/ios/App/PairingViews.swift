@@ -83,8 +83,10 @@ struct ScannerScreen: View {
                         Text("GenDesk needs the camera to read the code on your Mac.")
                             .multilineTextAlignment(.center)
                             .foregroundStyle(.white)
-                        Button("Open Settings") {
+                        Button {
                             if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
+                        } label: {
+                            Text("Open Settings").foregroundStyle(Theme.onAccent)
                         }
                         .buttonStyle(.borderedProminent)
                     }

@@ -100,7 +100,7 @@ struct Composer: View {
                 Button { send(acting.working ? acting.onSteer : acting.onSend) } label: {
                     Image(systemName: "arrow.up")
                         .font(.body.weight(.bold))
-                        .foregroundStyle(sendable ? Color.white : Theme.inkFaint)
+                        .foregroundStyle(sendable ? Theme.onAccent : Theme.inkFaint)
                         .frame(width: 40, height: 40)
                         .background(sendable ? Theme.accent : Theme.field, in: Circle())
                         .contentShape(Rectangle().inset(by: -4))
