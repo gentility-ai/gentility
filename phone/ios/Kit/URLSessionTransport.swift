@@ -78,9 +78,9 @@ public final class URLSessionTransport: NSObject, RPCTransport, URLSessionWebSoc
     public func ping() async throws {
         guard let task = lock.withLock({ task }) else { throw PhoenixError.closed }
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            let pong = ResumedOnce(continuation)
             task.sendPing { error in
-                if error != nil { continuation.resume(throwing: PhoenixError.closed) }
-                else { continuation.resume() }
+                pong.resume(error == nil ? .success(()) : .failure(PhoenixError.closed))
             }
         }
     }
@@ -146,5 +146,26 @@ public final class URLSessionTransport: NSObject, RPCTransport, URLSessionWebSoc
     private static func code(of error: Error) -> String {
         let error = error as NSError
         return "\(error.domain) \(error.code)"
+    }
+}
+
+/// A continuation that takes its first answer and drops the rest.
+/// `URLSessionWebSocketTask.sendPing` can call its handler twice when the
+/// connection is lost with a ping outstanding, and a checked continuation
+/// resumed twice stops the app.
+final class ResumedOnce<Value: Sendable>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var continuation: CheckedContinuation<Value, Error>?
+
+    init(_ continuation: CheckedContinuation<Value, Error>) {
+        self.continuation = continuation
+    }
+
+    func resume(_ result: Result<Value, Error>) {
+        let continuation = lock.withLock {
+            defer { self.continuation = nil }
+            return self.continuation
+        }
+        continuation?.resume(with: result)
     }
 }
