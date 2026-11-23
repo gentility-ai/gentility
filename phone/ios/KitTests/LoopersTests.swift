@@ -9,12 +9,24 @@ final class FakeLooperLobby: LooperLobby, @unchecked Sendable {
     var refusal: Error?
     /// What every read throws, while set.
     var down: Error?
+    /// While set, a read of the organisations waits here until `open()`.
+    var gated = false
+    private(set) var organizationReads = 0
+    private var waiting: [CheckedContinuation<Void, Never>] = []
+
+    func open() {
+        gated = false
+        waiting.forEach { $0.resume() }
+        waiting = []
+    }
     private(set) var started: [(looper: String, message: String?)] = []
     private(set) var updates: [[String: JSONValue]] = []
     private(set) var answers: [(request: String, answer: String)] = []
 
     func organizations() async throws -> Organizations {
-        Organizations(organizations: [.init(id: "o-1", slug: "northwind", name: "Northwind")],
+        organizationReads += 1
+        if gated { await withCheckedContinuation { waiting.append($0) } }
+        return Organizations(organizations: [.init(id: "o-1", slug: "northwind", name: "Northwind")],
                       person: .init(id: "p-1", email: "morgan@example.com", name: "Morgan"))
     }
     func loopers(organizationID: String) async throws -> [LooperRow] {
@@ -320,12 +332,23 @@ final class LoopersTests: XCTestCase {
     func testAReadAskedForWhileOneIsGoingWaitsForIt() async {
         let lobby = FakeLooperLobby()
         lobby.rows["o-1"] = [row("a", "Triage")]
+        lobby.gated = true
         let model = LoopersModel(lobby: lobby)
-        async let first: Void = model.refresh()
-        async let second: Void = model.refresh()
-        _ = await (first, second)
-        XCTAssertEqual(model.loopers.map(\.name), ["Triage"], "whichever returned, the list is read")
-        XCTAssertNotNil(model.looper(id: "a"))
+        let first = Task { await model.refresh() }
+        while lobby.organizationReads == 0 { await Task.yield() }
+        var returned = false
+        let second = Task { await model.refresh(); returned = true }
+        for _ in 0..<50 { await Task.yield() }
+        XCTAssertFalse(returned, "the second caller waits for the read that is going")
+        XCTAssertEqual(lobby.organizationReads, 1, "and starts no read of its own")
+        lobby.open()
+        await first.value
+        await second.value
+        XCTAssertTrue(returned)
+        XCTAssertEqual(model.loopers.map(\.name), ["Triage"])
+        XCTAssertEqual(lobby.organizationReads, 1)
+        await model.refresh()
+        XCTAssertEqual(lobby.organizationReads, 2, "the next call reads again")
         XCTAssertEqual(LooperCopy.tryAgain, "Try again")
     }
 
