@@ -677,9 +677,9 @@ struct ComposeButton: View {
         Button(action: action) {
             Image(systemName: "square.and.pencil")
                 .font(.title3.weight(.semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.onAccent)
                 .frame(width: 56, height: 56)
-                .background(Theme.accentFill, in: Circle())
+                .background(Theme.accent, in: Circle())
                 .shadow(color: .black.opacity(0.25), radius: 12, y: 4)
         }
         .padding(.trailing, Theme.Space.l).padding(.bottom, Theme.Space.l)

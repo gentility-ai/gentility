@@ -230,10 +230,10 @@ struct PageButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.body.weight(.semibold))
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.onAccent)
             .padding(.horizontal, Theme.Space.xl)
             .frame(maxWidth: wide ? .infinity : nil, minHeight: 50)
-            .background(Theme.accentFill, in: RoundedRectangle(cornerRadius: Theme.Corner.medium, style: .continuous))
+            .background(Theme.accent, in: RoundedRectangle(cornerRadius: Theme.Corner.medium, style: .continuous))
             .opacity(configuration.isPressed ? 0.8 : 1)
     }
 }
