@@ -17,6 +17,7 @@ moving their source. Recorded examples use invented identities.
 | `merge-rules.md` | server | Admission and merge rules cite their implementation and tests |
 | `released.json` | core | Window protocol compatibility tests prevent removal within a major |
 | `door/` | core | Real core frames recorded in the phone's transport envelopes |
+| `guest_exec/` | core | A loop computer's core and its job executor, local to the guest; the types write and read back each line |
 
 Read [the server contract](server/README.md), [the session fold](fold/README.md),
 [the transcript fold](transcript/README.md), and [merge rules](merge-rules.md)

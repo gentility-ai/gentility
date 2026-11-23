@@ -6,12 +6,12 @@
     "README.md": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "3b9f3427876b3a578e41aac1bf3b72feec23c34f42236cc932f8042a8f482b24"
+      "sha256": "83bd911831f81a16ad22dc433f235742e01d8b6c23d3ed4bc54d721dd0f521d6"
     },
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "932ab0a0e4191d32c0af7b3f565b7b180dbe9869378abc5816f9add54b806e7f"
+      "sha256": "9961d158a7e0e2f990765971a9e490af826c0743b7d603020f34cc8944319fcb"
     },
     "config_change/README.md": {
       "executable": false,
@@ -1277,6 +1277,16 @@
       "executable": false,
       "owner": "server",
       "sha256": "103447694e258f593f9bf0a40c03a610899eb561d5354db2a52a8dfd6bf5b414"
+    },
+    "guest_exec/README.md": {
+      "executable": false,
+      "owner": "core",
+      "sha256": "8d95d4cbada770c85c8e71024d7d18d76fd4e8cbb5227be3007a1828261b41bc"
+    },
+    "guest_exec/lines.json": {
+      "executable": false,
+      "owner": "core",
+      "sha256": "535f8c4d14b6f4b173dd6722e7586d20428689f320cf6e81c70175c009707720"
     },
     "merge-rules.md": {
       "executable": false,
@@ -3086,8 +3096,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 27,
-  "source_commit": "1c9c9e7ff474261f3b6e77d50d5479960eb967ca",
+  "number": 28,
+  "source_commit": "cd6f6580c82266681f53ae156321da17c9c064d4",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

@@ -1,0 +1,124 @@
+{
+  "from_executor": [
+    {
+      "running": [],
+      "type": "hello",
+      "version": 1
+    },
+    {
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "type": "started"
+    },
+    {
+      "data": "Q2xvbmluZyBpbnRvICdyZXBvJy4uLgo=",
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "offset": 0,
+      "stream": "stdout",
+      "type": "output"
+    },
+    {
+      "data": "/wo=",
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "offset": 0,
+      "stream": "stderr",
+      "type": "output"
+    },
+    {
+      "decision": "exited",
+      "exit_code": 0,
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "stderr_total": 2,
+      "stdout_total": 23,
+      "type": "ended"
+    },
+    {
+      "decision": "exited",
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "signal": 9,
+      "stderr_total": 0,
+      "stdout_total": 1572864,
+      "type": "ended"
+    },
+    {
+      "decision": "cancelled",
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "reason": "caller_cancelled",
+      "signal": 15,
+      "stderr_total": 0,
+      "stdout_total": 0,
+      "type": "ended"
+    },
+    {
+      "decision": "cancelled",
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "reason": "time_limit",
+      "signal": 9,
+      "stderr_total": 0,
+      "stdout_total": 0,
+      "type": "ended"
+    },
+    {
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "reason": "busy",
+      "type": "refused"
+    },
+    {
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "reason": "duplicate",
+      "type": "refused"
+    },
+    {
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "reason": "malformed",
+      "type": "refused"
+    },
+    {
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "reason": "cwd_missing",
+      "type": "refused"
+    },
+    {
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "reason": "not_ready",
+      "type": "refused"
+    }
+  ],
+  "reasons": [
+    "caller_cancelled",
+    "switch_off",
+    "run_ended",
+    "origin_call_ended",
+    "organization_closed",
+    "computer_stopping",
+    "revoked",
+    "shell_disabled",
+    "evaluator_refused",
+    "lease_lapsed",
+    "time_limit"
+  ],
+  "to_executor": [
+    {
+      "type": "hello",
+      "version": 1
+    },
+    {
+      "command": "git clone https://example.com/repo.git && cd repo && make",
+      "cwd": "work",
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "time_limit_s": 600,
+      "type": "start"
+    },
+    {
+      "command": "git clone https://example.com/repo.git && cd repo && make",
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "time_limit_s": 600,
+      "type": "start"
+    },
+    {
+      "job": "01a20000-0000-7000-8000-000000000001",
+      "reason": "caller_cancelled",
+      "type": "cancel"
+    }
+  ],
+  "version": 1
+}
