@@ -30,6 +30,18 @@ public struct StatusStrip: Equatable, Sendable {
         if doing == nil, self.queued == 0 { return nil }
     }
 
+    /// Whether the strip draws a spinner. A turn at work has its live sign in
+    /// the transcript, the caret or the running call, so the strip spins for
+    /// it only once that end has scrolled out of sight. Connecting and
+    /// compacting have no other sign.
+    public func spins(atEnd: Bool) -> Bool {
+        switch doing {
+        case .connecting, .compacting: true
+        case .working: !atEnd
+        case nil: false
+        }
+    }
+
     /// "Working · 1m 05s · 2 queued".
     public func words(now: Date) -> String {
         var parts: [String] = []

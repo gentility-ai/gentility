@@ -36,4 +36,16 @@ final class StatusStripTests: XCTestCase {
         XCTAssertEqual(StatusStrip.elapsed(185), "3m 05s")
         XCTAssertEqual(StatusStrip.elapsed(3_720), "1h 02m")
     }
+
+    func testAWorkingStripSpinsOnlyOnceTheTranscriptsSignIsOutOfSight() throws {
+        let working = try XCTUnwrap(StatusStrip(phase: .open, held: true, working: true, since: nil, queued: 0))
+        XCTAssertFalse(working.spins(atEnd: true), "the caret or the running call is the live sign")
+        XCTAssertTrue(working.spins(atEnd: false))
+        let compacting = try XCTUnwrap(StatusStrip(phase: .open, held: true, working: true, compacting: true, since: nil, queued: 0))
+        XCTAssertTrue(compacting.spins(atEnd: true), "a compaction's line does not move")
+        let connecting = try XCTUnwrap(StatusStrip(phase: .connecting, held: true, working: false, since: nil, queued: 0))
+        XCTAssertTrue(connecting.spins(atEnd: true))
+        let queued = try XCTUnwrap(StatusStrip(phase: .open, held: true, working: false, since: nil, queued: 1))
+        XCTAssertFalse(queued.spins(atEnd: false))
+    }
 }

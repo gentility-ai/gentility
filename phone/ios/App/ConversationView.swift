@@ -201,7 +201,7 @@ private struct StripView: View {
             Button(action: onJump) {
                 HStack(spacing: 10) {
                     if let strip {
-                        if strip.doing != nil { ProgressView().controlSize(.small) }
+                        if strip.spins(atEnd: atEnd) { ProgressView().controlSize(.small) }
                         TimelineView(.periodic(from: .now, by: 1)) { context in
                             Text(strip.words(now: context.date)).monospacedDigit()
                         }
@@ -493,7 +493,7 @@ extension View {
 }
 
 /// A prompt asked for whose turn has not started: the person's own bubble,
-/// dimmed, and what it waits on under it. The row stops carrying it once its
+/// in soft ink, and what it waits on under it. The row stops carrying it once its
 /// turn starts, and the transcript has the words.
 private struct WaitingPromptView: View {
     let prompt: RequestedPrompt
@@ -509,13 +509,13 @@ private struct WaitingPromptView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 4) {
-            Text(words).foregroundStyle(Theme.ink).youBubble()
-                .opacity(0.6)
+            // Soft ink says it waits. Not `opacity`, which dims the words past reading.
+            Text(words).foregroundStyle(Theme.inkSoft).youBubble()
             HStack(spacing: 4) {
                 Image(systemName: "clock")
                 Text(caption)
             }
-            .font(.caption).foregroundStyle(.secondary)
+            .font(.caption).foregroundStyle(Theme.inkFaint)
         }
         .frame(maxWidth: .infinity, alignment: .trailing)
         .padding(.leading, 48)
