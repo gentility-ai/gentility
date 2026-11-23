@@ -82,7 +82,7 @@ struct Showcase: View {
         "idle", "approval", "approval-three", "approval-short", "show-all", "question", "question-tall", "link", "queued", "steer-refused",
         "requested-compacting", "requested-waiting",
         "elsewhere", "redial", "unopened-answer", "wrong-store", "ended", "ended-words",
-        "tools", "tools-running", "strip-working", "strip-scrolled", "strip-reconnecting", "strip-tall", "strip-compacting",
+        "tools", "tools-running", "strip-working", "strip-scrolled", "strip-reconnecting", "strip-reconnecting-tools", "strip-tall", "strip-compacting",
         "attach-menu", "attach-tray", "attach-failed", "attach-old-mac",
         "transcript-images", "transcript-markdown", "transcript-streaming", "transcript-long", "transcript-remote-image", "image-viewer",
         "f1", "f2", "f3", "f5", "lapsed", "unjoined",
@@ -171,6 +171,9 @@ struct Showcase: View {
                                           onRetry: {}), "Phone pairing spec")
         case "strip-reconnecting":
             conversation(TranscriptScreen(turns: Self.turns, phase: .connecting, asleepLines: [], acting: Self.acting(open: false, working: true),
+                                          strip: StatusStrip(phase: .connecting, held: true, working: true, since: nil, queued: 0), onRetry: {}), "Phone pairing spec")
+        case "strip-reconnecting-tools":
+            conversation(TranscriptScreen(turns: Self.toolTurns(running: true), phase: .connecting, asleepLines: [], acting: Self.acting(open: false, working: true),
                                           strip: StatusStrip(phase: .connecting, held: true, working: true, since: nil, queued: 0), onRetry: {}), "Phone pairing spec")
         case "tools": conversation(TranscriptScreen(turns: Self.toolTurns(running: false), phase: .open, asleepLines: [], acting: Self.acting(working: false), onRetry: {}), "Phone pairing spec")
         case "tools-running": conversation(TranscriptScreen(turns: Self.toolTurns(running: true), phase: .open, asleepLines: [], acting: Self.acting(working: true),

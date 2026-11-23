@@ -123,8 +123,8 @@ struct TranscriptScreen: View {
                         ForEach(turns) { turn in
                             ForEach(TranscriptRow.rows(turn.lines)) { row in
                                 switch row {
-                                case .line(let line): LineView(line: line, cursor: caret == .inLine(line.id))
-                                case .tools(let run): ToolRunView(run: run)
+                                case .line(let line): LineView(line: line, cursor: caret == .inLine(line.id), live: phase == .open)
+                                case .tools(let run): ToolRunView(run: run, live: phase == .open)
                                 }
                             }
                             if let end = turn.drawnEnd {
@@ -183,7 +183,9 @@ struct TranscriptScreen: View {
         .background(Color.orange.opacity(0.15))
     }
 
-    private var caret: Caret { Caret(turns: turns, working: working, compacting: compacting) }
+    /// Nothing in the transcript moves unless the conversation is open:
+    /// connecting, the strip's spinner is the one live sign.
+    private var caret: Caret { Caret(turns: turns, working: working && phase == .open, compacting: compacting) }
 }
 
 /// The strip over the foot of the transcript: what the session is doing and
@@ -301,6 +303,8 @@ private struct LineView: View {
     let line: Line
     /// The agent is still writing this line.
     let cursor: Bool
+    /// The conversation is open, so a running call is known to be running.
+    let live: Bool
 
     var body: some View {
         switch line {
@@ -325,7 +329,7 @@ private struct LineView: View {
             .padding(.vertical, 4)
         case .tool:
             // Tool calls reach the screen as runs; one alone is a run of one.
-            if case .tools(let run)? = TranscriptRow.rows([line]).first { ToolRunView(run: run) }
+            if case .tools(let run)? = TranscriptRow.rows([line]).first { ToolRunView(run: run, live: live) }
         }
     }
 }
@@ -342,6 +346,8 @@ extension View {
 /// there were. A run of several opens to each call.
 private struct ToolRunView: View {
     let run: ToolRun
+    /// The conversation is open. Otherwise a running call holds still.
+    let live: Bool
     @State private var open = false
 
     private var several: Bool { run.steps.count > 1 }
@@ -394,8 +400,10 @@ private struct ToolRunView: View {
 
     @ViewBuilder private var glyph: some View {
         Group {
-            if run.running != nil {
+            if run.spins(live: live) {
                 ProgressView().controlSize(.mini)
+            } else if run.running != nil {
+                Image(systemName: "ellipsis.circle").foregroundStyle(Theme.inkFaint)
             } else if run.failed > 0 {
                 Image(systemName: "xmark.circle.fill").foregroundStyle(Theme.bad)
             } else if run.steps.allSatisfy({ $0.state == .done }) {

@@ -33,6 +33,10 @@ public struct ToolRun: Equatable, Sendable, Identifiable {
     public var failed: Int { steps.filter { $0.state == .failed }.count }
     /// The call going now, the last of them where there are several.
     public var running: ToolStep? { steps.last { $0.state == .running } }
+    /// Whether the row draws a spinner. A call the phone last heard running
+    /// is only known to be running while the conversation is open: through
+    /// a redial or a drop the strip or the banner speaks, and the row waits.
+    public func spins(live: Bool) -> Bool { live && running != nil }
 
     /// The row's words: the call going now, the one call there is, or how
     /// many there were and how many of them failed.

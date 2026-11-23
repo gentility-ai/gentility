@@ -32,8 +32,9 @@ public struct StatusStrip: Equatable, Sendable {
 
     /// Whether the strip draws a spinner. A turn at work has its live sign in
     /// the transcript, the caret or the running call, so the strip spins for
-    /// it only once that end has scrolled out of sight. Connecting and
-    /// compacting have no other sign.
+    /// it only once that end has scrolled out of sight. While connecting
+    /// the transcript holds still (`ToolRun.spins`), and a compaction's
+    /// line does not move, so the strip is their one sign.
     public func spins(atEnd: Bool) -> Bool {
         switch doing {
         case .connecting, .compacting: true

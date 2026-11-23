@@ -34,6 +34,14 @@ final class ToolRunsTests: XCTestCase {
         XCTAssertEqual(ToolRun(steps: [ToolStep(id: "1", mark: "⊘", title: "Write b")]).headline, "Write b")
     }
 
+    func testARunningCallSpinsOnlyWhileTheConversationIsOpen() {
+        let going = ToolRun(steps: [ToolStep(id: "1", mark: "✓", title: "Read a"), ToolStep(id: "2", mark: "…", title: "Bash make")])
+        XCTAssertTrue(going.spins(live: true))
+        XCTAssertFalse(going.spins(live: false), "through a redial the strip's spinner is the one live sign")
+        let done = ToolRun(steps: [ToolStep(id: "1", mark: "✓", title: "Read a")])
+        XCTAssertFalse(done.spins(live: true))
+    }
+
     func testARunKeepsItsIdAsCallsJoinIt() {
         let before = TranscriptRow.rows([.tool(id: "t1", text: "… Read a")])
         let after = TranscriptRow.rows([.tool(id: "t1", text: "✓ Read a"), .tool(id: "t2", text: "… Read b")])
