@@ -7,6 +7,8 @@ final class FakeLooperLobby: LooperLobby, @unchecked Sendable {
     var reads: [String: LooperRunRead] = [:]
     var muted: Set<String> = []
     var refusal: Error?
+    /// What every read throws, while set.
+    var down: Error?
     private(set) var started: [(looper: String, message: String?)] = []
     private(set) var updates: [[String: JSONValue]] = []
     private(set) var answers: [(request: String, answer: String)] = []
@@ -15,9 +17,16 @@ final class FakeLooperLobby: LooperLobby, @unchecked Sendable {
         Organizations(organizations: [.init(id: "o-1", slug: "northwind", name: "Northwind")],
                       person: .init(id: "p-1", email: "morgan@example.com", name: "Morgan"))
     }
-    func loopers(organizationID: String) async throws -> [LooperRow] { rows[organizationID] ?? [] }
-    func runs(organizationID: String, looperID: String) async throws -> [LooperRunRow] { runs[looperID] ?? [] }
+    func loopers(organizationID: String) async throws -> [LooperRow] {
+        if let down { throw down }
+        return rows[organizationID] ?? []
+    }
+    func runs(organizationID: String, looperID: String) async throws -> [LooperRunRow] {
+        if let down { throw down }
+        return runs[looperID] ?? []
+    }
     func run(organizationID: String, runID: String) async throws -> LooperRunRead {
+        if let down { throw down }
         guard let read = reads[runID] else { throw LobbyError.refused("not_found") }
         return read
     }
@@ -35,6 +44,7 @@ final class FakeLooperLobby: LooperLobby, @unchecked Sendable {
                          schedule: .init(cron: "0 9 * * 1-5", enabled: changes["schedule_enabled"]?.bool ?? true, timezone: nil))
     }
     func answer(organizationID: String, requestID: String, answer: String) async throws -> LooperRequest {
+        if let refusal { throw refusal }
         answers.append((requestID, answer))
         return LooperRequest(id: requestID, kind: "question", status: "answered")
     }
@@ -85,8 +95,8 @@ final class LoopersTests: XCTestCase {
         func state(_ looper: Looper) -> String { looper.state(now: now).text }
         XCTAssertEqual(state(Looper(row: row("a", "A"), organizationID: "o", working: true, asking: true)), "Asking")
         XCTAssertEqual(state(Looper(row: row("a", "A"), organizationID: "o", working: true)), "Working")
-        XCTAssertEqual(state(Looper(row: row("a", "A", next: "2026-01-01T15:00:00.000000Z"), organizationID: "o")), "next run in 3 h")
-        XCTAssertEqual(state(Looper(row: row("a", "A", next: "2026-01-01T12:20:00.000000Z"), organizationID: "o")), "next run in 20 min")
+        XCTAssertEqual(state(Looper(row: row("a", "A", next: "2026-01-01T15:00:00.000000Z"), organizationID: "o")), "Next run in 3 h")
+        XCTAssertEqual(state(Looper(row: row("a", "A", next: "2026-01-01T12:20:00.000000Z"), organizationID: "o")), "Next run in 20 min")
         XCTAssertEqual(state(Looper(row: row("a", "A"), organizationID: "o")), "Not known yet")
         XCTAssertEqual(state(Looper(row: row("a", "A", enabled: false), organizationID: "o")), "Schedule off")
         XCTAssertEqual(state(Looper(row: row("a", "A", cron: nil), organizationID: "o")), "Manual")
@@ -132,7 +142,7 @@ final class LoopersTests: XCTestCase {
         XCTAssertNil(lobby.started.first?.message)
         XCTAssertEqual(page.notice, "Run started")
         XCTAssertEqual(page.started?.id, "r-new")
-        XCTAssertEqual(page.runBlocked, "Running…")
+        XCTAssertEqual(page.runBlocked, "A run is already going.")
         XCTAssertTrue(page.looper.working)
     }
 
@@ -151,10 +161,10 @@ final class LoopersTests: XCTestCase {
         let page = LooperPageModel(looper: Looper(row: row("a", "A"), organizationID: "o-1"), lobby: lobby, personID: "p-1")
         lobby.refusal = LobbyError.refused("paused")
         await page.run()
-        XCTAssertEqual(page.failure, "Paused: resume it to run")
+        XCTAssertEqual(page.failure, "This looper is paused. Resume it on the web to run it.")
         lobby.refusal = LobbyError.refused("not_funded")
         await page.run()
-        XCTAssertEqual(page.failure, "Add funds to run")
+        XCTAssertEqual(page.failure, "Its organisation is out of funds. Add funds on the web to run it.")
         XCTAssertNil(page.notice)
     }
 
@@ -206,9 +216,13 @@ final class LoopersTests: XCTestCase {
         let refused = await page.save(draft)
         XCTAssertFalse(refused)
         XCTAssertEqual(page.looper.name, "Triage")
+        XCTAssertEqual(page.editFailure, "The server did not take that. Check the schedule and try again.")
+        XCTAssertNil(page.failure, "a refused Save is said on the form, not under Run now")
         lobby.refusal = nil
         let saved = await page.save(draft)
         XCTAssertTrue(saved)
+        XCTAssertNil(page.editFailure)
+        XCTAssertEqual(page.notice, "Saved")
         XCTAssertEqual(lobby.updates, [["name": .string("Sorter")]])
         XCTAssertEqual(page.looper.name, "Sorter")
     }
@@ -241,8 +255,196 @@ final class LoopersTests: XCTestCase {
         XCTAssertEqual(model.open.map(\.id), ["q-1"])
         await model.answer(question, with: "  ")
         XCTAssertTrue(lobby.answers.isEmpty)
+        XCTAssertEqual(model.failure, "Write an answer first.")
         await model.answer(question, with: "acme/billing")
         XCTAssertEqual(lobby.answers.first?.answer, "acme/billing")
         XCTAssertEqual(model.notice, "Answered")
+        XCTAssertNil(model.failure, "an answer that went clears the last failure")
+    }
+
+    func testARefusedAnswerSaysWhy() async {
+        let lobby = FakeLooperLobby()
+        let run = LooperRunRow(id: "r1", status: "running")
+        lobby.reads["r1"] = LooperRunRead(run: run, turns: [], requests: [question])
+        let model = LooperRunModel(run: run, organizationID: "o-1", lobby: lobby)
+        await model.refresh()
+        lobby.refusal = LobbyError.refused("not_open")
+        await model.answer(question, with: "acme/billing")
+        XCTAssertEqual(model.failure, "That request was already answered.")
+        XCTAssertNil(model.notice)
+    }
+
+    // MARK: the words a refusal is said in
+
+    func testEveryRefusalIsASentenceAndAnUnknownCodeIsNeverShown() {
+        func said(_ code: String) -> String { LooperRefusal.sentence(LobbyError.refused(code)) }
+        XCTAssertEqual(said("paused"), "This looper is paused. Resume it on the web to run it.")
+        XCTAssertEqual(said("not_funded"), "Its organisation is out of funds. Add funds on the web to run it.")
+        XCTAssertEqual(said("run_in_flight"), "A run is already going.")
+        XCTAssertEqual(said("blank_message"), "Write a message first.")
+        XCTAssertEqual(said("not_found"), "This looper is no longer yours to run.")
+        XCTAssertEqual(said("not_editable"), "That setting is changed on the web.")
+        XCTAssertEqual(said("invalid"), "The server did not take that. Check the schedule and try again.")
+        XCTAssertEqual(said("answer_required"), "Write an answer first.")
+        XCTAssertEqual(said("not_open"), "That request was already answered.")
+        XCTAssertEqual(LooperRefusal.sentence(LobbyError.unauthorized), "This phone is no longer paired.")
+        XCTAssertEqual(LooperRefusal.sentence(LobbyError.unreachable("timed out")), "Can't reach the server. Try again.")
+        let unknown = said("quota_exceeded_v2")
+        XCTAssertEqual(unknown, "That did not go through.")
+        XCTAssertFalse(unknown.contains("quota"))
+        for code in ["paused", "not_funded", "run_in_flight", "blank_message", "not_found", "not_editable", "invalid", "answer_required", "not_open", "anything"] {
+            XCTAssertTrue(said(code).hasSuffix("."), code)
+        }
+    }
+
+    // MARK: a read that fails is not an empty fact
+
+    func testAListThatFailsToLoadSaysSoAndKeepsWhatItHad() async {
+        let lobby = FakeLooperLobby()
+        lobby.rows["o-1"] = [row("a", "Triage")]
+        let model = LoopersModel(lobby: lobby)
+        lobby.down = LobbyError.unreachable("timed out")
+        await model.refresh()
+        XCTAssertEqual(model.line, "Can't reach the server. Try again.")
+        XCTAssertTrue(model.loopers.isEmpty)
+        lobby.down = nil
+        await model.refresh()
+        XCTAssertNil(model.line, "a read that works clears the line")
+        XCTAssertEqual(model.loopers.map(\.name), ["Triage"])
+        lobby.down = LobbyError.unreachable("timed out")
+        await model.refresh()
+        XCTAssertEqual(model.line, "Can't reach the server. Try again.")
+        XCTAssertEqual(model.loopers.map(\.name), ["Triage"], "the last list is kept")
+    }
+
+    func testAPageWhoseRunsFailToLoadSaysSoApartFromAPress() async {
+        let lobby = FakeLooperLobby()
+        lobby.runs["a"] = [LooperRunRow(id: "r1", number: 1, status: "completed")]
+        let page = LooperPageModel(looper: Looper(row: row("a", "A"), organizationID: "o-1"), lobby: lobby, personID: "p-1")
+        lobby.down = LobbyError.unreachable("timed out")
+        await page.refresh()
+        XCTAssertEqual(page.line, "Can't reach the server. Try again.")
+        XCTAssertNil(page.failure, "a failed read is not a failed press")
+        lobby.down = nil
+        await page.refresh()
+        XCTAssertNil(page.line)
+        XCTAssertEqual(page.runs.map(\.id), ["r1"])
+    }
+
+    func testAPressClearsTheLastFailure() async {
+        let lobby = FakeLooperLobby()
+        let page = LooperPageModel(looper: Looper(row: row("a", "A"), organizationID: "o-1"), lobby: lobby, personID: "p-1")
+        lobby.refusal = LobbyError.refused("not_funded")
+        let refused = await page.run()
+        XCTAssertFalse(refused)
+        XCTAssertNotNil(page.failure)
+        lobby.refusal = nil
+        let started = await page.run(message: "Include the deploy queue")
+        XCTAssertTrue(started, "the field is cleared on this, not on the absence of a failure")
+        XCTAssertNil(page.failure)
+
+        lobby.refusal = LobbyError.refused("invalid")
+        var draft = LooperDraft(page.looper.row)
+        draft.name = "B"
+        _ = await page.save(draft)
+        XCTAssertNotNil(page.editFailure)
+        page.editing()
+        XCTAssertNil(page.editFailure, "the form opens without an earlier refusal")
+
+        lobby.refusal = LobbyError.refused("paused")
+        await page.run()
+        XCTAssertNotNil(page.failure)
+        await page.setMuted(true)
+        XCTAssertNil(page.failure)
+        XCTAssertEqual(page.notice, "Muted on this phone")
+        await page.setMuted(false)
+        XCTAssertEqual(page.notice, "Notifications on")
+    }
+
+    func testARunThatFailsToLoadSaysSoAndAReadThatWorksClearsIt() async {
+        let lobby = FakeLooperLobby()
+        let run = LooperRunRow(id: "r1", status: "completed")
+        lobby.reads["r1"] = LooperRunRead(run: run, turns: [], requests: [])
+        let model = LooperRunModel(run: run, organizationID: "o-1", lobby: lobby)
+        lobby.down = LobbyError.unreachable("timed out")
+        await model.refresh()
+        XCTAssertEqual(model.line, "Can't reach the server. Try again.")
+        XCTAssertNil(model.failure)
+        lobby.down = nil
+        await model.refresh()
+        XCTAssertNil(model.line)
+    }
+
+    // MARK: the rest of the words
+
+    func testARunSaysQueuedAndStoppedAndEveryWayItWoke() {
+        XCTAssertEqual(RunFace(LooperRunRow(id: "r", status: "queued")).word, "Queued")
+        XCTAssertEqual(RunFace(LooperRunRow(id: "r", status: "pending")).word, "Queued")
+        XCTAssertEqual(RunFace(LooperRunRow(id: "r", status: "stopped")).word, "Stopped")
+        XCTAssertEqual(RunFace(LooperRunRow(id: "r", status: "cancelled")).word, "Stopped")
+        XCTAssertNil(RunFace(LooperRunRow(id: "r", status: "completed")).word)
+        func woke(_ by: String?, _ source: String? = nil) -> String { RunFace.wakeWords(by.map { .init(by: $0, source: source) }) }
+        XCTAssertEqual(woke(nil), "Woke")
+        XCTAssertEqual(woke("task"), "Woken by a task")
+        XCTAssertEqual(woke("email"), "Woken by an email")
+        XCTAssertEqual(woke("request"), "Woken by an answer")
+        XCTAssertEqual(woke("manual"), "Started by hand")
+        XCTAssertEqual(woke("trigger"), "Woken by a trigger")
+        XCTAssertEqual(woke("event"), "Woken by an event")
+        XCTAssertEqual(woke("event", "a new issue"), "Woken by a new issue")
+        XCTAssertEqual(woke("something_new"), "Woke")
+    }
+
+    func testTheNextRunIsSaidNowInMinutesHoursAndDays() {
+        func until(_ seconds: TimeInterval) -> String { Looper.until(now.addingTimeInterval(seconds), now: now) }
+        XCTAssertEqual(until(-30), "now")
+        XCTAssertEqual(until(30), "now")
+        XCTAssertEqual(until(20 * 60), "in 20 min")
+        XCTAssertEqual(until(47 * 3_600), "in 47 h")
+        XCTAssertEqual(until(72 * 3_600), "in 3 d")
+    }
+
+    func testTheEditFormIsGivenANextRunOnlyWhereOneIsScheduled() {
+        func next(_ looper: Looper) -> String? { looper.nextRun(now: now) }
+        XCTAssertEqual(next(Looper(row: row("a", "A", next: "2026-01-01T15:00:00.000000Z"), organizationID: "o")), "in 3 h")
+        XCTAssertEqual(next(Looper(row: row("a", "A", next: "2026-01-01T15:00:00.000000Z"), organizationID: "o", working: true, asking: true)), "in 3 h", "never the state word")
+        XCTAssertNil(next(Looper(row: row("a", "A"), organizationID: "o")))
+        XCTAssertNil(next(Looper(row: row("a", "A", enabled: false, next: "2026-01-01T15:00:00.000000Z"), organizationID: "o")))
+        XCTAssertNil(next(Looper(row: row("a", "A", cron: nil), organizationID: "o")))
+    }
+
+    func testTheDraftSaysWhoSeesIt() {
+        var draft = LooperDraft(row("a", "A"))
+        XCTAssertEqual(draft.visibilityLine, "Only your organisation sees it and its runs")
+        draft.isPublic = true
+        XCTAssertEqual(draft.visibilityLine, "Anyone with its public link can read its brief and runs")
+    }
+
+    func testThePagesOwnSentences() {
+        XCTAssertEqual(LooperCopy.running, "A run is already going.")
+        XCTAssertEqual(LooperCopy.noRuns, "No runs yet. Run now starts one.")
+        XCTAssertEqual(LooperCopy.answerOnWeb, "Answer this one on the web.")
+        XCTAssertEqual(LooperCopy.notYours, "This run belongs to a looper that is not yours. It opens on the web.")
+        XCTAssertEqual(LooperCopy.opensOnWeb, "This run opens on the web.")
+        XCTAssertEqual(LooperCopy.nothingSaid(going: true), "Nothing said yet.")
+        XCTAssertEqual(LooperCopy.nothingSaid(going: false), "This run said nothing.")
+        XCTAssertEqual(LooperCopy.runFailed("timeout"), "This run failed. Reason: timeout")
+        XCTAssertEqual(LooperCopy.tools(names: ["task_list"], failed: 0), "task_list")
+        XCTAssertEqual(LooperCopy.tools(names: ["a", "b", "c"], failed: 0), "3 tool calls")
+        XCTAssertEqual(LooperCopy.tools(names: ["a", "b", "c"], failed: 2), "3 tool calls, 2 failed")
+    }
+
+    func testTheFilterNamesLooperAndResponderRuns() {
+        XCTAssertEqual(ThreadKind.looper.plural, "Looper runs")
+        XCTAssertEqual(ThreadKind.responder.plural, "Responder runs")
+    }
+
+    func testAPageSaysARunIsGoingWhereRunNowCannotRun() async {
+        let lobby = FakeLooperLobby()
+        lobby.runs["a"] = [LooperRunRow(id: "r1", status: "running")]
+        let page = LooperPageModel(looper: Looper(row: row("a", "A"), organizationID: "o-1"), lobby: lobby, personID: "p-1")
+        XCTAssertNil(page.runBlocked)
+        await page.refresh()
+        XCTAssertEqual(page.runBlocked, "A run is already going.")
     }
 }

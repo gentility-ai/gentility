@@ -53,14 +53,43 @@ struct SearchTab: View {
     var body: some View {
         NavigationStack {
             SearchResults(rows: home.rows, loopers: app.loopers?.loopers ?? [], query: query, onThread: onThread, onLooper: onLooper)
-                .navigationTitle("Search")
+                .navigationTitle("Search").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) { SettingsGear { settings = true } }
                 }
                 .navigationDestination(isPresented: $settings) { SettingsView(app: app).toolbar(.hidden, for: .tabBar) }
-                .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Threads and loopers")
+                .safeAreaInset(edge: .top, spacing: 0) { SearchField(query: $query) }
                 .task { await app.loopers?.refresh() }
         }
+    }
+}
+
+/// The Search tab's field. Its own, not the system's, whose prompt is
+/// drawn under 4.5:1.
+struct SearchField: View {
+    @Binding var query: String
+
+    var body: some View {
+        HStack(spacing: Theme.Space.s) {
+            Image(systemName: "magnifyingglass").foregroundStyle(Theme.inkFaint).accessibilityHidden(true)
+            TextField("Search", text: $query, prompt: Text("Threads and loopers").foregroundStyle(Theme.inkFaint))
+                .foregroundStyle(Theme.ink)
+                .textInputAutocapitalization(.never).autocorrectionDisabled()
+                .submitLabel(.search)
+            if !query.isEmpty {
+                Button { query = "" } label: {
+                    Image(systemName: "xmark.circle.fill").foregroundStyle(Theme.inkFaint)
+                        .frame(width: Theme.touch, height: Theme.touch)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Clear search")
+            }
+        }
+        .padding(.leading, Theme.Space.m).padding(.trailing, query.isEmpty ? Theme.Space.m : 0)
+        .frame(minHeight: Theme.touch)
+        .background(Theme.field, in: RoundedRectangle(cornerRadius: Theme.Corner.medium, style: .continuous))
+        .padding(.horizontal, Theme.Space.l).padding(.vertical, Theme.Space.s)
+        .background(Theme.ground)
     }
 }
 

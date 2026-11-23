@@ -134,14 +134,13 @@ struct LooperRowView: View {
 struct LooperRunLanding: View {
     @ObservedObject var app: AppModel
     let row: HomeRow
-    @State private var run: LooperRunRow?
 
     var body: some View {
         Group {
             if let loopers = app.loopers {
                 Landing(loopers: loopers, looperID: row.looperID, title: row.title)
             } else {
-                Vacant(glyph: "arrow.triangle.2.circlepath", title: row.title, line: "This run opens on the web.")
+                Vacant(glyph: "arrow.triangle.2.circlepath", title: row.title, line: LooperCopy.opensOnWeb)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -160,8 +159,11 @@ struct LooperRunLanding: View {
                         .navigationDestination(item: $opened) { run in
                             LooperRunScreen(model: loopers.page(for: looper).runModel(for: run))
                         }
+                } else if let line = loopers.line {
+                    // A list that did not load cannot say whose the looper is.
+                    Vacant(glyph: "exclamationmark.icloud", title: title, line: line)
                 } else if loopers.loaded {
-                    Vacant(glyph: "arrow.triangle.2.circlepath", title: title, line: "This run belongs to a looper that is not yours. It opens on the web.")
+                    Vacant(glyph: "arrow.triangle.2.circlepath", title: title, line: LooperCopy.notYours)
                 } else {
                     ProgressView()
                 }
@@ -185,14 +187,13 @@ struct LooperPageScreen: View {
 
     var body: some View {
         LooperPage(
-            looper: page.looper, runs: page.runs, loaded: page.loaded, open: page.open.map { WaitingRequest(run: $0.run, request: $0.request) },
+            looper: page.looper, runs: page.runs, loaded: page.loaded, line: page.line, open: page.open.map { WaitingRequest(run: $0.run, request: $0.request) },
             runBlocked: page.runBlocked, busy: page.busy, notice: page.notice, failure: page.failure, message: $message,
             onRunNow: { Task { await page.run() } },
             onSend: {
                 let words = message
                 Task {
-                    await page.run(message: words)
-                    if page.failure == nil { message = "" }
+                    if await page.run(message: words) { message = "" }
                 }
             },
             onRun: onRun
@@ -251,6 +252,8 @@ struct LooperPage: View {
     let looper: Looper
     let runs: [LooperRunRow]
     let loaded: Bool
+    /// Why its runs did not load.
+    var line: String? = nil
     let open: [WaitingRequest]
     let runBlocked: String?
     let busy: Bool
@@ -277,16 +280,16 @@ struct LooperPage: View {
                     }
                     Button(action: onRunNow) {
                         HStack(spacing: Theme.Space.s) {
-                            if busy { ProgressView().controlSize(.small).tint(runBlocked == nil ? Theme.onAccent : Theme.inkFaint) } else { Image(systemName: "play.fill") }
+                            if busy { ProgressView().controlSize(.small).tint(Theme.onAccent) } else { Image(systemName: "play.fill") }
                             Text("Run now").fontWeight(.semibold)
                         }
                         .frame(maxWidth: .infinity, minHeight: Theme.touch)
-                        .foregroundStyle(runBlocked == nil ? Theme.onAccent : Theme.inkFaint)
-                        .background(runBlocked == nil ? Theme.accent : Theme.field, in: RoundedRectangle(cornerRadius: Theme.Corner.medium, style: .continuous))
+                        .foregroundStyle(canRun ? Theme.onAccent : Theme.inkFaint)
+                        .background(canRun ? Theme.accent : Theme.field, in: RoundedRectangle(cornerRadius: Theme.Corner.medium, style: .continuous))
                     }
                     .buttonStyle(.plain)
-                    .allowsHitTesting(runBlocked == nil && !busy)
-                    .accessibilityValue(runBlocked == nil && !busy ? "" : "Not ready")
+                    .allowsHitTesting(canRun && !busy)
+                    .accessibilityValue(canRun && !busy ? "" : "Not ready")
                     if let said = failure ?? runBlocked {
                         Text(said).font(.footnote).foregroundStyle(failure == nil ? Theme.inkSoft : Theme.bad)
                     }
@@ -321,8 +324,10 @@ struct LooperPage: View {
             }
 
             Section {
-                if loaded, runs.isEmpty {
-                    Text("No runs yet — Run now starts one.").font(.subheadline).foregroundStyle(Theme.inkSoft)
+                if let line {
+                    Label(line, systemImage: "exclamationmark.icloud").font(.footnote).foregroundStyle(Theme.inkSoft)
+                } else if loaded, runs.isEmpty {
+                    Text(LooperCopy.noRuns).font(.subheadline).foregroundStyle(Theme.inkSoft)
                 }
                 ForEach(runs) { run in
                     Button { onRun(run) } label: { RunRowView(run: run, now: Date()) }
@@ -347,7 +352,8 @@ struct LooperPage: View {
                         .transition(.opacity)
                 }
                 HStack(spacing: Theme.Space.s) {
-                    TextField("Start a run with a message", text: $message, axis: .vertical)
+                    TextField("Start a run with a message", text: $message, prompt: Text("Start a run with a message").foregroundStyle(Theme.inkFaint), axis: .vertical)
+                        .foregroundStyle(Theme.ink)
                         .lineLimit(1...4)
                         .padding(.horizontal, Theme.Space.m).padding(.vertical, 10)
                         .background(Theme.field, in: RoundedRectangle(cornerRadius: Theme.Corner.large, style: .continuous))
@@ -367,8 +373,12 @@ struct LooperPage: View {
         }
     }
 
+    /// Run now waits for the runs: until they are read, the page cannot
+    /// know whether one is going, and its own spinner is the sign.
+    private var canRun: Bool { loaded && runBlocked == nil }
+
     private var canSend: Bool {
-        !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && runBlocked == nil && !busy
+        !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && canRun && !busy
     }
 }
 
@@ -409,7 +419,7 @@ struct LooperRunScreen: View {
     }
 
     var body: some View {
-        LooperRunPage(run: model.run, items: model.items, open: model.open, loaded: model.loaded, failure: model.failure, notice: model.notice) { request, words in
+        LooperRunPage(run: model.run, items: model.items, open: model.open, loaded: model.loaded, line: model.line, failure: model.failure, notice: model.notice, answering: model.answering) { request, words in
             Task { await model.answer(request, with: words) }
         }
         .navigationTitle(RunFace(model.run).title)
@@ -442,8 +452,11 @@ struct LooperRunPage: View {
     let items: [RunItem]
     let open: [LooperRequest]
     let loaded: Bool
+    /// Why the run did not load.
+    var line: String? = nil
     let failure: String?
     let notice: String?
+    var answering = false
     var onAnswer: (LooperRequest, String) -> Void = { _, _ in }
 
     var body: some View {
@@ -461,7 +474,7 @@ struct LooperRunPage: View {
                 ForEach(items) { item in
                     switch item {
                     case .said(_, let text):
-                        Text(text)
+                        Text(text).foregroundStyle(Theme.ink)
                             .padding(.horizontal, Theme.Space.m).padding(.vertical, 10)
                             .surface(Theme.Corner.large)
                             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -476,15 +489,17 @@ struct LooperRunPage: View {
                 }
 
                 if let error = run.error, !error.isEmpty {
-                    Label(error, systemImage: "xmark.circle.fill").font(.footnote).foregroundStyle(Theme.bad)
+                    Label(LooperCopy.runFailed(error), systemImage: "xmark.circle.fill").font(.footnote).foregroundStyle(Theme.bad)
                 }
-                if loaded, items.isEmpty, open.isEmpty, run.error == nil {
-                    Text(RunFace.going(run.status) ? "Nothing said yet." : "This run said nothing.")
+                if let line {
+                    Label(line, systemImage: "exclamationmark.icloud").font(.footnote).foregroundStyle(Theme.inkSoft)
+                } else if loaded, items.isEmpty, open.isEmpty, run.error == nil {
+                    Text(LooperCopy.nothingSaid(going: RunFace.going(run.status)))
                         .font(.subheadline).foregroundStyle(Theme.inkSoft)
                 }
 
                 ForEach(open) { request in
-                    RequestForm(request: request) { onAnswer(request, $0) }
+                    RequestForm(request: request, answering: answering) { onAnswer(request, $0) }
                 }
                 if let said = failure ?? notice {
                     Text(said).font(.footnote).foregroundStyle(failure == nil ? Theme.inkSoft : Theme.bad)
@@ -521,7 +536,8 @@ private struct ToolsLine: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .disabled(names.count < 2)
+            // Not `disabled`, which dims the words.
+            .allowsHitTesting(names.count > 1)
             if open {
                 ForEach(Array(names.enumerated()), id: \.offset) { _, name in
                     Text(name).font(.caption.monospaced()).foregroundStyle(Theme.inkSoft).padding(.leading, Theme.Space.xl)
@@ -530,16 +546,14 @@ private struct ToolsLine: View {
         }
     }
 
-    private var headline: String {
-        if names.count == 1 { return names[0] }
-        return failed > 0 ? "\(names.count) tool calls, \(failed) failed" : "\(names.count) tool calls"
-    }
+    private var headline: String { LooperCopy.tools(names: names, failed: failed) }
 }
 
 /// A request with its answer form. A question is answered here; any other
 /// kind says where it is answered.
 private struct RequestForm: View {
     let request: LooperRequest
+    var answering = false
     let onAnswer: (String) -> Void
     @State private var answer = ""
 
@@ -549,7 +563,8 @@ private struct RequestForm: View {
                 .font(.footnote.weight(.semibold)).foregroundStyle(Theme.attention)
             Text(request.rendered ?? request.body ?? "").foregroundStyle(Theme.ink)
             if request.kind == "question", request.canResolve != false {
-                TextField("Your answer", text: $answer, axis: .vertical)
+                TextField("Your answer", text: $answer, prompt: Text("Your answer").foregroundStyle(Theme.inkFaint), axis: .vertical)
+                    .foregroundStyle(Theme.ink)
                     .lineLimit(1...5)
                     .padding(.horizontal, Theme.Space.m).padding(.vertical, 10)
                     .background(Theme.field, in: RoundedRectangle(cornerRadius: Theme.Corner.medium, style: .continuous))
@@ -559,10 +574,10 @@ private struct RequestForm: View {
                         .background(blank ? Theme.field : Theme.accent, in: RoundedRectangle(cornerRadius: Theme.Corner.medium, style: .continuous))
                 }
                 .buttonStyle(.plain)
-                .allowsHitTesting(!blank)
-                .accessibilityValue(blank ? "Not ready" : "")
+                .allowsHitTesting(!blank && !answering)
+                .accessibilityValue(blank ? "Not ready" : answering ? "Sending" : "")
             } else {
-                Text("Answer this one on the web.").font(.footnote).foregroundStyle(Theme.inkSoft)
+                Text(LooperCopy.answerOnWeb).font(.footnote).foregroundStyle(Theme.inkSoft)
             }
         }
         .padding(Theme.Space.m)
@@ -587,80 +602,126 @@ private struct LooperEditSheet: View {
 
     var body: some View {
         NavigationStack {
-            LooperEditForm(draft: $draft, nextRun: page.looper.state(now: Date()).text, failure: page.failure)
+            LooperEditForm(draft: $draft, nextRun: page.looper.nextRun(now: Date()), failure: page.editFailure)
                 .navigationTitle("Edit")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Save") {
+                        SaveButton(ready: !saving && !draft.changes(from: page.looper.row).isEmpty) {
                             saving = true
                             Task {
-                                page.failure = nil
                                 if await page.save(draft) { dismiss() }
                                 saving = false
                             }
                         }
-                        .disabled(saving || draft.changes(from: page.looper.row).isEmpty)
                     }
                 }
         }
+        .onAppear { page.editing() }
     }
 }
 
-/// The form, in Desk's groups and labels.
+/// The form's Save. With nothing changed it takes no tap and wears faint
+/// ink: not `disabled`, which dims the word below 4.5:1.
+struct SaveButton: View {
+    let ready: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text("Save").fontWeight(.semibold).foregroundStyle(ready ? Theme.accent : Theme.inkFaint)
+        }
+        .allowsHitTesting(ready)
+        .accessibilityValue(ready ? "" : "Not ready")
+    }
+}
+
+/// The form, in Desk's groups and labels, drawn with the theme's tokens.
 struct LooperEditForm: View {
     @Binding var draft: LooperDraft
-    let nextRun: String
+    /// When it next runs; nil where no run is scheduled.
+    let nextRun: String?
     let failure: String?
 
     var body: some View {
         Form {
             if let failure {
                 Section { Label(failure, systemImage: "exclamationmark.triangle").foregroundStyle(Theme.bad).font(.footnote) }
-            }
-            Section("Instructions") {
-                LabeledContent("Name") { TextField("Name", text: $draft.name).multilineTextAlignment(.trailing) }
-                TextField("Instructions", text: $draft.instructions, axis: .vertical).lineLimit(4...12)
+                    .listRowBackground(Theme.raised)
             }
             Section {
-                LabeledContent("Runs") {
-                    TextField("No schedule", text: $draft.cron)
-                        .multilineTextAlignment(.trailing).font(.body.monospaced())
+                row("Name") { field("Name", $draft.name) }
+                TextField("Instructions", text: $draft.instructions, prompt: faint("Instructions"), axis: .vertical)
+                    .foregroundStyle(Theme.ink).lineLimit(4...12)
+            } header: {
+                heading("Instructions")
+            }
+            .listRowBackground(Theme.raised)
+            Section {
+                row("Runs") {
+                    field("No schedule", $draft.cron).font(.body.monospaced())
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                 }
-                LabeledContent("Timezone") {
-                    TextField("UTC", text: $draft.timezone)
-                        .multilineTextAlignment(.trailing).textInputAutocapitalization(.never).autocorrectionDisabled()
+                row("Timezone") {
+                    field("UTC", $draft.timezone).textInputAutocapitalization(.never).autocorrectionDisabled()
                 }
-                Toggle("Schedule", isOn: $draft.scheduleOn)
-                LabeledContent("Next run", value: nextRun.replacingOccurrences(of: "next run ", with: ""))
+                Toggle(isOn: $draft.scheduleOn) { Text("Schedule").foregroundStyle(Theme.ink) }.tint(Theme.accent)
+                if let nextRun {
+                    row("Next run") { Text(nextRun).foregroundStyle(Theme.inkSoft) }
+                }
             } header: {
-                Text("Schedule")
+                heading("Schedule")
             } footer: {
-                Text(draft.cronLine)
+                note(draft.cronLine)
             }
+            .listRowBackground(Theme.raised)
             Section {
-                LabeledContent("Notify") {
-                    TextField("Nobody", text: $draft.notify)
-                        .multilineTextAlignment(.trailing).textInputAutocapitalization(.never).autocorrectionDisabled()
+                row("Notify") {
+                    field("Nobody", $draft.notify).textInputAutocapitalization(.never).autocorrectionDisabled()
                 }
-                Picker("Visibility", selection: $draft.isPublic) {
+                Picker(selection: $draft.isPublic) {
                     Text("Private").tag(false)
                     Text("Public").tag(true)
+                } label: {
+                    Text("Visibility").foregroundStyle(Theme.ink)
                 }
+                .tint(Theme.inkSoft)
             } header: {
-                Text("Details")
+                heading("Details")
             } footer: {
-                Text(draft.visibilityLine)
+                note(draft.visibilityLine)
             }
+            .listRowBackground(Theme.raised)
             Section {
                 Text("Model, grants, triggers and files").foregroundStyle(Theme.inkSoft)
             } header: {
-                Text("Set on the web")
+                heading("Set on the web")
             } footer: {
-                Text("Open this looper on the web to change them.")
+                note("Open this looper on the web to change them.")
             }
+            .listRowBackground(Theme.raised)
         }
+        .scrollContentBackground(.hidden)
+        .background(Theme.ground)
+    }
+
+    private func faint(_ words: String) -> Text { Text(words).foregroundStyle(Theme.inkFaint) }
+
+    private func heading(_ words: String) -> some View {
+        Text(words).font(.footnote.weight(.semibold)).foregroundStyle(Theme.inkSoft).textCase(nil)
+    }
+
+    private func note(_ words: String) -> some View {
+        Text(words).font(.footnote).foregroundStyle(Theme.inkSoft)
+    }
+
+    private func row<Value: View>(_ label: String, @ViewBuilder _ value: () -> Value) -> some View {
+        LabeledContent { value() } label: { Text(label).foregroundStyle(Theme.ink) }
+    }
+
+    /// A trailing field whose prompt states the fact an empty value means.
+    private func field(_ prompt: String, _ text: Binding<String>) -> some View {
+        TextField(prompt, text: text, prompt: faint(prompt)).foregroundStyle(Theme.ink).multilineTextAlignment(.trailing)
     }
 }

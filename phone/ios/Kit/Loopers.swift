@@ -1,8 +1,7 @@
 import Foundation
 
-/// A cron read in words, as Desk reads it (`describeCron`,
-/// `desk/ui/src/looper/looper.logic.ts`), so the two never disagree about one
-/// schedule. Anything it would have to guess at is nil.
+/// A cron read in words, as Desk reads it, so the two never disagree about
+/// one schedule. Anything it would have to guess at is nil.
 public enum CronReading {
     static let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -112,14 +111,21 @@ public struct Looper: Identifiable, Hashable, Sendable {
 
     private var hasCron: Bool { !(row.schedule.cron ?? "").trimmingCharacters(in: .whitespaces).isEmpty }
 
-    /// The one state the list says, in Desk's words (`pinWord`).
+    /// The one state the list says.
     public func state(now: Date) -> (text: String, tone: LooperTone) {
         if asking { return ("Asking", .asking) }
         if working { return ("Working", .working) }
         if !hasCron { return (responder ? "Listening" : "Manual", .faint) }
         if !row.schedule.enabled { return ("Schedule off", .faint) }
         guard let next = row.nextRunAt.flatMap(WireDate.parse) else { return ("Not known yet", .faint) }
-        return ("next run \(Self.until(next, now: now))", .faint)
+        return ("Next run \(Self.until(next, now: now))", .faint)
+    }
+
+    /// When it next runs, for the Edit form: nil where no run is scheduled
+    /// or the time is not known.
+    public func nextRun(now: Date) -> String? {
+        guard hasCron, row.schedule.enabled, let next = row.nextRunAt.flatMap(WireDate.parse) else { return nil }
+        return Self.until(next, now: now)
     }
 
     /// `in 3 h`, `in 12 min`, `now`.
@@ -158,7 +164,7 @@ public struct RunFace: Equatable, Sendable {
 
     public static func going(_ status: String) -> Bool { ["queued", "pending", "running", "waiting"].contains(status) }
 
-    /// Why it woke (`wakeWords`, `desk/ui/src/run/story.ts`).
+    /// Why it woke, in Desk's words.
     public static func wakeWords(_ wake: LooperRunRow.Wake?) -> String {
         switch wake?.by {
         case nil: "Woke"
@@ -178,8 +184,8 @@ public struct RunFace: Equatable, Sendable {
 public enum LooperRefusal {
     public static func sentence(_ error: Error) -> String {
         switch error as? LobbyError {
-        case .refused("paused"): "Paused: resume it to run"
-        case .refused("not_funded"): "Add funds to run"
+        case .refused("paused"): "This looper is paused. Resume it on the web to run it."
+        case .refused("not_funded"): "Its organisation is out of funds. Add funds on the web to run it."
         case .refused("run_in_flight"): "A run is already going."
         case .refused("blank_message"): "Write a message first."
         case .refused("not_found"): "This looper is no longer yours to run."
@@ -191,6 +197,31 @@ public enum LooperRefusal {
         case .unreachable: "Can't reach the server. Try again."
         default: "That did not go through."
         }
+    }
+}
+
+/// The sentences the looper pages say that no model holds.
+public enum LooperCopy {
+    public static let running = "A run is already going."
+    public static let noRuns = "No runs yet. Run now starts one."
+    public static let answerOnWeb = "Answer this one on the web."
+    public static let notYours = "This run belongs to a looper that is not yours. It opens on the web."
+    public static let opensOnWeb = "This run opens on the web."
+
+    /// A run with nothing to show: still going, or finished without a word.
+    public static func nothingSaid(going: Bool) -> String {
+        going ? "Nothing said yet." : "This run said nothing."
+    }
+
+    /// A run's own failure, which the server sends as it has it.
+    public static func runFailed(_ reason: String) -> String {
+        "This run failed. Reason: \(reason)"
+    }
+
+    /// A fold of tool calls: one call's name, or how many and how many failed.
+    public static func tools(names: [String], failed: Int) -> String {
+        if names.count == 1 { return names[0] }
+        return failed > 0 ? "\(names.count) tool calls, \(failed) failed" : "\(names.count) tool calls"
     }
 }
 
@@ -273,8 +304,12 @@ public final class LooperPageModel: ObservableObject {
     @Published public private(set) var loaded = false
     /// "Run started", "Muted on this phone": said once, then cleared.
     @Published public var notice: String?
-    /// Why the last press failed.
-    @Published public var failure: String?
+    /// Why the last press failed; the next press clears it.
+    @Published public private(set) var failure: String?
+    /// Why the last read of its runs failed; a read that works clears it.
+    @Published public private(set) var line: String?
+    /// Why the last Save failed, said on the Edit form.
+    @Published public private(set) var editFailure: String?
     @Published public private(set) var busy = false
     /// The run a press just started, for the page to open.
     @Published public var started: LooperRunRow?
@@ -297,8 +332,11 @@ public final class LooperPageModel: ObservableObject {
 
     /// Why Run now cannot run, or nil when it can.
     public var runBlocked: String? {
-        runs.contains { RunFace.going($0.status) } ? "Running…" : nil
+        runs.contains { RunFace.going($0.status) } ? LooperCopy.running : nil
     }
+
+    /// The Edit form opens with no failure of an earlier Save.
+    public func editing() { editFailure = nil }
 
     public func refresh() async {
         do {
@@ -308,17 +346,20 @@ public final class LooperPageModel: ObservableObject {
             next.working = !live.isEmpty
             next.asking = live.contains { ($0.requests ?? []).contains { $0.status == "open" } }
             set(next)
+            line = nil
         } catch {
-            failure = LooperRefusal.sentence(error)
+            line = LooperRefusal.sentence(error)
         }
         loaded = true
     }
 
-    /// Run now, or a run that opens with `message`.
-    public func run(message: String? = nil) async {
+    /// Run now, or a run that opens with `message`. True once a run started.
+    @discardableResult
+    public func run(message: String? = nil) async -> Bool {
         let message = message?.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let message, message.isEmpty { failure = "Write a message first."; return }
-        guard !busy else { return }
+        guard !busy else { return false }
+        failure = nil
+        if let message, message.isEmpty { failure = "Write a message first."; return false }
         busy = true
         defer { busy = false }
         do {
@@ -326,12 +367,15 @@ public final class LooperPageModel: ObservableObject {
             notice = "Run started"
             await refresh()
             started = runs.first { $0.id == id }
+            return true
         } catch {
             failure = LooperRefusal.sentence(error)
+            return false
         }
     }
 
     public func setMuted(_ muted: Bool) async {
+        failure = nil
         guard let personID else { failure = "That did not go through."; return }
         do {
             try await lobby.mute(personID: personID, looperID: looper.id, muted: muted)
@@ -347,6 +391,7 @@ public final class LooperPageModel: ObservableObject {
     /// Sends what `draft` changed. True once the server took it.
     public func save(_ draft: LooperDraft) async -> Bool {
         let changes = draft.changes(from: looper.row)
+        editFailure = nil
         guard !changes.isEmpty else { return true }
         do {
             let row = try await lobby.update(organizationID: looper.organizationID, looperID: looper.id, changes: changes)
@@ -356,7 +401,7 @@ public final class LooperPageModel: ObservableObject {
             notice = "Saved"
             return true
         } catch {
-            failure = LooperRefusal.sentence(error)
+            editFailure = LooperRefusal.sentence(error)
             return false
         }
     }
@@ -442,8 +487,13 @@ public final class LooperRunModel: ObservableObject {
     @Published public private(set) var items: [RunItem] = []
     @Published public private(set) var requests: [LooperRequest] = []
     @Published public private(set) var loaded = false
-    @Published public var failure: String?
-    @Published public var notice: String?
+    /// Why the last answer failed; the next answer clears it.
+    @Published public private(set) var failure: String?
+    /// Why the last read failed; a read that works clears it.
+    @Published public private(set) var line: String?
+    @Published public private(set) var notice: String?
+    /// An answer is being sent.
+    @Published public private(set) var answering = false
 
     public let organizationID: String
     private let lobby: LooperLobby
@@ -462,16 +512,20 @@ public final class LooperRunModel: ObservableObject {
             run = read.run
             items = Self.fold(read.turns)
             requests = read.requests
-            failure = nil
+            line = nil
         } catch {
-            failure = LooperRefusal.sentence(error)
+            line = LooperRefusal.sentence(error)
         }
         loaded = true
     }
 
     public func answer(_ request: LooperRequest, with text: String) async {
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !answering else { return }
+        failure = nil
         guard !text.isEmpty else { failure = "Write an answer first."; return }
+        answering = true
+        defer { answering = false }
         do {
             let answered = try await lobby.answer(organizationID: organizationID, requestID: request.id, answer: text)
             if let at = requests.firstIndex(where: { $0.id == answered.id }) { requests[at] = answered }

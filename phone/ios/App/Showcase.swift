@@ -103,7 +103,11 @@ private struct ArrivingTranscript: View {
 struct Showcase: View {
     static let screens = [
         "scanner", "camera", "number", "joining", "home", "home-siblings", "home-sibling-unavailable", "sibling-not-open", "home-off", "home-search", "home-settled", "home-snooze", "home-undo",
-        "home-menu", "home-tip", "home-filtered", "home-waiting", "home-empty", "home-nomatch", "home-loopers", "home-xxl", "home-presence", "conversation", "f4", "f4-waiting", "link-unavailable", "no-door", "lost",
+        "home-menu", "home-tip", "home-filtered", "home-waiting", "home-empty", "home-nomatch", "home-loopers", "home-xxl", "home-presence",
+        "search", "search-empty", "search-none", "loopers", "loopers-empty", "loopers-loading", "loopers-failed", "loopers-stale", "loopers-long",
+        "looper", "looper-asking", "looper-refused", "looper-new", "looper-loading", "looper-busy", "looper-failed", "looper-started", "looper-typed",
+        "run", "run-asking", "run-loading", "run-load-failed", "run-failed", "run-one-tool", "run-private", "run-web", "run-refused", "run-quiet",
+        "run-landing-loading", "run-landing-not-yours", "looper-edit", "looper-edit-empty", "looper-edit-refused", "looper-edit-ready", "looper-edit-manual", "tabs-pushed", "conversation", "f4", "f4-waiting", "link-unavailable", "no-door", "lost",
         "idle", "approval", "approval-three", "approval-short", "show-all", "question", "question-tall", "link", "queued", "steer-refused",
         "requested-compacting", "requested-waiting",
         "elsewhere", "redial", "unopened-answer", "wrong-store", "ended", "ended-words",
@@ -137,50 +141,80 @@ struct Showcase: View {
                 .navigationTitle("Threads")
         }
         case "home-off": home(notificationsOff: true)
-        case "home-search", "search": ShowcaseTabs(tab: .search) {
-            SearchResults(rows: Self.rows, loopers: Self.loopers, query: "re")
-                .navigationTitle("Search")
-                .searchable(text: .constant("re"), placement: .navigationBarDrawer(displayMode: .always), prompt: "Threads and loopers")
+        case "home-search", "search", "search-empty", "search-none": ShowcaseTabs(tab: .search) {
+            let query = screen == "search-empty" ? "" : screen == "search-none" ? "zebra" : "re"
+            SearchResults(rows: Self.rows, loopers: Self.loopers, query: query)
+                .navigationTitle("Search").navigationBarTitleDisplayMode(.inline)
+                .safeAreaInset(edge: .top, spacing: 0) { SearchField(query: .constant(query)) }
         }
-        case "search-empty": ShowcaseTabs(tab: .search) {
-            SearchResults(rows: Self.rows, loopers: Self.loopers, query: "")
-                .navigationTitle("Search")
-                .searchable(text: .constant(""), placement: .navigationBarDrawer(displayMode: .always), prompt: "Threads and loopers")
+        case "loopers", "loopers-empty", "loopers-loading", "loopers-failed", "loopers-stale", "loopers-long": ShowcaseTabs(tab: .loopers) {
+            LoopersList(
+                loopers: screen == "loopers" || screen == "loopers-stale" ? Self.loopers : screen == "loopers-long" ? [Self.longLooper] + Self.loopers : [],
+                loaded: screen != "loopers-loading",
+                line: screen == "loopers-failed" || screen == "loopers-stale" ? "Can't reach the server. Try again." : nil
+            ).navigationTitle("Loopers")
         }
-        case "loopers": ShowcaseTabs(tab: .loopers) {
-            LoopersList(loopers: Self.loopers, loaded: true, line: nil).navigationTitle("Loopers")
-        }
-        case "loopers-empty": ShowcaseTabs(tab: .loopers) {
-            LoopersList(loopers: [], loaded: true, line: nil).navigationTitle("Loopers")
-        }
-        case "looper", "looper-asking", "looper-refused", "looper-new":
-            pushed(Self.loopers[screen == "looper-asking" ? 0 : 2].name, from: "Loopers") {
+        case "looper", "looper-asking", "looper-refused", "looper-new", "looper-loading", "looper-busy", "looper-failed", "looper-started", "looper-typed":
+            let asking = screen == "looper-asking" || screen == "looper-typed"
+            pushed(Self.loopers[asking ? 0 : 2].name, from: "Loopers") {
                 LooperPage(
-                    looper: Self.loopers[screen == "looper-asking" ? 0 : 2],
-                    runs: screen == "looper-new" ? [] : screen == "looper-asking" ? Self.runs : Array(Self.runs.dropFirst()),
-                    loaded: true,
-                    open: screen == "looper-asking" ? [WaitingRequest(run: Self.runs[0], request: Self.question)] : [],
-                    runBlocked: screen == "looper-asking" ? "Running…" : nil, busy: false,
-                    notice: nil, failure: screen == "looper-refused" ? "Add funds to run" : nil,
-                    message: .constant("")
+                    looper: Self.loopers[asking ? 0 : 2],
+                    runs: ["looper-new", "looper-loading", "looper-failed"].contains(screen) ? [] : asking ? Self.runs : Array(Self.runs.dropFirst()),
+                    loaded: screen != "looper-loading",
+                    line: screen == "looper-failed" ? "Can't reach the server. Try again." : nil,
+                    open: asking ? [WaitingRequest(run: Self.runs[0], request: Self.question)] : [],
+                    runBlocked: asking ? LooperCopy.running : nil, busy: screen == "looper-busy",
+                    notice: screen == "looper-started" ? "Run started" : nil,
+                    failure: screen == "looper-refused" ? LooperRefusal.sentence(LobbyError.refused("not_funded")) : nil,
+                    message: .constant(screen == "looper-typed" ? "Include the deploy queue" : "")
                 )
             }
-        case "run", "run-asking":
-            pushed("Run #\(screen == "run" ? 41 : 42)", from: "Morning triage") {
+        case "run", "run-asking", "run-loading", "run-load-failed", "run-failed", "run-one-tool", "run-private", "run-web", "run-refused", "run-quiet":
+            let going = ["run-asking", "run-web", "run-refused"].contains(screen)
+            pushed("Run #\(going ? 42 : screen == "run-failed" ? 40 : 41)", from: "Morning triage") {
                 LooperRunPage(
-                    run: Self.runs[screen == "run" ? 1 : 0], items: screen == "run" ? Self.runItems : Array(Self.runItems.prefix(3)),
-                    open: screen == "run" ? [] : [Self.question], loaded: true, failure: nil, notice: nil
+                    run: screen == "run-failed" ? Self.failedRun : Self.runs[going ? 0 : 1],
+                    items: Self.runItems(screen),
+                    open: screen == "run-web" ? [Self.approvalRequest] : going ? [Self.question] : [],
+                    loaded: screen != "run-loading",
+                    line: screen == "run-load-failed" ? "Can't reach the server. Try again." : nil,
+                    failure: screen == "run-refused" ? LooperRefusal.sentence(LobbyError.refused("not_open")) : nil, notice: nil
                 )
             }
-        case "looper-edit":
+        case "run-landing-loading", "run-landing-not-yours":
+            pushed("Morning triage #42", from: "Threads") {
+                if screen == "run-landing-loading" {
+                    ProgressView()
+                } else {
+                    Vacant(glyph: "arrow.triangle.2.circlepath", title: "Morning triage #42", line: LooperCopy.notYours)
+                }
+            }
+        case "looper-edit", "looper-edit-empty", "looper-edit-refused", "looper-edit-ready", "looper-edit-manual":
             NavigationStack {
-                LooperEditForm(draft: .constant(LooperDraft(Self.loopers[2].row)), nextRun: "next run in 3 h", failure: nil)
+                LooperEditForm(
+                    draft: .constant(LooperDraft(screen == "looper-edit-empty" ? LooperRow(id: "l-9", name: "", schedule: .init(cron: nil, enabled: false, timezone: nil)) : Self.loopers[screen == "looper-edit-manual" ? 5 : 2].row)),
+                    nextRun: screen == "looper-edit-empty" || screen == "looper-edit-manual" ? nil : "in 3 h",
+                    failure: screen == "looper-edit-refused" ? LooperRefusal.sentence(LobbyError.refused("invalid")) : nil
+                )
                     .navigationTitle("Edit").navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) { Button("Cancel") {} }
-                        ToolbarItem(placement: .confirmationAction) { Button("Save") {}.disabled(true) }
+                        ToolbarItem(placement: .confirmationAction) { SaveButton(ready: screen == "looper-edit-ready" || screen == "looper-edit-refused") {} }
                     }
             }
+        case "tabs-pushed":
+            TabView(selection: .constant(TabsView.Tab.loopers)) {
+                NavigationStack(path: .constant(NavigationPath(["s"]))) {
+                    Color.clear.navigationTitle("Loopers")
+                        .navigationDestination(for: String.self) { _ in
+                            LooperPage(looper: Self.loopers[2], runs: Array(Self.runs.dropFirst()), loaded: true, open: [], runBlocked: nil, busy: false, notice: nil, failure: nil, message: .constant(""))
+                                .navigationTitle(Self.loopers[2].name).navigationBarTitleDisplayMode(.inline)
+                                .toolbar(.hidden, for: .tabBar)
+                        }
+                }
+                .tabItem { Label("Loopers", systemImage: "arrow.triangle.2.circlepath") }.tag(TabsView.Tab.loopers)
+            }
+            .tint(Theme.accent)
         case "home-settled": home(notificationsOff: false, open: [.settled])
         case "home-snooze": home(notificationsOff: false, snoozing: Self.rows[2])
         case "home-undo": home(notificationsOff: false, undo: Undo(words: "Snoozed until Tue 09:00", rowID: "s-2", organizationID: "o-1", inverse: .wake))
@@ -320,6 +354,22 @@ struct Showcase: View {
         LooperRunRow(id: "r-40", number: 40, status: "failed", startedAt: ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: -2 * 86_400)), wake: .init(by: "task", source: nil)),
         LooperRunRow(id: "r-39", number: 39, status: "completed", startedAt: ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: -3 * 86_400)), wake: .init(by: "manual", source: nil)),
     ]
+
+    static let longLooper = Looper(row: LooperRow(id: "l-0", name: "Weekly customer escalations digest for the support and success teams", schedule: .init(cron: "0 8 * * 1", enabled: true, timezone: "Europe/London"), nextRunAt: ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: 50 * 3_600))), organizationID: "o-1")
+
+    static let failedRun = LooperRunRow(id: "r-40", number: 40, status: "failed", startedAt: ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: -2 * 86_400)), wake: .init(by: "task", source: nil), error: "The model stopped answering after 3 tries.")
+
+    static let approvalRequest = LooperRequest(id: "q-2", kind: "approval", kindLabel: "Approval", rendered: "Close issue 214 as a duplicate of issue 198?", status: "open", canResolve: true)
+
+    static func runItems(_ screen: String) -> [RunItem] {
+        switch screen {
+        case "run": runItems
+        case "run-loading", "run-load-failed", "run-quiet": []
+        case "run-one-tool": [runItems[1], .tools(id: "t5", names: ["task_list"], failed: 0), .tools(id: "t6", names: ["web_fetch"], failed: 1) ]
+        case "run-private": [runItems[0], .withheld(id: "t7"), runItems[1]]
+        default: Array(runItems.prefix(3))
+        }
+    }
 
     static let runItems: [RunItem] = [
         .said(id: "t1", text: "Include the deploy queue this morning."),
