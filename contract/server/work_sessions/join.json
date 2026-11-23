@@ -124,6 +124,7 @@
         "wake_turns": 500
       },
       "threads": {
+        "opener_answers": true,
         "self_manage": true
       }
     },

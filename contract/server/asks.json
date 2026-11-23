@@ -99,6 +99,7 @@
     ],
     "payload": [
       "action",
+      "allows",
       "by",
       "epoch",
       "option_id",
@@ -108,8 +109,12 @@
       "value"
     ],
     "refusals": [
+      "action_unstated",
+      "allows_mismatch",
+      "allows_needed",
       "already_decided",
       "archived",
+      "child_mode",
       "deferred",
       "expired",
       "forbidden",
@@ -117,6 +122,9 @@
       "internal",
       "malformed",
       "management_grant_required",
+      "mode_set_by_person",
+      "not_once",
+      "opener_answers_off",
       "option_unknown",
       "self_answer",
       "session_closed",

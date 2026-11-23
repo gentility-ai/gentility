@@ -1457,9 +1457,14 @@
               "properties": {
                 "self_manage": {
                   "type": "boolean"
+                },
+                "opener_answers": {
+                  "description": "Whether a thread may answer a one-time approval of a thread it opened without a grant: the organization's switch and the person's, ANDed (`Gentility.Accounts.threads_opener_answers?/2`).",
+                  "type": "boolean"
                 }
               },
               "required": [
+                "opener_answers",
                 "self_manage"
               ],
               "additionalProperties": false
@@ -8264,6 +8269,10 @@
               },
               "value": {
                 "description": "The typed answer, with an `accept` only."
+              },
+              "allows": {
+                "description": "With an approval, from a thread answering a thread it opened without a grant (`by.basis` `opener`): the pending request's `action`, byte for byte. Never on a grant's answer.",
+                "type": "string"
               }
             },
             "required": [
@@ -8278,8 +8287,12 @@
             "refused"
           ],
           "refusals": [
+            "action_unstated",
+            "allows_mismatch",
+            "allows_needed",
             "already_decided",
             "archived",
+            "child_mode",
             "deferred",
             "expired",
             "forbidden",
@@ -8287,6 +8300,9 @@
             "internal",
             "malformed",
             "management_grant_required",
+            "mode_set_by_person",
+            "not_once",
+            "opener_answers_off",
             "option_unknown",
             "self_answer",
             "session_closed",
@@ -8915,21 +8931,28 @@
       "x-answer": {
         "event": "ask_answered",
         "refusals": [
+          "action_unstated",
+          "allows_mismatch",
+          "allows_needed",
           "already_decided",
           "busy",
+          "child_mode",
           "expired",
           "feed_unreachable",
           "held",
           "malformed",
           "management_grant_required",
+          "mode_set_by_person",
           "no_feed",
           "no_handover",
           "no_launcher",
           "not_a_checkout",
           "not_a_host",
           "not_latest",
+          "not_once",
           "not_this_operation",
           "nothing_running",
+          "opener_answers_off",
           "option_unknown",
           "self_answer",
           "self_management_off",
@@ -9056,6 +9079,10 @@
           },
           "delegated_by": {
             "description": "When the asking thread acts on a grant another thread passed on (T-584), that thread's id.",
+            "type": "string"
+          },
+          "basis": {
+            "description": "`opener` when the asking thread holds no grant and answers a one-time approval of a thread it opened (T-759); absent on a grant's ask. Only the server writes it.",
             "type": "string"
           }
         },

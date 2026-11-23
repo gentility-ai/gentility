@@ -2181,7 +2181,29 @@ changes_dropped?: boolean,
  * (`api::desk::answer_asked`). Absent is false, from a core before this
  * field as from any other question.
  */
-person_only?: boolean, options: Array<PermissionOption>, };
+person_only?: boolean, options: Array<PermissionOption>,
+/**
+ * What the call would do, in one line a person or another agent can
+ * judge: the drawer's heading and what it is about — `Run a command:
+ * sleep 75`, `Edit a file: /abs/path`, `Use desk · task_get: {…}`
+ * (`crate::opener_answers::action`). Written once, by the core, as the
+ * question is parked, and copied and never recomputed by whoever reads
+ * it: the server's `pending_request.action`, and the `allows` a thread
+ * that opened this one must send to answer it (T-759).
+ *
+ * Whole or absent, never shortened: absent for a kind outside the
+ * covered list, a path that is not absolute, a dropped input and
+ * anything past `crate::opener_answers::ACTION_LIMIT`. Absent is a
+ * question only the person or a grant may answer.
+ */
+action?: string | null,
+/**
+ * The thread that opened this one, where it was told it may answer this
+ * question because every rule that lets an opener answer held as it was
+ * parked (T-759): what the drawer says while it waits. The holder judges
+ * again when an answer comes; this decides nothing.
+ */
+opener?: string | null, };
 
 /**
  * A question row supplied by the owner-scoped server read. No local fold.
@@ -3250,7 +3272,14 @@ tool_kind: string, status: ToolStatus, settled: boolean,
  * The call whose sub-agent ran this one, and `null` for the top-level
  * agent's own work — the launching call itself included.
  */
-parent_call_id: string | null, } | { "kind": "asked", request: PermissionRequest, } | { "kind": "answered", request_id: string, option_id: string, by: Decider, } | { "kind": "unanswered", request_id: string, } | { "kind": "elicited", request: Elicitation, } | { "kind": "elicitation_decided", request_id: string, decision: ElicitationDecision, } | { "kind": "turn_ended", outcome: string, detail?: string, spent: Spent | null, } | { "kind": "context", used: number, size: number, } | { "kind": "compaction", id: string, status: CompactionStatus, before?: number, after?: number, duration_ms?: number, error?: string, } | { "kind": "mode_changed", mode: Mode, } | { "kind": "checkpoint", n: number, sha: string, } | { "kind": "reverted", turn: number, sha: string, } | { "kind": "lagged", missed: number, } | { "kind": "continued" } | { "kind": "handoff", from: string, to: string, } | { "kind": "heard", from: string, } | { "kind": "head_moved", sha: string, branch: string | null, paths: Array<string>, more: number, } | { "kind": "stalled", quiet_ms: number, } | { "kind": "unknown" };
+parent_call_id: string | null, } | { "kind": "asked", request: PermissionRequest, } | { "kind": "answered", request_id: string, option_id: string, by: Decider,
+/**
+ * The thread whose hand it was, where another thread answered: under
+ * its grant, or as the thread that opened this one (T-759). `by` stays
+ * `Decider::Person`, whose name it acts in; absent for the person's
+ * own answer and the policy's.
+ */
+by_thread?: string, } | { "kind": "unanswered", request_id: string, } | { "kind": "elicited", request: Elicitation, } | { "kind": "elicitation_decided", request_id: string, decision: ElicitationDecision, } | { "kind": "turn_ended", outcome: string, detail?: string, spent: Spent | null, } | { "kind": "context", used: number, size: number, } | { "kind": "compaction", id: string, status: CompactionStatus, before?: number, after?: number, duration_ms?: number, error?: string, } | { "kind": "mode_changed", mode: Mode, } | { "kind": "checkpoint", n: number, sha: string, } | { "kind": "reverted", turn: number, sha: string, } | { "kind": "lagged", missed: number, } | { "kind": "continued" } | { "kind": "handoff", from: string, to: string, } | { "kind": "heard", from: string, } | { "kind": "head_moved", sha: string, branch: string | null, paths: Array<string>, more: number, } | { "kind": "stalled", quiet_ms: number, } | { "kind": "unknown" };
 
 /**
  * What a sample asked for came to: see `crate::diag`'s sampler.

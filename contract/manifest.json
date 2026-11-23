@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "64aeb9975f234becd55bb4635e6e2f2da7a6b7bf0a896f0c07763bdfbfb31420"
+      "sha256": "20d2add851bf39edcc6b5e830930f962db7e19dffa2cab8610eed551eda6c302"
     },
     "config_change/README.md": {
       "executable": false,
@@ -216,7 +216,7 @@
     "door/said_asked.json": {
       "executable": false,
       "owner": "core",
-      "sha256": "7d494a3b886d6053fc9a583ec8c8e3f76ff4e615914fa21ca1e23ef64758f48c"
+      "sha256": "4fbb6d4c77f37838b971e5a17b69f9a570da9e875aca5af6a31c1e8b1879f4f6"
     },
     "door/said_elicitation_decided.json": {
       "executable": false,
@@ -261,7 +261,7 @@
     "door/session_attention_approval.json": {
       "executable": false,
       "owner": "core",
-      "sha256": "13b097394c6350bf04e0d8c5ad92052068c4d60afce43726cce717956ccdcdd8"
+      "sha256": "a3788a1486e218cef5bc3b71070ea1972379155d306db3de299aad696618745c"
     },
     "door/session_attention_elicitation.json": {
       "executable": false,
@@ -306,7 +306,7 @@
     "door/sessions_list.json": {
       "executable": false,
       "owner": "core",
-      "sha256": "c23aa3e139e8240a7764b8c225d0cdf67b37b1642dba17bacfb0b9fe2e192511"
+      "sha256": "bb27cc721fa971288d47e1e54c4ec4a3642dd7cc61728f23b9736e250f22ddb7"
     },
     "door/steer.json": {
       "executable": false,
@@ -1366,7 +1366,7 @@
     "released.json": {
       "executable": false,
       "owner": "core",
-      "sha256": "2ea54b30d92635b390a7696d7f75bc98bfede902c73f7ac0623eb326ffc1ee62"
+      "sha256": "f094a76d663712728006804d9e38254e534ccf95f4cdae157c5b529f319d7f09"
     },
     "repository_forms.json": {
       "executable": false,
@@ -1381,12 +1381,12 @@
     "server/asks.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "3cf09fe09c5ae8bdd10886f748e4f0e7d8fc8909c0391021a3680d62cfbd09b7"
+      "sha256": "0e7c4343bf596e9c3c0f79c8f9d2afdec6f022c88464e291511f8c121f2c4fdc"
     },
     "server/contract.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "a208a6cb92f343af9bbdf6b79720f3df50e9d4cb89f50c6e16c8f4e7d0859397"
+      "sha256": "2af604e05067edb2bdd650a23e5005468c3e4ec1ee2e086697060ac7cd6405e3"
     },
     "server/desk/answer.json": {
       "executable": false,
@@ -1422,6 +1422,11 @@
       "executable": false,
       "owner": "server",
       "sha256": "2066770261d4688da4a3cea95968a02b8f66dcab4c33d08c91723199beec8f1d"
+    },
+    "server/desk/ask_session_answer_by_opener.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "a8e4f6bcd55a007e4a336dc9582c89887ce0267eda0367f1e02be9711745f648"
     },
     "server/desk/ask_session_answer_decline.json": {
       "executable": false,
@@ -1497,6 +1502,11 @@
       "executable": false,
       "owner": "server",
       "sha256": "c519a928d0e3705687d07b76a46b1df69b6c19d45a62e2feade051e5e4e1e5c3"
+    },
+    "server/desk/fact_ask_answered_session_answer_by_opener.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "ee2e24d4e28761ac9598e7e1ade1da6acc28b948458a1c92aa31fbf1f31014bb"
     },
     "server/desk/fact_ask_answered_session_manage.json": {
       "executable": false,
@@ -1686,7 +1696,7 @@
     "server/refusals.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "bc6b0f4be4fa13c35615ba60037e74c5d907496297187e1797a748802f91b138"
+      "sha256": "26cc4780d994eda287c8151dc81d31de2d9e5c67e04aaed6ac0245a01585730a"
     },
     "server/refused.jsonl": {
       "executable": false,
@@ -2516,7 +2526,7 @@
     "server/work_sessions/join.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "891d0549ad2d1b933eff52790871b9687f397ac54c0f382c5534bd861f341220"
+      "sha256": "07c7aa68edb7878445d7adbbd1cbdf8216c47981ef5d98659beba46b0e4ed875"
     },
     "server/work_sessions/lease_take.json": {
       "executable": false,
@@ -3071,13 +3081,13 @@
     "window/protocol.gen.ts": {
       "executable": false,
       "owner": "core",
-      "sha256": "f10ab650ada894d280c3af69bc2ea3b29e06d00a60d3e66fd322d6082f2203f9"
+      "sha256": "c6b80a48dab20c6821daca0b9946fcce049e7d976a05f65afd241d87410abc68"
     }
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 25,
-  "source_commit": "71ce4c118f4b2f7c3dac2d746253ce25b835dbe3",
+  "number": 26,
+  "source_commit": "3ddfd0874368e868f79e758aa14e92dbeb51921f",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

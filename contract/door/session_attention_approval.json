@@ -4,6 +4,7 @@
       "archived_at": null,
       "attention": {
         "request": {
+          "action": "Edit a file: /tmp/recorded/README.md",
           "call_id": "call_fake_1",
           "changes": [
             {
