@@ -196,6 +196,6 @@ struct StartButton: View {
             Text("Start").fontWeight(.semibold).foregroundStyle(ready ? Theme.accent : Theme.inkFaint)
         }
         .allowsHitTesting(ready)
-        .accessibilityHint(ready ? "" : "Write what the agent should do first")
+        .accessibilityValue(ready ? "" : "Not ready")
     }
 }

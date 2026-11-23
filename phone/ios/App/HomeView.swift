@@ -19,8 +19,9 @@ struct HomeView: View {
                 onUndo: { Task { await home.undoLast() } },
                 onSettings: { settings = true },
                 // A new thread starts on a Mac one of the person's threads
-                // reaches, so with none there is nothing to offer.
-                onCompose: home.loaded && !home.macs().isEmpty ? { composing = true } : nil
+                // names, so an empty Home has none to offer. With threads but
+                // no Mac awake the button stays, and its sheet says why.
+                onCompose: home.loaded && !home.rows.isEmpty ? { composing = true } : nil
             )
                 .navigationTitle("Home")
                 .navigationDestination(for: HomeRow.self) { row in
@@ -58,7 +59,7 @@ struct HomeList: View {
     let onUndo: () -> Void
     /// Nil where there is no Settings page to open.
     let onSettings: (() -> Void)?
-    /// Nil where no Mac can take a new thread: the button is not drawn.
+    /// Nil on an empty Home, which knows no Mac: the button is not drawn.
     let onCompose: (() -> Void)?
     /// Set by Showcase: the filter to draw with, in place of the remembered one.
     private let preset: HomeListPreset?
@@ -273,6 +274,8 @@ struct HomeList: View {
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
           }
+          // The button keeps the trailing corner whether or not a notice shows.
+          .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .animation(.default, value: undo)
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Title, branch or project")
