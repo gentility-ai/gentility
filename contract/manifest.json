@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "20d2add851bf39edcc6b5e830930f962db7e19dffa2cab8610eed551eda6c302"
+      "sha256": "932ab0a0e4191d32c0af7b3f565b7b180dbe9869378abc5816f9add54b806e7f"
     },
     "config_change/README.md": {
       "executable": false,
@@ -2791,7 +2791,7 @@
     "server_tools.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "2e31f5dbe9868dc5b7fe0778b09be3cee4cd7f1a2d95d0b6d747b3520b9421b2"
+      "sha256": "aaa3c6de3ca719714ffd6caae9c134fadb8b755a9e36bc4e74cd673a7ed4584c"
     },
     "shared/management_waits.json": {
       "executable": false,
@@ -3086,8 +3086,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 26,
-  "source_commit": "3ddfd0874368e868f79e758aa14e92dbeb51921f",
+  "number": 27,
+  "source_commit": "1c9c9e7ff474261f3b6e77d50d5479960eb967ca",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

@@ -13,6 +13,7 @@
     "board_retire",
     "brief_list",
     "brief_read",
+    "db_access",
     "db_browse",
     "db_create",
     "db_delete",
