@@ -317,6 +317,18 @@ final class LoopersTests: XCTestCase {
         XCTAssertEqual(model.loopers.map(\.name), ["Triage"], "the last list is kept")
     }
 
+    func testAReadAskedForWhileOneIsGoingWaitsForIt() async {
+        let lobby = FakeLooperLobby()
+        lobby.rows["o-1"] = [row("a", "Triage")]
+        let model = LoopersModel(lobby: lobby)
+        async let first: Void = model.refresh()
+        async let second: Void = model.refresh()
+        _ = await (first, second)
+        XCTAssertEqual(model.loopers.map(\.name), ["Triage"], "whichever returned, the list is read")
+        XCTAssertNotNil(model.looper(id: "a"))
+        XCTAssertEqual(LooperCopy.tryAgain, "Try again")
+    }
+
     func testAPageWhoseRunsFailToLoadSaysSoApartFromAPress() async {
         let lobby = FakeLooperLobby()
         lobby.runs["a"] = [LooperRunRow(id: "r1", number: 1, status: "completed")]

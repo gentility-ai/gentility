@@ -207,6 +207,7 @@ public enum LooperCopy {
     public static let answerOnWeb = "Answer this one on the web."
     public static let notYours = "This run belongs to a looper that is not yours. It opens on the web."
     public static let opensOnWeb = "This run opens on the web."
+    public static let tryAgain = "Try again"
 
     /// A run with nothing to show: still going, or finished without a word.
     public static func nothingSaid(going: Bool) -> String {
@@ -236,7 +237,7 @@ public final class LoopersModel: ObservableObject {
     private let lobby: LooperLobby
     private let now: @Sendable () -> Date
     private(set) var personID: String?
-    private var refreshing = false
+    private var reading: Task<Void, Never>?
 
     public init(lobby: LooperLobby, now: @escaping @Sendable () -> Date = { Date() }) {
         self.lobby = lobby
@@ -252,10 +253,17 @@ public final class LoopersModel: ObservableObject {
         }
     }
 
+    /// Reads the list. A call made while a read is going waits for that
+    /// read, so whoever asked may trust the list when this returns.
     public func refresh() async {
-        guard !refreshing else { return }
-        refreshing = true
-        defer { refreshing = false }
+        if let reading { await reading.value; return }
+        let task = Task { await read() }
+        reading = task
+        await task.value
+        reading = nil
+    }
+
+    private func read() async {
         do {
             let organizations = try await lobby.organizations()
             personID = organizations.person.id

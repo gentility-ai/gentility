@@ -107,7 +107,7 @@ struct Showcase: View {
         "search", "search-empty", "search-none", "loopers", "loopers-empty", "loopers-loading", "loopers-failed", "loopers-stale", "loopers-long",
         "looper", "looper-asking", "looper-refused", "looper-new", "looper-loading", "looper-busy", "looper-failed", "looper-started", "looper-typed",
         "run", "run-asking", "run-loading", "run-load-failed", "run-failed", "run-one-tool", "run-private", "run-web", "run-refused", "run-quiet",
-        "run-landing-loading", "run-landing-not-yours", "looper-edit", "looper-edit-empty", "looper-edit-refused", "looper-edit-ready", "looper-edit-manual", "tabs-pushed", "conversation", "f4", "f4-waiting", "link-unavailable", "no-door", "lost",
+        "run-landing-loading", "run-landing-not-yours", "run-landing-failed", "run-landing-web", "looper-edit", "looper-edit-empty", "looper-edit-refused", "looper-edit-ready", "looper-edit-manual", "tabs-pushed", "conversation", "f4", "f4-waiting", "link-unavailable", "no-door", "lost",
         "idle", "approval", "approval-three", "approval-short", "show-all", "question", "question-tall", "link", "queued", "steer-refused",
         "requested-compacting", "requested-waiting",
         "elsewhere", "redial", "unopened-answer", "wrong-store", "ended", "ended-words",
@@ -181,13 +181,12 @@ struct Showcase: View {
                     failure: screen == "run-refused" ? LooperRefusal.sentence(LobbyError.refused("not_open")) : nil, notice: nil
                 )
             }
-        case "run-landing-loading", "run-landing-not-yours":
+        case "run-landing-loading", "run-landing-not-yours", "run-landing-failed", "run-landing-web":
             pushed("Morning triage #42", from: "Threads") {
-                if screen == "run-landing-loading" {
-                    ProgressView()
-                } else {
-                    Vacant(glyph: "arrow.triangle.2.circlepath", title: "Morning triage #42", line: LooperCopy.notYours)
-                }
+                RunLandingNotice(
+                    title: "Morning triage #42",
+                    state: screen == "run-landing-loading" ? .loading : screen == "run-landing-failed" ? .failed("Can't reach the server. Try again.") : screen == "run-landing-web" ? .opensOnWeb : .notYours
+                )
             }
         case "looper-edit", "looper-edit-empty", "looper-edit-refused", "looper-edit-ready", "looper-edit-manual":
             NavigationStack {

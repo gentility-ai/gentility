@@ -21,6 +21,8 @@ struct LoopersTab: View {
                     LoopersScreen(model: loopers)
                 } else {
                     Vacant(glyph: "arrow.triangle.2.circlepath", title: "No loopers yet", line: "Make one on the web and it shows here.")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                        .background(Theme.ground)
                 }
             }
             .navigationTitle("Loopers")
@@ -140,7 +142,7 @@ struct LooperRunLanding: View {
             if let loopers = app.loopers {
                 Landing(loopers: loopers, looperID: row.looperID, title: row.title)
             } else {
-                Vacant(glyph: "arrow.triangle.2.circlepath", title: row.title, line: LooperCopy.opensOnWeb)
+                RunLandingNotice(title: row.title, state: .opensOnWeb)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -151,6 +153,9 @@ struct LooperRunLanding: View {
         let looperID: String?
         let title: String
         @State private var opened: LooperRunRow?
+        /// This page's own read of the list has come back. Until it has,
+        /// the list may be old, and cannot say a looper is not the person's.
+        @State private var read = false
 
         var body: some View {
             Group {
@@ -159,17 +164,55 @@ struct LooperRunLanding: View {
                         .navigationDestination(item: $opened) { run in
                             LooperRunScreen(model: loopers.page(for: looper).runModel(for: run))
                         }
+                } else if !read {
+                    RunLandingNotice(title: title, state: .loading)
                 } else if let line = loopers.line {
-                    // A list that did not load cannot say whose the looper is.
-                    Vacant(glyph: "exclamationmark.icloud", title: title, line: line)
-                } else if loopers.loaded {
-                    Vacant(glyph: "arrow.triangle.2.circlepath", title: title, line: LooperCopy.notYours)
+                    RunLandingNotice(title: title, state: .failed(line)) { Task { await load() } }
                 } else {
-                    ProgressView()
+                    RunLandingNotice(title: title, state: .notYours)
                 }
             }
-            .task { if !loopers.loaded { await loopers.refresh() } }
+            .task { await load() }
         }
+
+        private func load() async {
+            read = false
+            await loopers.refresh()
+            read = true
+        }
+    }
+}
+
+/// What the page a run opens from Threads says while it has no looper to
+/// show, from plain values.
+struct RunLandingNotice: View {
+    enum State: Equatable { case loading, failed(String), notYours, opensOnWeb }
+
+    let title: String
+    let state: State
+    var onRetry: () -> Void = {}
+
+    var body: some View {
+        VStack(spacing: Theme.Space.l) {
+            switch state {
+            case .loading:
+                ProgressView().padding(.top, 72)
+            case .failed(let line):
+                Vacant(glyph: "exclamationmark.icloud", title: title, line: line)
+                Button(action: onRetry) {
+                    Text(LooperCopy.tryAgain).fontWeight(.semibold).foregroundStyle(Theme.onAccent)
+                        .padding(.horizontal, Theme.Space.xl).frame(minHeight: Theme.touch)
+                        .background(Theme.accent, in: RoundedRectangle(cornerRadius: Theme.Corner.medium, style: .continuous))
+                }
+                .buttonStyle(.plain)
+            case .notYours:
+                Vacant(glyph: "arrow.triangle.2.circlepath", title: title, line: LooperCopy.notYours)
+            case .opensOnWeb:
+                Vacant(glyph: "arrow.triangle.2.circlepath", title: title, line: LooperCopy.opensOnWeb)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(Theme.ground)
     }
 }
 
