@@ -5,6 +5,7 @@
       "unknown_event"
     ],
     "answer": [
+      "computer_install_refused",
       "desk_login_required",
       "expired",
       "not_asking",
@@ -52,6 +53,7 @@
       "wrong_channel"
     ],
     "fact": [
+      "computer_install_refused",
       "forbidden",
       "invalid",
       "malformed_batch",
@@ -59,15 +61,18 @@
     ],
     "heartbeat": [],
     "join": [
+      "computer_install_refused",
       "organization_closed",
       "unauthorized"
     ],
     "phone_claim_mint": [
+      "computer_install_refused",
       "desk_login_required",
       "not_your_machine",
       "person_required"
     ],
     "presence": [
+      "computer_install_refused",
       "desk_login_required",
       "person_required"
     ],
@@ -103,6 +108,7 @@
     "feed": [],
     "history": [],
     "join": [
+      "computer_install_refused",
       "organization_closed",
       "superseded",
       "unauthorized"
@@ -174,6 +180,7 @@
       "forbidden"
     ],
     "join": [
+      "computer_install_refused",
       "unauthorized"
     ],
     "mute": [
@@ -192,6 +199,7 @@
   },
   "rpc": {
     "*": [
+      "computer_install_refused",
       "forbidden",
       "hello_required",
       "malformed_payload",
@@ -273,6 +281,7 @@
       "too_large"
     ],
     "join": [
+      "computer_install_refused",
       "forbidden",
       "organization_closed",
       "superseded",
@@ -429,6 +438,7 @@
       "session_running"
     ],
     "join": [
+      "computer_install_refused",
       "organization_closed",
       "superseded",
       "unauthorized"

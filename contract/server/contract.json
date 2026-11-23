@@ -1484,6 +1484,7 @@
         }
       },
       "x-refusals": [
+        "computer_install_refused",
         "organization_closed",
         "revoked",
         "superseded",
@@ -1661,6 +1662,7 @@
         }
       },
       "x-refusals": [
+        "computer_install_refused",
         "organization_closed",
         "revoked",
         "superseded",
@@ -2084,6 +2086,7 @@
         }
       },
       "x-refusals": [
+        "computer_install_refused",
         "desk_login_required",
         "expired",
         "not_asking",
@@ -2173,6 +2176,7 @@
         }
       },
       "x-refusals": [
+        "computer_install_refused",
         "forbidden",
         "invalid",
         "malformed_batch",
@@ -2234,6 +2238,7 @@
         }
       },
       "x-refusals": [
+        "computer_install_refused",
         "organization_closed",
         "unauthorized"
       ]
@@ -2271,6 +2276,7 @@
         }
       },
       "x-refusals": [
+        "computer_install_refused",
         "desk_login_required",
         "not_your_machine",
         "person_required"
@@ -2317,6 +2323,7 @@
         }
       },
       "x-refusals": [
+        "computer_install_refused",
         "desk_login_required",
         "person_required"
       ]
@@ -3054,6 +3061,7 @@
         }
       },
       "x-refusals": [
+        "computer_install_refused",
         "unauthorized"
       ]
     },
@@ -5240,6 +5248,7 @@
         }
       },
       "x-refusals": [
+        "computer_install_refused",
         "forbidden",
         "organization_closed",
         "revoked",
@@ -11390,6 +11399,7 @@
       "-32001": "any other refusal word"
     },
     "x-common-refusals": [
+      "computer_install_refused",
       "forbidden",
       "hello_required",
       "organization_closed"
