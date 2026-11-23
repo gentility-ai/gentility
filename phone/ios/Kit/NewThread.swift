@@ -377,7 +377,7 @@ public final class NewThreadModel: ObservableObject {
     static func say(_ error: Error, mac: String) -> String {
         switch error {
         case DoorError.refusal(let refusal):
-            return refusal.message.isEmpty ? "\(mac) refused (\(refusal.code))." : refusal.message
+            return refusal.message.isEmpty ? "\(mac) could not start the thread. Try again." : refusal.message
         case DoorError.timeout:
             return "\(mac) did not answer in time. Try again."
         case DoorError.closed:

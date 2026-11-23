@@ -35,10 +35,14 @@ public struct StatusStrip: Equatable, Sendable {
     /// it only once that end has scrolled out of sight. While connecting
     /// the transcript holds still (`ToolRun.spins`), and a compaction's
     /// line does not move, so the strip is their one sign.
-    public func spins(atEnd: Bool) -> Bool {
+    ///
+    /// `stops`: the strip offers the stop button, which stands where a
+    /// working turn's spinner would, its clock the sign of life beside it.
+    /// A compaction has no clock, so it keeps its spinner beside the stop.
+    public func spins(atEnd: Bool, stops: Bool = false) -> Bool {
         switch doing {
         case .connecting, .compacting: true
-        case .working: !atEnd
+        case .working: !atEnd && !stops
         case nil: false
         }
     }

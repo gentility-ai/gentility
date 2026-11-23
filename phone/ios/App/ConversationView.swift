@@ -212,8 +212,9 @@ struct TranscriptScreen: View {
 private struct StripView: View {
     let strip: StatusStrip?
     let atEnd: Bool
-    /// Stops the running turn. Its button stands where the spinner would:
-    /// the clock beside it is the sign of life.
+    /// Stops the running turn. Its button stands where a working turn's
+    /// spinner would: the clock beside it is the sign of life. A compaction
+    /// has no clock and keeps its spinner (`StatusStrip.spins`).
     let onStop: (() -> Void)?
     let onJump: () -> Void
 
@@ -239,7 +240,7 @@ private struct StripView: View {
                 Button(action: onJump) {
                     HStack(spacing: 10) {
                         if let strip {
-                            if strip.spins(atEnd: atEnd), !stops { ProgressView().controlSize(.small) }
+                            if strip.spins(atEnd: atEnd, stops: stops) { ProgressView().controlSize(.small) }
                             TimelineView(.periodic(from: .now, by: 1)) { context in
                                 Text(strip.words(now: context.date)).monospacedDigit()
                             }

@@ -30,15 +30,13 @@ struct NewThreadView: View {
                     if model.sending {
                         ProgressView()
                     } else {
-                        Button("Start") {
+                        StartButton(ready: model.canSend) {
                             Task {
                                 guard let started = await model.send() else { return }
                                 onStarted(started)
                                 dismiss()
                             }
                         }
-                        .fontWeight(.semibold)
-                        .disabled(!model.canSend)
                     }
                 }
             }
@@ -76,7 +74,7 @@ struct NewThreadForm: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Theme.Space.l) {
-                TextField("What should the agent do?", text: $text, axis: .vertical)
+                TextField("", text: $text, prompt: Text("What should the agent do?").foregroundStyle(Theme.inkFaint), axis: .vertical)
                     .lineLimit(4...12)
                     .focused(typing)
                     .padding(Theme.Space.m)
@@ -184,5 +182,20 @@ private struct ChoiceRow<Choices: View>: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(label): \(value)")
+    }
+}
+
+/// The form's Start. Before there is anything to send it takes no tap and
+/// wears faint ink: not `disabled`, which dims the word below 4.5:1.
+struct StartButton: View {
+    let ready: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text("Start").fontWeight(.semibold).foregroundStyle(ready ? Theme.accent : Theme.inkFaint)
+        }
+        .allowsHitTesting(ready)
+        .accessibilityHint(ready ? "" : "Write what the agent should do first")
     }
 }

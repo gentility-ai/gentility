@@ -82,10 +82,10 @@ struct Showcase: View {
         "idle", "approval", "approval-three", "approval-short", "show-all", "question", "question-tall", "link", "queued", "steer-refused",
         "requested-compacting", "requested-waiting",
         "elsewhere", "redial", "unopened-answer", "wrong-store", "ended", "ended-words",
-        "tools", "tools-running", "strip-working", "strip-scrolled", "strip-reconnecting", "strip-reconnecting-tools", "strip-tall", "strip-compacting",
+        "tools", "tools-running", "strip-working", "strip-scrolled", "strip-reconnecting", "strip-reconnecting-tools", "strip-tall", "strip-compacting", "strip-compacting-stop",
         "attach-menu", "attach-tray", "attach-failed", "attach-old-mac",
         "transcript-images", "transcript-markdown", "transcript-streaming", "transcript-long", "transcript-remote-image", "image-viewer",
-        "f1", "f2", "f3", "f5", "lapsed", "unjoined", "new-thread", "new-thread-refused", "settings", "settings-off",
+        "f1", "f2", "f3", "f5", "lapsed", "unjoined", "new-thread", "new-thread-refused", "new-thread-blank", "settings", "settings-off",
     ]
 
     let screen: String
@@ -171,6 +171,11 @@ struct Showcase: View {
                                           requested: RequestedPrompt(id: "p", text: "now wire the pairing screen to the door", compacting: true), compacting: true,
                                           strip: StatusStrip(phase: .open, held: true, working: true, compacting: true, since: Date(timeIntervalSinceNow: -65), queued: 1),
                                           onRetry: {}), "Phone pairing spec")
+        case "strip-compacting-stop":
+            conversation(TranscriptScreen(turns: Self.turns + [Turn(number: 2, lines: [.compaction(id: "k", text: "Compacting context…")])], phase: .open, asleepLines: [],
+                                          acting: Self.acting(working: true), compacting: true,
+                                          strip: StatusStrip(phase: .open, held: true, working: true, compacting: true, since: Date(timeIntervalSinceNow: -65), queued: 0),
+                                          onStop: {}, onRetry: {}), "Phone pairing spec")
         case "strip-reconnecting":
             conversation(TranscriptScreen(turns: Self.turns, phase: .connecting, asleepLines: [], acting: Self.acting(open: false, working: true),
                                           strip: StatusStrip(phase: .connecting, held: true, working: true, since: nil, queued: 0), onRetry: {}), "Phone pairing spec")
@@ -191,6 +196,7 @@ struct Showcase: View {
         case "f3": FailureView(failure: .cannotJoin("no_gateway"), onAction: {})
         case "f5": FailureView(failure: .removed, onAction: {})
         case "new-thread", "new-thread-refused": NewThreadShowcase(refused: screen == "new-thread-refused")
+        case "new-thread-blank": NewThreadShowcase(refused: false, text: "")
         case "settings", "settings-off":
             NavigationStack {
                 SettingsPage(
@@ -210,9 +216,8 @@ struct Showcase: View {
 
     private func home(notificationsOff: Bool, query: String = "", open: Set<Shelf> = [], snoozing: HomeRow? = nil, undo: Undo? = nil, preset: HomeListPreset = HomeListPreset(project: "")) -> some View {
         NavigationStack {
-            HomeList(rows: Self.rows, line: nil, empty: false, joining: false, notificationsOff: notificationsOff, undo: undo, query: query, open: open, snoozing: snoozing, preset: preset)
+            HomeList(rows: Self.rows, line: nil, empty: false, joining: false, notificationsOff: notificationsOff, undo: undo, onCompose: {}, query: query, open: open, snoozing: snoozing, preset: preset)
                 .navigationTitle("Home")
-                .overlay(alignment: .bottomTrailing) { ComposeButton {} }
         }
     }
 
@@ -453,11 +458,16 @@ struct Showcase: View {
 /// The new-thread sheet over sample choices.
 private struct NewThreadShowcase: View {
     let refused: Bool
-    @State private var text = "Find why the recap fires twice and fix it"
+    @State private var text: String
     @State private var newBranch = true
     @State private var model: String? = nil
     @State private var effort: String? = nil
     @FocusState private var typing: Bool
+
+    init(refused: Bool, text: String = "Find why the recap fires twice and fix it") {
+        self.refused = refused
+        _text = State(initialValue: text)
+    }
 
     var body: some View {
         let macs = [MacChoice(organizationID: "o", machineID: "m", label: "Morgan's MacBook Pro", address: "", port: 0),
@@ -475,7 +485,7 @@ private struct NewThreadShowcase: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") {}.foregroundStyle(Theme.inkSoft) }
-                ToolbarItem(placement: .confirmationAction) { Button("Start") {}.fontWeight(.semibold) }
+                ToolbarItem(placement: .confirmationAction) { StartButton(ready: !text.isEmpty) {} }
             }
         }
     }

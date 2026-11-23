@@ -17,7 +17,10 @@ struct HomeView: View {
                 undo: home.undo,
                 onAct: { action, row in Task { await home.act(action, on: row) } },
                 onUndo: { Task { await home.undoLast() } },
-                onSettings: { settings = true }
+                onSettings: { settings = true },
+                // A new thread starts on a Mac one of the person's threads
+                // reaches, so with none there is nothing to offer.
+                onCompose: home.loaded && !home.macs().isEmpty ? { composing = true } : nil
             )
                 .navigationTitle("Home")
                 .navigationDestination(for: HomeRow.self) { row in
@@ -28,9 +31,6 @@ struct HomeView: View {
                 .navigationDestination(isPresented: $settings) { SettingsView(app: app) }
                 .refreshable { await home.refresh() }
                 .task { await app.homeAppeared() }
-                .overlay(alignment: .bottomTrailing) {
-                    if home.loaded { ComposeButton { composing = true } }
-                }
         }
         .sheet(isPresented: $composing) {
             NewThreadView(model: app.newThread()) { started in
@@ -58,6 +58,8 @@ struct HomeList: View {
     let onUndo: () -> Void
     /// Nil where there is no Settings page to open.
     let onSettings: (() -> Void)?
+    /// Nil where no Mac can take a new thread: the button is not drawn.
+    let onCompose: (() -> Void)?
     /// Set by Showcase: the filter to draw with, in place of the remembered one.
     private let preset: HomeListPreset?
     private let tip = HomeActionsTip()
@@ -76,7 +78,7 @@ struct HomeList: View {
     /// The row whose snooze times are being offered.
     @State private var snoozing: HomeRow?
 
-    init(rows: [HomeRow], line: String?, empty: Bool, joining: Bool, notificationsOff: Bool, undo: Undo? = nil, onAct: @escaping (HomeAction, HomeRow) -> Void = { _, _ in }, onUndo: @escaping () -> Void = {}, onSettings: (() -> Void)? = nil, query: String = "", open: Set<Shelf> = [], snoozing: HomeRow? = nil, preset: HomeListPreset? = nil) {
+    init(rows: [HomeRow], line: String?, empty: Bool, joining: Bool, notificationsOff: Bool, undo: Undo? = nil, onAct: @escaping (HomeAction, HomeRow) -> Void = { _, _ in }, onUndo: @escaping () -> Void = {}, onSettings: (() -> Void)? = nil, onCompose: (() -> Void)? = nil, query: String = "", open: Set<Shelf> = [], snoozing: HomeRow? = nil, preset: HomeListPreset? = nil) {
         self.rows = rows
         self.line = line
         self.empty = empty
@@ -86,6 +88,7 @@ struct HomeList: View {
         self.onAct = onAct
         self.onUndo = onUndo
         self.onSettings = onSettings
+        self.onCompose = onCompose
         self.preset = preset
         _snoozing = State(initialValue: snoozing)
         _query = State(initialValue: query)
@@ -251,7 +254,11 @@ struct HomeList: View {
                 Button("\(preset.label) · \(preset.when)") { act(.snooze(preset.until), row) }
             }
         }
+        // The compose button and the undo notice share the inset, so neither
+        // covers the other and the list's last row clears both.
         .safeAreaInset(edge: .bottom) {
+          VStack(alignment: .trailing, spacing: Theme.Space.s) {
+            if let onCompose { ComposeButton(action: onCompose) }
             if let undo {
                 HStack {
                     Text(undo.words)
@@ -265,6 +272,7 @@ struct HomeList: View {
                 .padding(.horizontal, Theme.Space.m).padding(.bottom, 4)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
+          }
         }
         .animation(.default, value: undo)
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Title, branch or project")
@@ -682,7 +690,7 @@ struct ComposeButton: View {
                 .background(Theme.accent, in: Circle())
                 .shadow(color: .black.opacity(0.25), radius: 12, y: 4)
         }
-        .padding(.trailing, Theme.Space.l).padding(.bottom, Theme.Space.l)
+        .padding(.trailing, Theme.Space.l).padding(.bottom, Theme.Space.s)
         .accessibilityLabel("New thread")
     }
 }

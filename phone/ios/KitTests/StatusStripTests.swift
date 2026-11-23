@@ -43,6 +43,8 @@ final class StatusStripTests: XCTestCase {
         XCTAssertTrue(working.spins(atEnd: false))
         let compacting = try XCTUnwrap(StatusStrip(phase: .open, held: true, working: true, compacting: true, since: nil, queued: 0))
         XCTAssertTrue(compacting.spins(atEnd: true), "a compaction's line does not move")
+        XCTAssertFalse(working.spins(atEnd: false, stops: true), "the clock beside the stop is the sign")
+        XCTAssertTrue(compacting.spins(atEnd: true, stops: true), "a compaction has no clock, so the stop does not take its spinner")
         let connecting = try XCTUnwrap(StatusStrip(phase: .connecting, held: true, working: false, since: nil, queued: 0))
         XCTAssertTrue(connecting.spins(atEnd: true))
         let queued = try XCTUnwrap(StatusStrip(phase: .open, held: true, working: false, since: nil, queued: 1))

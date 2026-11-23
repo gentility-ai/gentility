@@ -92,7 +92,7 @@ struct Composer: View {
             }
             HStack(alignment: .bottom, spacing: 8) {
                 AttachButton(acting: acting)
-                TextField(acting.working ? "Steer the turn" : "Message", text: $draft, axis: .vertical)
+                TextField("", text: $draft, prompt: Text(acting.working ? "Steer the turn" : "Message").foregroundStyle(Theme.inkFaint), axis: .vertical)
                     .lineLimit(1...5)
                     .padding(.horizontal, 14).padding(.vertical, 9)
                     .frame(minHeight: 40)
