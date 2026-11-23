@@ -84,12 +84,12 @@ struct TranscriptImage: View {
 
     var body: some View {
         if request == .unsupported {
-            Text(alt.isEmpty ? src : alt).foregroundStyle(.secondary)
+            Text(alt.isEmpty ? src : alt).foregroundStyle(Theme.inkSoft)
         } else {
             VStack(alignment: .leading, spacing: 4) {
                 content
                 if let title, !title.isEmpty {
-                    Text(title).font(.caption).foregroundStyle(.secondary)
+                    Text(title).font(.caption).foregroundStyle(Theme.inkSoft)
                 }
             }
             .task(id: "\(request.hashValue)-\(context.open)") { await load.load(request, context, edge: 1024) }
@@ -160,7 +160,7 @@ private struct ImageFailure: View {
                     .font(.title2)
                 Text(words).font(.footnote).multilineTextAlignment(.center)
             }
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Theme.inkSoft)
             .padding(8)
         }
         .contentShape(Rectangle())
@@ -187,10 +187,10 @@ private struct RemoteCard: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: "globe").font(.title2).foregroundStyle(.secondary)
+            Image(systemName: "globe").font(.title2).foregroundStyle(Theme.inkSoft)
             VStack(alignment: .leading, spacing: 2) {
                 Text(alt.isEmpty ? "Web image" : alt).lineLimit(2)
-                if let host { Text(host).font(.caption).foregroundStyle(.secondary) }
+                if let host { Text(host).font(.caption).foregroundStyle(Theme.inkSoft) }
             }
             Spacer(minLength: 8)
             Button("Load image", action: onLoad)
@@ -286,7 +286,7 @@ private struct FileChip: View {
             Image(systemName: Self.symbol(file.kind))
             Text(file.name).lineLimit(1).truncationMode(.middle)
             if let size = file.size {
-                Text(ByteCountFormatter.string(fromByteCount: Int64(size), countStyle: .file)).foregroundStyle(.secondary)
+                Text(ByteCountFormatter.string(fromByteCount: Int64(size), countStyle: .file)).foregroundStyle(Theme.inkSoft)
             }
         }
         .font(.footnote)

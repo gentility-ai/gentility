@@ -36,6 +36,15 @@ enum Theme {
     static let good = dynamic(light: 0x1A7A42, dark: 0x4CC38A)
     static let bad = dynamic(light: 0xC22833, dark: 0xF2686F)
 
+    // MARK: swipe actions
+
+    /// The ground of a row's swipe action. The system draws its label white
+    /// in both themes, so each keeps its light step in both: white reads on
+    /// it at 4.5:1 or better, which it would not on the dark steps.
+    static let swipeGood = dynamic(light: 0x1A7A42, dark: 0x1A7A42)
+    static let swipeRest = dynamic(light: 0x4F5BD5, dark: 0x4F5BD5)
+    static let swipeWake = dynamic(light: 0x9E5800, dark: 0x9E5800)
+
     // MARK: measure
 
     enum Space {

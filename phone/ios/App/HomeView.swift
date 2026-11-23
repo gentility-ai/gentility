@@ -135,11 +135,11 @@ struct HomeList: View {
                 Section {
                     if joining {
                         Label("Joining your network…", systemImage: "network")
-                            .font(.footnote).foregroundStyle(.secondary)
+                            .font(.footnote).foregroundStyle(Theme.inkSoft)
                     }
                     if let line {
                         Label(line, systemImage: "exclamationmark.icloud")
-                            .font(.footnote).foregroundStyle(.secondary)
+                            .font(.footnote).foregroundStyle(Theme.inkSoft)
                     }
                     if notificationsOff {
                         Button {
@@ -223,7 +223,7 @@ struct HomeList: View {
             if !shown.isEmpty {
                 Section {
                     HStack(spacing: 4) {
-                        Text("Showing \(shown) only ·").foregroundStyle(.secondary)
+                        Text("Showing \(shown) only ·").foregroundStyle(Theme.inkSoft)
                         Button("Show all") { clear() }
                             .buttonStyle(.borderless)
                     }
@@ -366,13 +366,13 @@ extension HomeList {
     private func button(_ action: HomeAction, _ row: HomeRow) -> some View {
         switch action {
         case .settle:
-            Button { act(.settle, row) } label: { Label("Settle", systemImage: "checkmark.circle") }.tint(.green)
+            Button { act(.settle, row) } label: { Label("Settle", systemImage: "checkmark.circle") }.tint(Theme.swipeGood)
         case .unsettle:
-            Button { act(.unsettle, row) } label: { Label("Unsettle", systemImage: "arrow.uturn.backward.circle") }.tint(.green)
+            Button { act(.unsettle, row) } label: { Label("Unsettle", systemImage: "arrow.uturn.backward.circle") }.tint(Theme.swipeGood)
         case .snooze:
-            Button { snoozing = row } label: { Label("Snooze", systemImage: "moon.zzz") }.tint(.indigo)
+            Button { snoozing = row } label: { Label("Snooze", systemImage: "moon.zzz") }.tint(Theme.swipeRest)
         case .wake:
-            Button { act(.wake, row) } label: { Label("Wake", systemImage: "sun.max") }.tint(.orange)
+            Button { act(.wake, row) } label: { Label("Wake", systemImage: "sun.max") }.tint(Theme.swipeWake)
         case .archive:
             Button(role: .destructive) { act(.archive, row) } label: { Label("Archive", systemImage: "archivebox") }
         case .unarchive:

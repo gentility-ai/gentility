@@ -330,9 +330,9 @@ private struct EndView: View {
 
     private var color: Color {
         switch end.tone {
-        case .stopped: return .secondary
-        case .limited: return .orange
-        case .failed: return .red
+        case .stopped: return Theme.inkSoft
+        case .limited: return Theme.attention
+        case .failed: return Theme.bad
         }
     }
 }

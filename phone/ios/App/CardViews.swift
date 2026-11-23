@@ -139,7 +139,7 @@ struct QuestionCard: View {
         VStack(alignment: .leading, spacing: 10) {
             if let request {
                 CappedScroll(cap: cap) {
-                    Text(heading(request)).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    Text(heading(request)).font(.caption.weight(.semibold)).foregroundStyle(Theme.inkSoft)
                     Text(request.message)
                     asked(request.mode)
                 }
@@ -166,7 +166,7 @@ struct QuestionCard: View {
                 FieldView(field: field, draft: $draft, problem: problems[field.name])
             }
         default:
-            Text("This question needs Desk on your Mac.").font(.footnote).foregroundStyle(.secondary)
+            Text("This question needs Desk on your Mac.").font(.footnote).foregroundStyle(Theme.inkSoft)
         }
     }
 
@@ -236,7 +236,7 @@ private struct FieldView: View {
                     Button { draft.picks[field.name] = option.value } label: {
                         HStack(alignment: .firstTextBaseline, spacing: 8) {
                             Image(systemName: picked ? "largecircle.fill.circle" : "circle")
-                                .foregroundStyle(picked ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                                .foregroundStyle(picked ? AnyShapeStyle(.tint) : AnyShapeStyle(Theme.inkSoft))
                             Text(option.title).foregroundStyle(.primary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -263,12 +263,12 @@ private struct FieldView: View {
             case .multiChoice:
                 EmptyView()
             }
-            if let problem { Text(problem).font(.caption).foregroundStyle(.red) }
+            if let problem { Text(problem).font(.caption).foregroundStyle(Theme.bad) }
         }
     }
 
     private var label: some View {
-        Text(field.required ? "\(field.label) *" : field.label).font(.footnote).foregroundStyle(.secondary)
+        Text(field.required ? "\(field.label) *" : field.label).font(.footnote).foregroundStyle(Theme.inkSoft)
     }
 
     private var text: Binding<String> {
@@ -305,7 +305,7 @@ private struct CardFoot: View {
             Label(chosen, systemImage: "checkmark.circle.fill").font(.footnote.weight(.semibold))
         }
         if card.sending || card.checking { ProgressView().controlSize(.small) }
-        if let note = card.note { Text(note).font(.footnote).foregroundStyle(.orange) }
+        if let note = card.note { Text(note).font(.footnote).foregroundStyle(Theme.attention) }
     }
 }
 

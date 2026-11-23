@@ -50,7 +50,7 @@ struct Foot: View {
     var body: some View {
         VStack(spacing: 8) {
             if let cleared = acting.cleared {
-                Text(cleared).font(.footnote).foregroundStyle(.secondary)
+                Text(cleared).font(.footnote).foregroundStyle(Theme.inkSoft)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             if let card = acting.card {
@@ -111,7 +111,7 @@ struct Composer: View {
                 .animation(Theme.motion, value: sendable)
             }
             if let uploading = acting.tray.uploadingLine {
-                Text(uploading).font(.footnote).foregroundStyle(.secondary).padding(.leading, 44)
+                Text(uploading).font(.footnote).foregroundStyle(Theme.inkSoft).padding(.leading, 44)
             }
             if acting.working {
                 // Sending steers the running turn; this waits for it to end.
@@ -166,13 +166,13 @@ private struct PendingLineView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
-                Image(systemName: "clock").foregroundStyle(.secondary).accessibilityLabel("Queued:")
+                Image(systemName: "clock").foregroundStyle(Theme.inkSoft).accessibilityLabel("Queued:")
                 Text(line.text).lineLimit(1)
                 Spacer(minLength: 8)
                 Button("Take back", action: onTakeBack)
             }
             if let note = line.note {
-                Text(note).font(.caption).foregroundStyle(.secondary).padding(.leading, 22)
+                Text(note).font(.caption).foregroundStyle(Theme.inkSoft).padding(.leading, 22)
             }
         }
         .font(.footnote)
