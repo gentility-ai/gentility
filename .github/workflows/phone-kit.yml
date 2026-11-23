@@ -61,6 +61,26 @@ jobs:
           # still coming up, and the first suite ran five to sixty times
           # slower than on a settled one.
           xcrun simctl bootstatus "$device" -b
-          xcodebuild test -project DeskPhone.xcodeproj -scheme DeskPhoneKit \
-            -destination "id=$device" -derivedDataPath ../build/kit-tests \
-            CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=
+          kit() {
+            xcodebuild "$1" -project DeskPhone.xcodeproj -scheme DeskPhoneKit \
+              -destination "id=$device" -derivedDataPath ../build/kit-tests \
+              CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM=
+          }
+          kit build-for-testing
+          # Run once more only where no test started and xcodebuild says the
+          # test host failed to install, launch or finish bootstrapping. On
+          # 2026-11-23 four of seven attempts on pull request 9 fell so: three
+          # with "Mach error -308 - (ipc/mig) server died" at install or
+          # launch, one with the launched host ended by SIGTERM before it
+          # finished bootstrapping. A run in which any test started stands as
+          # it fell, so a test that fails or hangs is never run again into a
+          # pass. The first guard reads XCTest's serial "Test Case … started"
+          # lines: Swift Testing or parallel testing would need another.
+          set -o pipefail
+          if kit test-without-building 2>&1 | tee ../build/kit-tests.log; then exit 0; fi
+          if grep -q "^Test Case .* started" ../build/kit-tests.log; then exit 1; fi
+          grep -qE "Failed to install or launch the test runner|never finished bootstrapping" ../build/kit-tests.log || exit 1
+          echo "::warning::No test started and the test host failed to launch; running the tests once more on a fresh boot."
+          xcrun simctl shutdown "$device" || true
+          xcrun simctl bootstatus "$device" -b
+          kit test-without-building
