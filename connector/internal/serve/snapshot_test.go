@@ -346,3 +346,51 @@ func TestNamedOrganizationsSkipsAGrantWithNoLabel(t *testing.T) {
 		t.Fatalf("organizations = %+v, want northwind named and acme not", got)
 	}
 }
+
+// A node whose heartbeats are not being taken writes down since when, and
+// clears it on the first one that lands: the snapshot is otherwise as fresh
+// on a node nothing can reach as on one that is well.
+func TestRecordWritesDownSinceWhenNoHeartbeatWasTaken(t *testing.T) {
+	store := &state.Store{Dir: t.TempDir()}
+	documents := newLastDocument()
+	documents.set(fromDocument(applied()))
+
+	first := time.Date(2026, 11, 21, 9, 55, 0, 0, time.UTC)
+	documents.beaten(errors.New("context deadline exceeded"), first)
+	documents.beaten(errors.New("context deadline exceeded"), first.Add(30*time.Second))
+
+	if err := record(store, documents.get(), tsnode.Report{}, nil, first.Add(31*time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	written, err := store.LoadStatus()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !written.UnheardSince.Equal(first) {
+		t.Fatalf("unheard_since = %v, want the first beat that failed, %v", written.UnheardSince, first)
+	}
+
+	documents.beaten(nil, first.Add(time.Minute))
+	if err := record(store, documents.get(), tsnode.Report{}, nil, first.Add(61*time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	written, err = store.LoadStatus()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !written.UnheardSince.IsZero() {
+		t.Fatalf("unheard_since = %v after a beat was taken, want none", written.UnheardSince)
+	}
+}
+
+// A new document must not forget that the heartbeats are failing.
+func TestANewDocumentKeepsSinceWhenNoHeartbeatWasTaken(t *testing.T) {
+	documents := newLastDocument()
+	since := time.Date(2026, 11, 21, 9, 55, 0, 0, time.UTC)
+	documents.beaten(errors.New("refused"), since)
+	documents.set(fromDocument(applied()))
+
+	if got := documents.get().UnheardSince; !got.Equal(since) {
+		t.Fatalf("unheard_since = %v after a document, want %v", got, since)
+	}
+}

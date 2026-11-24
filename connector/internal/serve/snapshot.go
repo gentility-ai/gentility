@@ -33,9 +33,13 @@ import (
 //
 // What crosses the mutex is a value whose slices are built once at set and
 // never mutated after, so the copy is a copy in every sense that matters here.
+//
+// It also holds since when the mothership has taken no heartbeat, which no
+// document decides and a new document must not forget.
 type lastDocument struct {
-	mu   sync.Mutex
-	half state.Status
+	mu      sync.Mutex
+	half    state.Status
+	unheard time.Time
 }
 
 func newLastDocument() *lastDocument { return &lastDocument{half: nothingApplied()} }
@@ -49,7 +53,23 @@ func (l *lastDocument) set(half state.Status) {
 func (l *lastDocument) get() state.Status {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	return l.half
+	half := l.half
+	half.UnheardSince = l.unheard
+	return half
+}
+
+// beaten is told how a heartbeat went. The first failure after a beat that
+// landed is the moment kept; later failures leave it, and a beat that lands
+// clears it.
+func (l *lastDocument) beaten(err error, now time.Time) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	switch {
+	case err == nil:
+		l.unheard = time.Time{}
+	case l.unheard.IsZero():
+		l.unheard = now
+	}
 }
 
 // nothingApplied is the document half of a node that holds no document yet.

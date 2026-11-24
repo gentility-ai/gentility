@@ -115,6 +115,10 @@ type Reporter struct {
 
 	// Log is where a failed beat goes. Nil is silence.
 	Log func(format string, args ...any)
+
+	// Beaten hears how each beat went: nil when the mothership took it. Nil
+	// is nobody listening. A beat cut short by the node stopping is not told.
+	Beaten func(err error)
 }
 
 // Run beats until ctx is cancelled, and returns ctx.Err() when it is.
@@ -154,7 +158,11 @@ func (r *Reporter) Run(ctx context.Context) error {
 			continue
 		}
 
-		switch err := r.Beat(ctx); {
+		err := r.Beat(ctx)
+		if r.Beaten != nil && ctx.Err() == nil {
+			r.Beaten(err)
+		}
+		switch {
 		case err != nil && ctx.Err() == nil:
 			r.logf("%v", err)
 		case err == nil && !beaten:

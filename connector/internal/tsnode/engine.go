@@ -11,7 +11,7 @@ package tsnode
 //
 // The glue upstream is package main, so it is copied in shape, not imported,
 // and tracking it is ours. It follows, at tailscale.com =>
-// github.com/gentility-ai/genscale v1.101.0-pre.6net.7:
+// github.com/gentility-ai/genscale v1.101.0-pre.6net.8:
 //
 //   - cmd/tailscaled/tailscaled.go run: tsd.NewSystem, then netmon.New, then
 //     dns.CleanUp (~481), which always runs before the engine starts.

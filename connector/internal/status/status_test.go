@@ -37,6 +37,7 @@ func TestRenderGoldens(t *testing.T) {
 		{"mixed_paths", mixedPaths()},
 		{"older_daemon", olderDaemon()},
 		{"no_peers", noPeers()},
+		{"unheard", unheard()},
 	}
 
 	for _, c := range cases {
@@ -403,6 +404,12 @@ func stale() Snapshot {
 	return s
 }
 
+func unheard() Snapshot {
+	s := relayed()
+	s.Unheard = 5*time.Hour + 31*time.Minute
+	return s
+}
+
 func joined() Snapshot {
 	return Snapshot{
 		State:      Joined,
@@ -589,5 +596,75 @@ func TestSnapshotJSONCarriesPartial(t *testing.T) {
 	}
 	if strings.Contains(string(whole), "partial") {
 		t.Fatalf("a whole snapshot mentions partial: %s", whole)
+	}
+}
+
+// A fresh snapshot from a daemon whose heartbeats nobody takes is a node that
+// looks well and that nothing can reach. Status says so, and for how long.
+func TestLoadSaysTheMothershipHasNotHeardThisNode(t *testing.T) {
+	store := &state.Store{Dir: t.TempDir()}
+	if err := store.SaveNode(state.Node{
+		NodeID: "node-1", NodeCredential: "cred", HeadURL: "https://head.example",
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := store.SaveStatus(state.Status{
+		WrittenAt: now().Add(-10 * time.Second), Revision: 5,
+		UnheardSince: now().Add(-5*time.Hour - 31*time.Minute),
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := Load(store, now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Stale {
+		t.Fatalf("Snapshot = %+v, want it fresh: the daemon is running", got)
+	}
+	if want := 5*time.Hour + 31*time.Minute; got.Unheard != want {
+		t.Fatalf("Unheard = %v, want %v", got.Unheard, want)
+	}
+	if block := Render(got); !strings.Contains(block, "no heartbeat taken for 5h31m0s") {
+		t.Fatalf("the block does not say the node is unheard:\n%s", block)
+	}
+}
+
+// One lost beat is a slow network, as it is for a snapshot's own age.
+func TestLoadSaysNothingOfAFewLostHeartbeats(t *testing.T) {
+	store := &state.Store{Dir: t.TempDir()}
+	if err := store.SaveNode(state.Node{
+		NodeID: "node-1", NodeCredential: "cred", HeadURL: "https://head.example",
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := store.SaveStatus(state.Status{
+		WrittenAt: now().Add(-10 * time.Second), Revision: 5,
+		UnheardSince: now().Add(-StaleAfter + time.Second),
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := Load(store, now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Unheard != 0 {
+		t.Fatalf("Unheard = %v, want none before %v", got.Unheard, StaleAfter)
+	}
+}
+
+func TestSnapshotJSONSaysHowLongUnheardInSeconds(t *testing.T) {
+	encoded, err := json.Marshal(Snapshot{State: Live, Revision: 3, Unheard: 2 * time.Minute})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var back Snapshot
+	if err := json.Unmarshal(encoded, &back); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(encoded), `"unheard_seconds":120`) || back.Unheard != 2*time.Minute {
+		t.Fatalf("unheard did not travel as seconds and back: %s -> %v", encoded, back.Unheard)
 	}
 }

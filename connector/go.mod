@@ -73,7 +73,7 @@ require (
 // The pinned pair. genscale carries 6net's range and names (its
 // GENSCALE.md lists every divergence); version.Genscale and the parity fixture
 // must name this tag.
-replace tailscale.com => github.com/gentility-ai/genscale v1.101.0-pre.6net.7
+replace tailscale.com => github.com/gentility-ai/genscale v1.101.0-pre.6net.8
 
 // gomobile binds ./phonenode into the iOS app's xcframework
 // (phone/build-phonenode.sh), and refuses a module that does not hold

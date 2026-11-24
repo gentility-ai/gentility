@@ -90,6 +90,19 @@ daemon's: `status.json` is `0644`, because it holds no secret, and every other
 file is `0600`. On a shared host that means any local account can read a
 daemon's org slugs, overlay addresses and public endpoint; that is deliberate.
 
+## When status says no heartbeat is taken
+
+```
+presence   no heartbeat taken for 5h31m0s; other machines may not reach this one
+```
+
+The daemon sends the mothership a heartbeat every thirty seconds, over 6net.
+This line appears once none has been taken for ninety seconds, and says for
+how long. The daemon is running and still receiving, which is why the rest of
+the block looks well; what it sends is not arriving, so its peers may not
+reach it either. `--json` carries the same as `unheard_seconds`, and
+`status.json` as `unheard_since`.
+
 ## Check the daemon's network observations
 
 ```

@@ -353,3 +353,31 @@ func TestHeartbeatOmitsServicesWhenThisNodeAdvertisesNone(t *testing.T) {
 		t.Fatalf("services should be absent: %s", body)
 	}
 }
+
+// Beaten hears how every beat went, so the daemon can write down since when
+// the mothership has not taken one.
+func TestHeartbeatTellsBeatenHowEachBeatWent(t *testing.T) {
+	sink := &recorder{status: 500}
+	ticks := make(chan time.Time)
+	r := reporter(t, sink, ticks)
+
+	outcomes := make(chan error, 2)
+	r.Beaten = func(err error) { outcomes <- err }
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go r.Run(ctx)
+
+	if err := <-outcomes; err == nil {
+		t.Fatal("a beat the mothership answered 500 to was reported as taken")
+	}
+
+	sink.mu.Lock()
+	sink.status = 204
+	sink.mu.Unlock()
+	ticks <- time.Now()
+
+	if err := <-outcomes; err != nil {
+		t.Fatalf("a beat the mothership took was reported as %v", err)
+	}
+}

@@ -99,6 +99,12 @@ type Snapshot struct {
 	Age   time.Duration `json:"-"`
 	Stale bool          `json:"stale,omitempty"`
 
+	// Unheard is how long the mothership has taken no heartbeat from this
+	// node, and zero until that is StaleAfter: the daemon is running and
+	// writing, and what it sends is not arriving, so other machines may not
+	// reach this one either. It travels as unheard_seconds, as Age does.
+	Unheard time.Duration `json:"-"`
+
 	// Name is this machine's 6net name, as the daemon last wrote it:
 	// cedar.morgan.northwind.6net.io.
 	Name string `json:"name,omitempty"`
@@ -130,13 +136,15 @@ type plainSnapshot Snapshot
 // in, rather than the nanoseconds a Duration would print.
 type wireSnapshot struct {
 	plainSnapshot
-	AgeSeconds int64 `json:"age_seconds,omitempty"`
+	AgeSeconds     int64 `json:"age_seconds,omitempty"`
+	UnheardSeconds int64 `json:"unheard_seconds,omitempty"`
 }
 
 func (s Snapshot) MarshalJSON() ([]byte, error) {
 	return json.Marshal(wireSnapshot{
-		plainSnapshot: plainSnapshot(s),
-		AgeSeconds:    int64(s.Age / time.Second),
+		plainSnapshot:  plainSnapshot(s),
+		AgeSeconds:     int64(s.Age / time.Second),
+		UnheardSeconds: int64(s.Unheard / time.Second),
 	})
 }
 
@@ -149,6 +157,7 @@ func (s *Snapshot) UnmarshalJSON(data []byte) error {
 	}
 	*s = Snapshot(wire.plainSnapshot)
 	s.Age = time.Duration(wire.AgeSeconds) * time.Second
+	s.Unheard = time.Duration(wire.UnheardSeconds) * time.Second
 	return nil
 }
 
@@ -206,6 +215,11 @@ func Load(store *state.Store, now time.Time) (Snapshot, error) {
 	snapshot.Revision = last.Revision
 	snapshot.Age = age(last.WrittenAt, now)
 	snapshot.Stale = snapshot.Age >= StaleAfter
+	if !last.UnheardSince.IsZero() {
+		if unheard := age(last.UnheardSince, now); unheard >= StaleAfter {
+			snapshot.Unheard = unheard
+		}
+	}
 	snapshot.Name = last.Name
 	snapshot.Relayed = last.Relayed
 	snapshot.Endpoint = last.Endpoint
@@ -311,6 +325,12 @@ the daemon has not written a status yet. On a server, start it:
 		}
 		identity(&b, snapshot)
 		field(&b, "config", freshness(snapshot))
+		// A stale snapshot already asks whether the daemon is running, and its
+		// last word on its heartbeats is as old as the rest of it.
+		if snapshot.Unheard > 0 && !snapshot.Stale {
+			field(&b, "presence", fmt.Sprintf(
+				"no heartbeat taken for %s; other machines may not reach this one", snapshot.Unheard))
+		}
 		field(&b, "peers", path(snapshot))
 		// Only in interface mode: a userspace node is on no device, and a line
 		// that said so would be noise on every machine that never asked.

@@ -44,6 +44,12 @@ type Status struct {
 	WrittenAt time.Time `json:"written_at"`
 	Revision  int64     `json:"revision"`
 
+	// UnheardSince is when the first of the heartbeats the mothership has not
+	// taken failed, and zero while the last one landed. The daemon rewrites
+	// this file on every beat whether or not the beat lands, so WrittenAt
+	// alone reads the same on a node nothing can reach as on one that is well.
+	UnheardSince time.Time `json:"unheard_since,omitzero"`
+
 	// Connector is the version of the connector that wrote this, so a reader
 	// of the file alone — Desk — can say which one is running.
 	Connector string `json:"connector,omitempty"`

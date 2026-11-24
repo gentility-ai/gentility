@@ -27,7 +27,7 @@ const Tailscale = "v1.101.0-pre"
 // 6net's range and names (genscale's GENSCALE.md lists every divergence).
 // It must equal the replace line's version; the test reads go.mod to hold it
 // there.
-const Genscale = "v1.101.0-pre.6net.7"
+const Genscale = "v1.101.0-pre.6net.8"
 
 // NodeCapver is the node_capver this binary speaks, sent as X-Node-Capver on
 // EVERY node → Gentility request — the exchange included,

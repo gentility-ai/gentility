@@ -98,6 +98,7 @@ func attend(ctx context.Context, opts Options, a Attendance, logf func(string, .
 		Status:     status(a, advertised, documents, logf),
 		Ready:      configs.Ready,
 		Log:        func(format string, args ...any) { logf(format, args...) },
+		Beaten:     func(err error) { documents.beaten(err, time.Now()) },
 	}
 	go presence.Run(ctx)
 
