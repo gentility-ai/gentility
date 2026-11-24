@@ -278,12 +278,11 @@ A host that runs loop computers serves one thing on the overlay: its runner,
 which listens on a unix socket and nowhere else. `--forward` carries that
 service to the socket. It forwards a kind only if this binary lists it
 (`vmrunner`, today) and the server has declared it for this node and marked it
-`forwardable` in the config document, which no heartbeat can do. The first
-document must carry exactly one such entry, or `serve` exits 2 and is not
-restarted, so start a host's unit with `--forward` only once its document shows
-the service. Later, the forward is bound only while the current document
-carries exactly one approved, marked entry; without it, every forwarded
-connection is closed and the node runs on.
+`forwardable` in the config document, which no heartbeat can do. The forward is
+bound only while the current document carries exactly one approved, marked
+entry. Otherwise nothing is bound, every forwarded connection is closed, and
+the node beats offering nothing and waits; its log says why. So a host's unit
+may start before the server has declared the service.
 
 With `--forward` the heartbeat offers nothing and no egress relay runs, and
 `--interface` is refused: the node stays in userspace. It listens on its own

@@ -137,7 +137,7 @@ type Service struct {
 	// Forwardable is the server's mark on a service `connector serve
 	// --forward` may carry to a local socket (internal/forward). The renderer
 	// writes it only when true, and only on this node's own services, so an
-	// absent mark reads false and refuses.
+	// absent mark reads false and nothing is bound.
 	Forwardable bool `json:"forwardable,omitempty"`
 }
 

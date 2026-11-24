@@ -131,46 +131,79 @@ func attend(ctx context.Context, opts Options, a Attendance, logf func(string, .
 		defer forwarder.Stop()
 	}
 
-	var current *config.Document
-	refreshDiscovery := func() {
-		if current != nil {
-			_ = trees.apply(treeContext, a, current, base, client, logf)
-		}
+	refreshDiscovery := func(document *config.Document) {
+		_ = trees.apply(treeContext, a, document, base, client, logf)
 	}
-	configs.OnUnchanged = func() {
-		refreshDiscovery()
-		// A forward whose bind failed is tried again on the document this
-		// node already holds; documents arrive only when something changes.
-		if forwarder != nil && current != nil {
-			_ = forwarder.Apply(ctx, current)
-		}
-	}
-	return configs.Run(ctx, func(document *config.Document) error {
+	return follow(ctx, configs, forwarder, func(document *config.Document) error {
 		if err := document.Adopt(a.Session.Node, a.Store); err != nil {
 			return err
 		}
 
-		// A forwarding node runs no relay at all, so it is never an egress by
-		// what runs here, not only by what the server approved.
-		if forwarder != nil {
-			if err := forwarder.Apply(ctx, document); err != nil {
-				return err
-			}
-		} else if err := act(ctx, reconcile(document, relay.serving()), document, relay, advertised, a, admit, logf); err != nil {
+		if err := carryOut(ctx, forwarder, document, relay, advertised, a, admit, logf); err != nil {
 			return err
 		}
 
 		// After the document has been acted on, so what a person reads is what
 		// this node is doing and not what it was about to try.
 		// A tree refusal cannot stop the connector's config or presence loops.
-		current = document
-		refreshDiscovery()
+		refreshDiscovery(document)
 		documents.set(fromDocument(document))
 		note(ctx, a, advertised, documents, logf)
 
 		logf("config rev %d applied", document.Revision)
 		return nil
+	}, refreshDiscovery)
+}
+
+// follow runs the config channel: apply on every new document, and refresh on
+// an unchanged poll, with the document this node already holds. A forward
+// whose bind failed is tried again then too, because documents arrive only
+// when something changes.
+func follow(
+	ctx context.Context,
+	configs *config.Client,
+	forwarder *forward.Forwarder,
+	apply func(*config.Document) error,
+	refresh func(*config.Document),
+) error {
+	var current *config.Document
+	configs.OnUnchanged = func() {
+		if current == nil {
+			return
+		}
+		refresh(current)
+		if forwarder != nil {
+			forwarder.Apply(ctx, current)
+		}
+	}
+	return configs.Run(ctx, func(document *config.Document) error {
+		if err := apply(document); err != nil {
+			return err
+		}
+		current = document
+		return nil
 	})
+}
+
+// carryOut makes this node serve what a document says: the forward alone on a
+// node that forwards, and the relay on every other. A forwarding node runs no
+// relay at all, so it is never an egress by what runs here, not only by what
+// the server approved.
+func carryOut(
+	ctx context.Context,
+	forwarder *forward.Forwarder,
+	document *config.Document,
+	relay *relayGeneration,
+	advertised *advertisement,
+	a Attendance,
+	admit *egress.AdmitClient,
+	logf func(string, ...any),
+) error {
+	if forwarder != nil {
+		forwarder.Apply(ctx, document)
+		return nil
+	}
+	return act(ctx, reconcile(document, relay.serving()), document, relay, advertised, a, admit, logf)
 }
 
 // forwarding is the forwarder `--forward` asks for, or nil when it asks for

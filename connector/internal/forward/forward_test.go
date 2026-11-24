@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"net/netip"
@@ -70,6 +71,7 @@ type harness struct {
 	mu    sync.Mutex
 	asked []netip.AddrPort
 	bound net.Listener
+	lines []string
 }
 
 func newHarness(t *testing.T) *harness {
@@ -101,7 +103,11 @@ func newHarness(t *testing.T) *harness {
 		Attribute: func(ctx context.Context, remote netip.AddrPort, local netip.Addr) (netip.Addr, error) {
 			return h.peer.Load().(netip.Addr), nil
 		},
-		Log: t.Logf,
+		Log: func(format string, args ...any) {
+			h.mu.Lock()
+			defer h.mu.Unlock()
+			h.lines = append(h.lines, fmt.Sprintf(format, args...))
+		},
 	}
 	h.forwarder.Dial = func(ctx context.Context, socket string) (net.Conn, error) {
 		h.dials.Add(1)
@@ -138,8 +144,15 @@ func (h *harness) echo() {
 	}()
 }
 
-func (h *harness) apply(document *config.Document) error {
-	return h.forwarder.Apply(context.Background(), document)
+func (h *harness) apply(document *config.Document) {
+	h.forwarder.Apply(context.Background(), document)
+}
+
+// said is every line logged so far.
+func (h *harness) said() []string {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	return append([]string(nil), h.lines...)
 }
 
 func (h *harness) listener() net.Listener {
@@ -204,17 +217,9 @@ func vmrunner(state string, forwardable bool) config.Service {
 	}
 }
 
-func wantUsage(t *testing.T, err error, says string) {
-	t.Helper()
-	if err == nil || !strings.Contains(err.Error(), says) {
-		t.Fatalf("Apply = %v, want a refusal saying %q", err, says)
-	}
-	if code, fatal := exitcodes.Of(err); !fatal || code != exitcodes.Usage {
-		t.Fatalf("the refusal exits (%d, %v), want (%d, true)", code, fatal, exitcodes.Usage)
-	}
-}
-
-func TestTheFirstDocumentMustMarkExactlyOneEntry(t *testing.T) {
+// No document ends the process: a first document that does not carry exactly
+// one marked entry binds nothing, and the entry arriving later binds.
+func TestAFirstDocumentWithoutExactlyOneMarkedEntryWaits(t *testing.T) {
 	for name, tc := range map[string]struct {
 		services []config.Service
 		says     string
@@ -235,27 +240,82 @@ func TestTheFirstDocumentMustMarkExactlyOneEntry(t *testing.T) {
 	} {
 		t.Run(name, func(t *testing.T) {
 			h := newHarness(t)
-			wantUsage(t, h.apply(document(tc.services...)), tc.says)
+			h.echo()
+
+			h.apply(document(tc.services...))
 			if binds := h.binds(); len(binds) != 0 {
-				t.Fatalf("a refused start bound %v", binds)
+				t.Fatalf("bound %v, want nothing", binds)
+			}
+			if said := h.said(); len(said) != 1 || !strings.Contains(said[0], tc.says) {
+				t.Fatalf("log = %q, want one line saying %q", said, tc.says)
+			}
+
+			h.apply(document(vmrunner("approved", true)))
+			if _, err := roundTrip(h.connect(), "arrived"); err != nil {
+				t.Fatalf("the entry arriving later did not bind: %v", err)
 			}
 		})
+	}
+}
+
+// Why nothing is bound is said once, and again only when the reason changes.
+func TestTheReasonIsLoggedOnlyWhenItChanges(t *testing.T) {
+	h := newHarness(t)
+
+	h.apply(document())
+	h.apply(document())
+	h.apply(document(vmrunner("declared", true)))
+	h.apply(document(vmrunner("declared", true)))
+	h.apply(document(vmrunner("approved", true)))
+	h.apply(document())
+
+	want := []string{"declares no forwardable", "is declared, not approved", "serving", "declares no forwardable"}
+	said := h.said()
+	if len(said) != len(want) {
+		t.Fatalf("log = %q, want %d lines", said, len(want))
+	}
+	for i := range want {
+		if !strings.Contains(said[i], want[i]) {
+			t.Errorf("line %d = %q, want it to say %q", i, said[i], want[i])
+		}
+	}
+}
+
+// A bind that fails is tried again on the same document, and says so once.
+func TestAFailedBindIsTriedAgainOnTheSameDocument(t *testing.T) {
+	h := newHarness(t)
+	h.echo()
+	listen, failures := h.forwarder.Listen, 2
+	h.forwarder.Listen = func(addr netip.Addr, port uint16) (net.Listener, error) {
+		if failures > 0 {
+			failures--
+			return nil, errors.New("the address is not up yet")
+		}
+		return listen(addr, port)
+	}
+
+	current := document(vmrunner("approved", true))
+	h.apply(current)
+	h.apply(current)
+	if said := h.said(); len(said) != 1 || !strings.Contains(said[0], "could not bind") {
+		t.Fatalf("log = %q, want the failed bind said once", said)
+	}
+
+	h.apply(current)
+	if _, err := roundTrip(h.connect(), "bound"); err != nil {
+		t.Fatalf("after the bind succeeded: %v", err)
 	}
 }
 
 func TestADeclaredServiceBindsNothingUntilApproved(t *testing.T) {
 	h := newHarness(t)
 
-	if err := h.apply(document(vmrunner("declared", true))); err != nil {
-		t.Fatalf("a declared, marked service was refused: %v", err)
-	}
+	h.apply(document(vmrunner("declared", true)))
 	if binds := h.binds(); len(binds) != 0 {
 		t.Fatalf("a declared service was bound on %v", binds)
 	}
 
-	if err := h.apply(document(vmrunner("approved", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("approved", true)))
 	want := netip.AddrPortFrom(netip.MustParseAddr(nodeAddress), 7443)
 	if binds := h.binds(); len(binds) != 1 || binds[0] != want {
 		t.Fatalf("bound %v, want exactly [%s]: the node's own address in the service's organization", binds, want)
@@ -265,9 +325,7 @@ func TestADeclaredServiceBindsNothingUntilApproved(t *testing.T) {
 func TestTheGatewayReachesTheSocket(t *testing.T) {
 	h := newHarness(t)
 	h.echo()
-	if err := h.apply(document(vmrunner("approved", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("approved", true)))
 
 	got, err := roundTrip(h.connect(), "inventory")
 	if err != nil {
@@ -281,9 +339,7 @@ func TestTheGatewayReachesTheSocket(t *testing.T) {
 func TestAPeerThatIsNotTheGatewayIsClosedBeforeTheSocketIsDialled(t *testing.T) {
 	h := newHarness(t)
 	h.echo()
-	if err := h.apply(document(vmrunner("approved", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("approved", true)))
 
 	h.peer.Store(netip.MustParseAddr(otherAddress))
 	if !closed(h.connect()) {
@@ -300,9 +356,7 @@ func TestAnUnattributablePeerIsClosed(t *testing.T) {
 	h.forwarder.Attribute = func(context.Context, netip.AddrPort, netip.Addr) (netip.Addr, error) {
 		return netip.Addr{}, errors.New("the head knows no such peer")
 	}
-	if err := h.apply(document(vmrunner("approved", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("approved", true)))
 
 	if !closed(h.connect()) {
 		t.Fatal("a peer the head could not attribute was left open")
@@ -314,9 +368,7 @@ func TestAnUnattributablePeerIsClosed(t *testing.T) {
 
 func TestAMissingSocketClosesTheConnection(t *testing.T) {
 	h := newHarness(t)
-	if err := h.apply(document(vmrunner("approved", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("approved", true)))
 
 	if !closed(h.connect()) {
 		t.Fatal("a connection to a missing socket was left open")
@@ -331,18 +383,14 @@ func TestAMissingSocketClosesTheConnection(t *testing.T) {
 func TestAGatewayThatMovedIsReadFromTheCurrentDocument(t *testing.T) {
 	h := newHarness(t)
 	h.echo()
-	if err := h.apply(document(vmrunner("approved", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("approved", true)))
 	if _, err := roundTrip(h.connect(), "before"); err != nil {
 		t.Fatalf("the gateway before it moved: %v", err)
 	}
 
 	moved := document(vmrunner("approved", true))
 	moved.Gateway.Address = otherAddress
-	if err := h.apply(moved); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(moved)
 
 	if !closed(h.connect()) {
 		t.Fatal("the old gateway was let in after the document named another")
@@ -358,18 +406,14 @@ func TestAGatewayThatMovedIsReadFromTheCurrentDocument(t *testing.T) {
 func TestALaterDocumentWithoutTheMarkUnbindsAndTheMarkReturningBindsAgain(t *testing.T) {
 	h := newHarness(t)
 	h.echo()
-	if err := h.apply(document(vmrunner("approved", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("approved", true)))
 	open := h.connect()
 	if _, err := roundTrip(open, "open"); err != nil {
 		t.Fatal(err)
 	}
 	first := h.listener()
 
-	if err := h.apply(document(vmrunner("approved", false))); err != nil {
-		t.Fatalf("a later document without the mark was fatal: %v", err)
-	}
+	h.apply(document(vmrunner("approved", false)))
 	if !closed(open) {
 		t.Fatal("an open forwarded connection outlived the mark")
 	}
@@ -377,9 +421,7 @@ func TestALaterDocumentWithoutTheMarkUnbindsAndTheMarkReturningBindsAgain(t *tes
 		t.Fatal("the listener outlived the mark")
 	}
 
-	if err := h.apply(document(vmrunner("approved", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("approved", true)))
 	if len(h.binds()) != 2 {
 		t.Fatalf("binds = %v, want a second bind once the mark returned", h.binds())
 	}
@@ -391,14 +433,10 @@ func TestALaterDocumentWithoutTheMarkUnbindsAndTheMarkReturningBindsAgain(t *tes
 func TestApprovedGoingBackToDeclaredUnbinds(t *testing.T) {
 	h := newHarness(t)
 	h.echo()
-	if err := h.apply(document(vmrunner("approved", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("approved", true)))
 	open := h.connect()
 
-	if err := h.apply(document(vmrunner("declared", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("declared", true)))
 	if !closed(open) {
 		t.Fatal("a connection outlived its service's approval")
 	}
@@ -407,14 +445,10 @@ func TestApprovedGoingBackToDeclaredUnbinds(t *testing.T) {
 func TestALaterDocumentWithTwoMarkedEntriesUnbinds(t *testing.T) {
 	h := newHarness(t)
 	h.echo()
-	if err := h.apply(document(vmrunner("approved", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("approved", true)))
 	open := h.connect()
 
-	if err := h.apply(document(vmrunner("approved", true), vmrunner("approved", true))); err != nil {
-		t.Fatalf("a later document with two marked entries was fatal: %v", err)
-	}
+	h.apply(document(vmrunner("approved", true), vmrunner("approved", true)))
 	if !closed(open) {
 		t.Fatal("two marked entries left the forward bound; neither is to be picked")
 	}
@@ -424,17 +458,13 @@ func TestALaterDocumentWithTwoMarkedEntriesUnbinds(t *testing.T) {
 func TestTheSameDocumentAgainKeepsTheBinding(t *testing.T) {
 	h := newHarness(t)
 	h.echo()
-	if err := h.apply(document(vmrunner("approved", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("approved", true)))
 	open := h.connect()
 	if _, err := roundTrip(open, "one"); err != nil {
 		t.Fatal(err)
 	}
 
-	if err := h.apply(document(vmrunner("approved", true))); err != nil {
-		t.Fatal(err)
-	}
+	h.apply(document(vmrunner("approved", true)))
 	if _, err := roundTrip(open, "two"); err != nil {
 		t.Fatalf("the same document again broke an open connection: %v", err)
 	}

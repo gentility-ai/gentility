@@ -103,7 +103,7 @@ func TestOptionalOriginWireCompatibility(t *testing.T) {
 }
 
 // `forwardable` is written only when true, so its absence is false: a service
-// the server did not mark is one `serve --forward` refuses. readDocument is
+// the server did not mark is one `serve --forward` never binds. readDocument is
 // the one decoder every reader of the document goes through.
 func TestForwardableIsReadOnlyWhereTheServerWroteIt(t *testing.T) {
 	wire := `{"renderer_version":1,"services":[` +

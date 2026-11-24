@@ -16,13 +16,12 @@
 //
 // So a connector is not a way to reach any local socket by naming a kind.
 //
-// The rule, per document: the forward is bound only while the current
-// document carries exactly one approved, marked entry of the kind, and the
-// first document must carry the entry or the process refuses to start. A
-// later document without it unbinds and closes every open connection, and the
-// connector runs on; the entry coming back binds again. A refusal is exit 2,
-// which the unit does not restart, so it is kept for the one moment a flag on
-// the wrong host should be loud: the first document.
+// The rule: the forward is bound only while the current document carries
+// exactly one approved, marked entry of the kind; otherwise nothing is bound,
+// the node beats offering nothing, and it waits. No document ends the process:
+// the first heartbeat waits for the first document to be applied, so a node
+// that refused a document without the entry would never be heard, and a server
+// that declares the service when it hears the node would never declare it.
 package forward
 
 import (
@@ -72,8 +71,9 @@ func Parse(value string) (Spec, error) {
 	return Spec{Kind: kind, Socket: socket}, nil
 }
 
-// Forwarder carries one Spec. Apply it every config document; it binds,
-// rebinds and unbinds as the documents say.
+// Forwarder carries one Spec. Apply every config document to it, and the
+// current one again on an unchanged poll; it binds, rebinds and unbinds as the
+// documents say.
 type Forwarder struct {
 	Spec Spec
 
@@ -94,8 +94,9 @@ type Forwarder struct {
 	// mu orders Apply and Stop. The gateway has its own atomic, because a
 	// connection reads it while Apply, holding mu, waits for connections.
 	mu      sync.Mutex
-	applied bool
 	current *binding
+	// reason is why nothing is bound, as last logged. Empty while bound.
+	reason  string
 	gateway atomic.Pointer[netip.Addr]
 }
 
@@ -106,55 +107,49 @@ type target struct {
 	port    uint16
 }
 
-// Apply takes one config document. It answers an error only for the first
-// document, and only when that document does not carry exactly one marked
-// entry of the kind: that error is fatal, exit 2.
-func (f *Forwarder) Apply(ctx context.Context, document *config.Document) error {
-	marked := f.marked(document)
-
+// Apply takes one config document and leaves the forward bound where it says,
+// or unbound. It says why nothing is bound once, and again only when the
+// reason changes, so a node that waits does not log once a poll.
+func (f *Forwarder) Apply(ctx context.Context, document *config.Document) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
-
-	first := !f.applied
-	if first && len(marked) != 1 {
-		return f.refusal(len(marked))
-	}
-	f.applied = true
 
 	// Each connection reads this when it arrives, so a gateway that moved is
 	// the only one let in from the next connection on.
 	gateway, _ := netip.ParseAddr(document.Gateway.Address)
 	f.gateway.Store(&gateway)
 
-	want, reason := f.target(document, marked)
+	want, reason := f.target(document)
 	if f.current != nil && f.current.target == want {
-		return nil
+		return
 	}
 	if f.current != nil {
 		f.current.stop()
 		f.current = nil
-		if want != (target{}) {
-			reason = fmt.Sprintf("to bind [%s]:%d instead", want.address, want.port)
-		}
-		f.logf("forward %s: unbound, %s", f.Spec, reason)
 	}
 	if want == (target{}) {
-		if first {
-			f.logf("forward %s: waiting, %s", f.Spec, reason)
-		}
-		return nil
+		f.wait(reason)
+		return
 	}
 
 	ln, err := f.Listen(want.address, want.port)
 	if err != nil {
-		// Not fatal: the next poll tries again (serve's OnUnchanged), and
-		// until then nothing is bound, which is the closed answer.
-		f.logf("forward %s: could not bind [%s]:%d: %v", f.Spec, want.address, want.port, err)
-		return nil
+		// The next poll tries again, on the same document if it is unchanged.
+		f.wait(fmt.Sprintf("could not bind [%s]:%d: %v", want.address, want.port, err))
+		return
 	}
 	f.current = f.serve(ctx, want, ln)
+	f.reason = ""
 	f.logf("forward %s: serving [%s]:%d", f.Spec, want.address, want.port)
-	return nil
+}
+
+// wait records why nothing is bound, and says so if that is news.
+func (f *Forwarder) wait(reason string) {
+	if reason == f.reason {
+		return
+	}
+	f.reason = reason
+	f.logf("forward %s: nothing bound, %s", f.Spec, reason)
 }
 
 // Stop unbinds and closes every open connection.
@@ -179,23 +174,16 @@ func (f *Forwarder) marked(document *config.Document) []config.Service {
 	return marked
 }
 
-func (f *Forwarder) refusal(count int) error {
-	if count == 0 {
-		return usage("the server declares no forwardable %s service on this node, so --forward %s is "+
-			"refused and nothing is bound", f.Spec.Kind, f.Spec)
-	}
-	return usage("the server marks %d forwardable %s services on this node, so --forward %s is "+
-		"refused and none is picked", count, f.Spec.Kind, f.Spec)
-}
-
 // target is where the document says to listen, or the zero target and why
 // nothing is to be bound.
-func (f *Forwarder) target(document *config.Document, marked []config.Service) (target, string) {
+func (f *Forwarder) target(document *config.Document) (target, string) {
+	marked := f.marked(document)
 	switch {
 	case len(marked) == 0:
-		return target{}, "the document marks no " + f.Spec.Kind + " service forwardable"
+		return target{}, "the server declares no forwardable " + f.Spec.Kind + " service on this node"
 	case len(marked) > 1:
-		return target{}, fmt.Sprintf("the document marks %d %s services forwardable", len(marked), f.Spec.Kind)
+		return target{}, fmt.Sprintf("the server marks %d forwardable %s services on this node, and none is picked",
+			len(marked), f.Spec.Kind)
 	}
 
 	service := marked[0]
