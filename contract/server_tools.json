@@ -19,6 +19,7 @@
     "db_delete",
     "db_exec",
     "db_grant",
+    "db_history",
     "db_list",
     "db_query",
     "db_revoke",
