@@ -49,7 +49,7 @@ func runEgress(args []string, stdout, stderr io.Writer) int {
 
 	say, complain := narrate("egress", stdout, stderr)
 
-	env, err := enroll.Read()
+	env, err := enroll.ReadOrRejoin()
 	if err != nil {
 		return complain(err)
 	}
@@ -182,7 +182,7 @@ func runProxy(args []string, stdout, stderr io.Writer) int {
 
 	say, complain := narrate("proxy", stdout, stderr)
 
-	env, err := enroll.Read()
+	env, err := enroll.ReadOrRejoin()
 	if err != nil {
 		return complain(err)
 	}

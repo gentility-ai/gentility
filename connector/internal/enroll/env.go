@@ -109,6 +109,10 @@ const (
 // Read reads the join environment from the process.
 func Read() (Env, error) { return ReadEnv(os.LookupEnv) }
 
+// ReadOrRejoin reads the join environment from the process, asking for the
+// one-shot three only when the state directory holds no node.
+func ReadOrRejoin() (Env, error) { return ReadEnvOrRejoin(os.LookupEnv) }
+
 // ReadEnv reads the join environment through lookup, which is os.LookupEnv
 // everywhere but the tests — a test that had to write the process environment
 // would be a test every other test in the package raced with.
@@ -116,7 +120,27 @@ func Read() (Env, error) { return ReadEnv(os.LookupEnv) }
 // An empty variable is a missing one: an exported-but-blank OVERLAY_NONCE is a
 // recipe that went wrong, not a node with no nonce.
 func ReadEnv(lookup func(string) (string, bool)) (Env, error) {
-	env, err := ReadJoin(lookup)
+	return readHop(lookup, ReadJoin)
+}
+
+// ReadEnvOrRejoin is ReadEnv over ReadJoinOrRejoin: the gateway hop as
+// ReadEnv reads it, and the pre-auth key, the enrollment id and the nonce only
+// when there is no node.json to rejoin from.
+//
+// It is what a node that must come back from its own state reads — `proxy`
+// and `egress`, which a supervisor restarts. With a node.json the three stay
+// EMPTY even when they are set, and that emptiness is what arms tsnode.Up's
+// rejoin refusal: a node the head has forgotten exits EnrollRefused instead of
+// waiting for a login nobody will give. It also means a spent key need not be
+// kept on disk for the next start.
+func ReadEnvOrRejoin(lookup func(string) (string, bool)) (Env, error) {
+	return readHop(lookup, ReadJoinOrRejoin)
+}
+
+// readHop reads the node through join and then the hop to the gateway, which
+// every node but the gateway itself has in front of it.
+func readHop(lookup func(string) (string, bool), join func(func(string) (string, bool)) (Env, error)) (Env, error) {
+	env, err := join(lookup)
 	if err != nil {
 		return Env{}, err
 	}
