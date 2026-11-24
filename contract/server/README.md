@@ -184,7 +184,10 @@ reasons it may refuse with are `refusals.json`'s `desk` → `ask_answered`.
 `asks.json` is `GentilityWeb.DeskContract.asks/0`, read from
 `machine.ask`'s `x-kinds`: each ask kind → its `payload` keys, the
 `decisions` an answer may settle it with (`refused` among them, with a
-`reason`) and the `refusals` the core may give. Like `refusals.json` it is
+`reason`) and the `refusals` the core may give. `computer_shell` also says
+the `reasons` a guest gives of its own for how a job ended, and the `limits`
+on its output: `chunk_bytes`, the most one report carries of a stream, and
+`kept_bytes`, the most the server stores of one. Like `refusals.json` it is
 not an exchange. `contract.json` declares each kind's payload as a schema,
 and `desk_contract_test.exs` holds `Gentility.Desk.AskKinds` to it word for
 word; every recorded ask's payload is held to its kind's schema, and

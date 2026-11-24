@@ -56,6 +56,10 @@
       "refused",
       "unknown"
     ],
+    "limits": {
+      "chunk_bytes": 262144,
+      "kept_bytes": 1048576
+    },
     "payload": [
       "binding_generation",
       "command_bytes",
@@ -65,6 +69,13 @@
       "desk_machine_id",
       "time_limit_s",
       "version"
+    ],
+    "reasons": [
+      "core_restarted",
+      "executor_restarted",
+      "kill_failed",
+      "lease_lapsed",
+      "time_limit"
     ],
     "refusals": [
       "busy",

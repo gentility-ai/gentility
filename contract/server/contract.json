@@ -9292,7 +9292,18 @@
             "malformed",
             "not_ready",
             "unsupported"
-          ]
+          ],
+          "reasons": [
+            "core_restarted",
+            "executor_restarted",
+            "kill_failed",
+            "lease_lapsed",
+            "time_limit"
+          ],
+          "limits": {
+            "chunk_bytes": 262144,
+            "kept_bytes": 1048576
+          }
         }
       },
       "x-answer": {
