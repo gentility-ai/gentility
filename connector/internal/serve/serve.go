@@ -33,6 +33,7 @@ import (
 
 	"github.com/gentility-ai/gentility/connector/internal/enroll"
 	"github.com/gentility-ai/gentility/connector/internal/exitcodes"
+	"github.com/gentility-ai/gentility/connector/internal/forward"
 	"github.com/gentility-ai/gentility/connector/internal/state"
 	"github.com/gentility-ai/gentility/connector/internal/tsnode"
 )
@@ -61,6 +62,10 @@ type Options struct {
 	// netstack inside this process, so the machine's own programs can reach
 	// it. It needs root, which is why only `install --interface` sets it.
 	Interface bool
+	// Forward is `--forward`: the one declared service this node carries to a
+	// local socket (internal/forward). The zero Spec forwards nothing. A node
+	// that forwards offers nothing on its heartbeat and runs no relay.
+	Forward forward.Spec
 }
 
 // Session is a node that is up on the overlay: the tsnet node and the addresses

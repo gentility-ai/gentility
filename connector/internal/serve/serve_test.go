@@ -10,6 +10,7 @@ import (
 	"github.com/gentility-ai/gentility/connector/internal/config"
 	"github.com/gentility-ai/gentility/connector/internal/enroll"
 	"github.com/gentility-ai/gentility/connector/internal/exitcodes"
+	"github.com/gentility-ai/gentility/connector/internal/forward"
 	"github.com/gentility-ai/gentility/connector/internal/report"
 	"github.com/gentility-ai/gentility/connector/internal/state"
 )
@@ -215,6 +216,15 @@ func TestOffersNothingFromAPersonsMachineAndTheRelayFromAServer(t *testing.T) {
 	server := offers(Options{EgressPort: 9443})
 	if len(server) != 1 || server[0] != (report.Service{Kind: "egress", Port: 9443}) {
 		t.Fatalf("userspace offers = %+v, want egress on 9443", server)
+	}
+}
+
+// A node that forwards offers nothing: its one service is the server's to
+// declare, and with no egress offered no egress is declared and no relay runs.
+func TestOffersNothingFromANodeThatForwards(t *testing.T) {
+	forwarding := offers(Options{EgressPort: DefaultEgressPort, Forward: forward.Spec{Kind: "vmrunner", Socket: "/run/vmrunner/door.sock"}})
+	if len(forwarding) != 0 {
+		t.Fatalf("a forwarding node offers %+v, want nothing", forwarding)
 	}
 }
 

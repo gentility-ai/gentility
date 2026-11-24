@@ -23,6 +23,7 @@ import (
 
 	"github.com/gentility-ai/gentility/connector/internal/auth"
 	"github.com/gentility-ai/gentility/connector/internal/exitcodes"
+	"github.com/gentility-ai/gentility/connector/internal/forward"
 	"github.com/gentility-ai/gentility/connector/internal/mcp"
 	"github.com/gentility-ai/gentility/connector/internal/serve"
 	"github.com/gentility-ai/gentility/connector/internal/state"
@@ -195,16 +196,25 @@ func runServe(args []string, stdout, stderr io.Writer) int {
 	hostname := flags.String("hostname", defaultHostname(), "the name to join the head under, on a first start")
 	egressPort := flags.Int("egress-port", serve.DefaultEgressPort, "the port to advertise this node's egress relay on")
 	iface := flags.Bool("interface", false, "put the overlay on a real network interface, which needs root (install --interface sets it)")
+	var forwards []string
+	flags.Func("forward", "carry the one service the server declared and marked forwardable, <kind>=<unix socket>, and offer no egress",
+		func(value string) error { forwards = append(forwards, value); return nil })
 
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
-			return help(stdout, invoked+" serve [--state-dir <dir>] [--hostname <name>] [--egress-port <port>] [--interface]", flags)
+			return help(stdout, invoked+" serve [--state-dir <dir>] [--hostname <name>] [--egress-port <port>] [--interface | --forward <kind>=<socket>]", flags)
 		}
 		diagnosticf(stderr, "%s serve: %v\n", invoked, err)
 		return exitcodes.Usage
 	}
 	if flags.NArg() > 0 {
 		diagnosticf(stderr, "%s serve: unexpected argument %q\n", invoked, flags.Arg(0))
+		return exitcodes.Usage
+	}
+
+	forwarded, err := forwardSpec(forwards, *iface)
+	if err != nil {
+		diagnosticf(stderr, "%s serve: %v\n", invoked, err)
 		return exitcodes.Usage
 	}
 
@@ -219,12 +229,29 @@ func runServe(args []string, stdout, stderr io.Writer) int {
 
 	opts := serve.Options{
 		StateDir: *stateDir, Hostname: *hostname, EgressPort: *egressPort, Interface: *iface,
+		Forward: forwarded,
 	}
 
 	if err := serve.Run(ctx, opts, serve.Default(say)); err != nil {
 		return complain(err)
 	}
 	return exitcodes.OK
+}
+
+// forwardSpec reads `--forward`, given at most once and never beside
+// `--interface`: a forwarding node stays in userspace, so the host's own
+// programs cannot reach its overlay addresses (internal/forward). No flag is
+// the zero Spec, which forwards nothing.
+func forwardSpec(values []string, iface bool) (forward.Spec, error) {
+	switch {
+	case len(values) == 0:
+		return forward.Spec{}, nil
+	case len(values) > 1:
+		return forward.Spec{}, fmt.Errorf("--forward is given once, not %d times", len(values))
+	case iface:
+		return forward.Spec{}, errors.New("--forward cannot be used with --interface: a forwarding node stays in userspace")
+	}
+	return forward.Parse(values[0])
 }
 
 // runStatus answers the four questions a person standing at this machine has:

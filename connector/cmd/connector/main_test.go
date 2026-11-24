@@ -640,7 +640,7 @@ func TestRunHelpAnswersEveryCommand(t *testing.T) {
 		{[]string{"task", "check"}, []string{"-cause", "-org"}},
 		{[]string{"task", "close"}, []string{"-cause", "-dismiss", "-superseded-by", "-org"}},
 		{[]string{"join"}, []string{"-verbose"}},
-		{[]string{"serve"}, []string{"-state-dir", "-hostname", "-egress-port", "-interface"}},
+		{[]string{"serve"}, []string{"-state-dir", "-hostname", "-egress-port", "-interface", "-forward"}},
 		{[]string{"status"}, []string{"-state-dir", "-json"}},
 		{[]string{"login"}, []string{"-url", "-server"}},
 		{[]string{"logout"}, nil},
@@ -980,6 +980,42 @@ func TestRunServeRefusesAMachineThatWasNeverEnrolled(t *testing.T) {
 	}
 	if !strings.Contains(stderr.String(), "login --server") {
 		t.Fatalf("stderr does not say what to type: %q", stderr.String())
+	}
+}
+
+// `--forward` is refused before anything is joined when it cannot be carried:
+// given twice, beside --interface, or naming what this binary does not
+// forward. Exit 2, which the unit does not restart into.
+func TestRunServeRefusesAForwardItCannotCarry(t *testing.T) {
+	for _, c := range []struct {
+		args []string
+		says string
+	}{
+		{[]string{"--forward", "vmrunner=/run/a.sock", "--forward", "vmrunner=/run/b.sock"}, "--forward is given once, not 2 times"},
+		{[]string{"--interface", "--forward", "vmrunner=/run/a.sock"}, "--forward cannot be used with --interface: a forwarding node stays in userspace"},
+		{[]string{"--forward", "egress=/run/a.sock"}, `--forward forwards only vmrunner, not "egress"`},
+		{[]string{"--forward", "vmrunner=a.sock"}, `--forward wants <kind>=<socket>, with an absolute socket path, not "vmrunner=a.sock"`},
+	} {
+		var stdout, stderr bytes.Buffer
+		code := run(append([]string{"serve", "--state-dir", t.TempDir()}, c.args...), &stdout, &stderr)
+
+		if code != exitcodes.Usage || !strings.Contains(stderr.String(), c.says) {
+			t.Errorf("run(serve %v) = %d, want %d saying %q:\n%s%s",
+				c.args, code, exitcodes.Usage, c.says, stdout.String(), stderr.String())
+		}
+	}
+}
+
+// A forward that parses gets as far as the door: here, a machine never
+// enrolled, refused for that and not for the flag.
+func TestRunServeTakesAForward(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+
+	code := run([]string{"serve", "--state-dir", t.TempDir(), "--forward", "vmrunner=/run/vmrunner/door.sock"}, &stdout, &stderr)
+
+	if code != exitcodes.Usage || !strings.Contains(stderr.String(), "not enrolled") {
+		t.Fatalf("run(serve --forward) = %d, want the not-enrolled refusal:\n%s%s",
+			code, stdout.String(), stderr.String())
 	}
 }
 

@@ -101,3 +101,30 @@ func TestOptionalOriginWireCompatibility(t *testing.T) {
 		}
 	}
 }
+
+// `forwardable` is written only when true, so its absence is false: a service
+// the server did not mark is one `serve --forward` refuses. readDocument is
+// the one decoder every reader of the document goes through.
+func TestForwardableIsReadOnlyWhereTheServerWroteIt(t *testing.T) {
+	wire := `{"renderer_version":1,"services":[` +
+		`{"id":"a","kind":"vmrunner","org":"platform","port":7443,"state":"approved","address":"fd06:6e7:0:a::5","forwardable":true},` +
+		`{"id":"b","kind":"egress","org":"platform","port":8443,"state":"approved","address":"fd06:6e7:0:a::5"}]}`
+
+	doc, err := readDocument(bytes.NewBufferString(wire))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !doc.Services[0].Forwardable || doc.Services[1].Forwardable {
+		t.Fatalf("forwardable = %t, %t; want true where written and false where absent",
+			doc.Services[0].Forwardable, doc.Services[1].Forwardable)
+	}
+
+	// Re-encoded, an unmarked service carries no mark, as the server wrote it.
+	encoded, err := json.Marshal(doc.Services[1])
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bytes.Contains(encoded, []byte("forwardable")) {
+		t.Fatalf("an unmarked service encodes as %s, want no forwardable key", encoded)
+	}
+}

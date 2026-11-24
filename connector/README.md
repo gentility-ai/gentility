@@ -268,6 +268,29 @@ refused, because the filter drops it and IPv6 gets no reset. A machine you
 have left with `gentility leave`, or lost, keeps reaching your ssh until an
 admin revokes it, so have a lost machine revoked.
 
+## A host that forwards one service
+
+```
+connector serve --forward vmrunner=/run/vmrunner/door.sock
+```
+
+A host that runs loop computers serves one thing on the overlay: its runner,
+which listens on a unix socket and nowhere else. `--forward` carries that
+service to the socket. It forwards a kind only if this binary lists it
+(`vmrunner`, today) and the server has declared it for this node and marked it
+`forwardable` in the config document, which no heartbeat can do. The first
+document must carry exactly one such entry, or `serve` exits 2 and is not
+restarted, so start a host's unit with `--forward` only once its document shows
+the service. Later, the forward is bound only while the current document
+carries exactly one approved, marked entry; without it, every forwarded
+connection is closed and the node runs on.
+
+With `--forward` the heartbeat offers nothing and no egress relay runs, and
+`--interface` is refused: the node stays in userspace. It listens on its own
+address in the service's organization, lets in only the platform gateway the
+current document names, and copies bytes both ways without reading them. If
+the socket does not answer, the connection is closed, with no retry.
+
 ## Building and testing
 
 Contract readers expect the single published `contract/` directory beside

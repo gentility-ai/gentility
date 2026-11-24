@@ -133,6 +133,12 @@ type Service struct {
 	Port    int    `json:"port"`
 	State   string `json:"state"`
 	Address string `json:"address"`
+
+	// Forwardable is the server's mark on a service `connector serve
+	// --forward` may carry to a local socket (internal/forward). The renderer
+	// writes it only when true, and only on this node's own services, so an
+	// absent mark reads false and refuses.
+	Forwardable bool `json:"forwardable,omitempty"`
 }
 
 // Egress is the relay this node's organization selected, and the path it holds

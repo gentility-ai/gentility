@@ -9,6 +9,8 @@ import (
 	"github.com/gentility-ai/gentility/connector/internal/config"
 	"github.com/gentility-ai/gentility/connector/internal/egress"
 	"github.com/gentility-ai/gentility/connector/internal/enroll"
+	"github.com/gentility-ai/gentility/connector/internal/forward"
+	"github.com/gentility-ai/gentility/connector/internal/gateway"
 	"github.com/gentility-ai/gentility/connector/internal/refusal"
 	"github.com/gentility-ai/gentility/connector/internal/report"
 	"github.com/gentility-ai/gentility/connector/internal/state"
@@ -124,19 +126,37 @@ func attend(ctx context.Context, opts Options, a Attendance, logf func(string, .
 
 	admit := egress.NewAdmitClient(client, base, a.Identity.NodeCredential)
 
+	forwarder := forwarding(opts, a, logf)
+	if forwarder != nil {
+		defer forwarder.Stop()
+	}
+
 	var current *config.Document
 	refreshDiscovery := func() {
 		if current != nil {
 			_ = trees.apply(treeContext, a, current, base, client, logf)
 		}
 	}
-	configs.OnUnchanged = refreshDiscovery
+	configs.OnUnchanged = func() {
+		refreshDiscovery()
+		// A forward whose bind failed is tried again on the document this
+		// node already holds; documents arrive only when something changes.
+		if forwarder != nil && current != nil {
+			_ = forwarder.Apply(ctx, current)
+		}
+	}
 	return configs.Run(ctx, func(document *config.Document) error {
 		if err := document.Adopt(a.Session.Node, a.Store); err != nil {
 			return err
 		}
 
-		if err := act(ctx, reconcile(document, relay.serving()), document, relay, advertised, a, admit, logf); err != nil {
+		// A forwarding node runs no relay at all, so it is never an egress by
+		// what runs here, not only by what the server approved.
+		if forwarder != nil {
+			if err := forwarder.Apply(ctx, document); err != nil {
+				return err
+			}
+		} else if err := act(ctx, reconcile(document, relay.serving()), document, relay, advertised, a, admit, logf); err != nil {
 			return err
 		}
 
@@ -153,8 +173,24 @@ func attend(ctx context.Context, opts Options, a Attendance, logf func(string, .
 	})
 }
 
+// forwarding is the forwarder `--forward` asks for, or nil when it asks for
+// none. Its gateway check is the egress relay's attribution: the head knows the
+// peer, the peer is in this org, and it holds the address it came from.
+func forwarding(opts Options, a Attendance, logf func(string, ...any)) *forward.Forwarder {
+	if opts.Forward == (forward.Spec{}) {
+		return nil
+	}
+	return &forward.Forwarder{
+		Spec:      opts.Forward,
+		Listen:    a.Session.Node.Listen,
+		Attribute: gateway.Attributor(a.Session.Node.WhoIs),
+		Log:       logf,
+	}
+}
+
 // offers is what this node advertises on every heartbeat: the egress relay, on
-// a server, and nothing at all on a person's machine.
+// a server, and nothing at all on a person's machine or on a node that
+// forwards — whose one service the server declares, and a heartbeat cannot.
 //
 // The mothership's presence parser is all-or-nothing — one kind it will not
 // accept and every heartbeat is refused — so nothing else goes in here, and
@@ -162,7 +198,7 @@ func attend(ctx context.Context, opts Options, a Attendance, logf func(string, .
 // relay, and a user node may not declare one, so offering it got every one of
 // its heartbeats answered 422.
 func offers(opts Options) []report.Service {
-	if opts.Interface {
+	if opts.Interface || opts.Forward != (forward.Spec{}) {
 		return nil
 	}
 	return []report.Service{{Kind: "egress", Port: opts.EgressPort}}
