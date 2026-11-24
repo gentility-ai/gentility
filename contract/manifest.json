@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "32c2643e0dc65524c9f1f6f9f00937322fd68d59986bc381d9ff2285d23e353d"
+      "sha256": "2115cdb6bfcfb008eb2bab2bb79347cb064a48e4e7c4115ccbe4469c787bb6c4"
     },
     "config_change/README.md": {
       "executable": false,
@@ -1391,12 +1391,12 @@
     "server/asks.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "0e7c4343bf596e9c3c0f79c8f9d2afdec6f022c88464e291511f8c121f2c4fdc"
+      "sha256": "e6c54095a9285848388252850e50bf2a82e53d39452dfab4b574622388dea603"
     },
     "server/contract.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "c28b03d18c9f6065c7ab2878dc7fc6bb6132142b6ac36f188028ab911c3c2884"
+      "sha256": "90e3a1645fc356f5a44dffb3bafa72c3f842d928d2ab1e3b9d7e1f9f810f3913"
     },
     "server/desk/answer.json": {
       "executable": false,
@@ -1427,6 +1427,11 @@
       "executable": false,
       "owner": "server",
       "sha256": "73d7a41882169f9057b17a64761a69c4d803b93eda501c54335b729a481b9bb6"
+    },
+    "server/desk/ask_computer_shell.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "ad8a45b6678fd989ee6971335acb762b3a20218f5b3eef235ddba5268186749d"
     },
     "server/desk/ask_session_answer.json": {
       "executable": false,
@@ -1588,6 +1593,26 @@
       "owner": "server",
       "sha256": "242fe86afecce2fdc97913d5c45077139ac0e36703a125f199f2d8fe1902bf00"
     },
+    "server/desk/shell_accept.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "a13e75f0e6d5c6289a064772a85b7bf4f5a9b072627bc26397bbed842da6b90c"
+    },
+    "server/desk/shell_report.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "f7912eea77b0fce331089233848751b9e8ebf1427738b9415a51eae399694ed1"
+    },
+    "server/desk/shell_report_cancel.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "76131cdc11efe848f3d36a5ab4d3f22a3999256b45d513e0eb2f1a4167235774"
+    },
+    "server/desk/shell_report_settled.json": {
+      "executable": false,
+      "owner": "server",
+      "sha256": "09b37404781e9fa47c21c79013626b176a28c0178ad3b618561c76c5be1af75e"
+    },
     "server/facts.json": {
       "executable": false,
       "owner": "server",
@@ -1631,7 +1656,7 @@
     "server/looper_threads/join.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "cedde3cfd581747a1f12c392538e6a65737370b8985f9eea43f1b2835fb1c887"
+      "sha256": "3a20ced153a0a44ecb94541d4a51dd250946556ca29ea0172fb645e4492ea833"
     },
     "server/looper_threads/list.json": {
       "executable": false,
@@ -1706,12 +1731,12 @@
     "server/refusals.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "522d3a0428033d908731622a3a23039f5538a9c2f849ad5ac90063ab9e4c9e7f"
+      "sha256": "81b5cfef5f5b98b4f178f971e5ce167ef8f0d54914b93068d6bb7b811b702994"
     },
     "server/refused.jsonl": {
       "executable": false,
       "owner": "server",
-      "sha256": "3e38071d5bed9b06e4cdee7d1fdd940fb9f25dacfc108fb4403d1e03af5ba5ac"
+      "sha256": "a793a27c12b60b8d7fc473aac269e19375b96b07405bc98adcbd761ef168b267"
     },
     "server/rows/feed.json": {
       "executable": false,
@@ -1816,12 +1841,12 @@
     "server/rpc/hello.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "2c338c64d55ed6aeb45f33143f74b9953b3ea3f96294b7d632a1fb4ec8d63c55"
+      "sha256": "ce0140ad989de63b4dcb814ae26cbd3051ef808bc564992d5ac7f2a76d108a6e"
     },
     "server/rpc/hello_host.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "95c9865b46e7f043438423aa25ef9dcb9ee682e3f6f95ef3a45dbb6235f5f8af"
+      "sha256": "471a8fa6c9b1976e6e325658315a9557af8810e0cbb744bef763bd7c1a2d254a"
     },
     "server/rpc/hello_required.json": {
       "executable": false,
@@ -2536,7 +2561,7 @@
     "server/work_sessions/join.json": {
       "executable": false,
       "owner": "server",
-      "sha256": "07c7aa68edb7878445d7adbbd1cbdf8216c47981ef5d98659beba46b0e4ed875"
+      "sha256": "797f2b6ca20a50ce190727c2b3de07ab914e8f231edb19f306dfb4d2e995f9a4"
     },
     "server/work_sessions/lease_take.json": {
       "executable": false,
@@ -3096,8 +3121,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 31,
-  "source_commit": "75218488a1c7d39dc1c94a95985da2cc397a566f",
+  "number": 32,
+  "source_commit": "30d10cdc6e6153abab64a4e96b91c11b85d87149",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

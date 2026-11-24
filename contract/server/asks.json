@@ -49,6 +49,32 @@
       "unsupported"
     ]
   },
+  "computer_shell": {
+    "decisions": [
+      "cancelled",
+      "exited",
+      "refused",
+      "unknown"
+    ],
+    "payload": [
+      "binding_generation",
+      "command_bytes",
+      "command_sha256",
+      "computer_id",
+      "deadline",
+      "desk_machine_id",
+      "time_limit_s",
+      "version"
+    ],
+    "refusals": [
+      "busy",
+      "expired",
+      "forbidden",
+      "malformed",
+      "not_ready",
+      "unsupported"
+    ]
+  },
   "host_upgrade": {
     "decisions": [
       "current",

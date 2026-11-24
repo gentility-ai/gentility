@@ -2417,6 +2417,297 @@
       ]
     },
     {
+      "name": "machine.shell_accept",
+      "description": "A computer's guest takes its `computer_shell` ask: the one time the command leaves the server. Asked again before the ask's `deadline` it answers the same verdict, and never a second lease. `lease_expires_at` is information: the guest counts its lease on its own clock, from when it sent the call.",
+      "x-phoenix": {
+        "channel": "desk",
+        "event": "shell_accept"
+      },
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "ask_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "result": {
+        "name": "verdict",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "integer"
+            },
+            "ask_id": {
+              "type": "string"
+            },
+            "computer_id": {
+              "type": "string"
+            },
+            "desk_machine_id": {
+              "type": "string"
+            },
+            "binding_generation": {
+              "type": "integer"
+            },
+            "scope": {
+              "type": "string"
+            },
+            "command": {
+              "type": "string"
+            },
+            "cwd": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "time_limit_s": {
+              "type": "integer"
+            },
+            "lease_expires_at": {
+              "type": "string"
+            },
+            "expires_at": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "version",
+            "ask_id",
+            "computer_id",
+            "desk_machine_id",
+            "binding_generation",
+            "scope",
+            "command",
+            "cwd",
+            "time_limit_s",
+            "lease_expires_at",
+            "expires_at"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "x-refusals": [
+        "already_decided",
+        "computer_unavailable",
+        "expired",
+        "forbidden",
+        "held_by_another_run",
+        "install_credential_required",
+        "install_mismatch",
+        "install_unavailable",
+        "invalid_id",
+        "loop_deleted",
+        "mcp_guest_refused",
+        "not_found",
+        "not_ready",
+        "organization_closed",
+        "person_guest_refused",
+        "personal_install_unsupported",
+        "scope_not_open",
+        "scope_not_switched",
+        "switch_off",
+        "wrong_kind",
+        "wrong_owner"
+      ]
+    },
+    {
+      "name": "machine.shell_report",
+      "description": "A guest's report of a job it accepted, at least every ten seconds while it runs: output, the outcome once it has ended, and whether to carry on. `cancel` names its `reason`; a job it is told of is stopped. A report on a settled ask is `settled`. A chunk below the length held is a duplicate and is not stored; one past it refuses the whole report as `gap`, whose `stdout_length` and `stderr_length` say where to send from, unless the job must stop, which is said first. A decision or reason this server does not know settles the ask `unknown`. An `outcome` of `refused` needs no accept.",
+      "x-phoenix": {
+        "channel": "desk",
+        "event": "shell_report"
+      },
+      "paramStructure": "by-name",
+      "params": [
+        {
+          "name": "ask_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "seq",
+          "required": true,
+          "schema": {
+            "description": "Rises with each report of the job.",
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        {
+          "name": "stdout",
+          "required": false,
+          "schema": {
+            "description": "What was written to stdout since the length the server last named.",
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "offset": {
+                "description": "Where in the stream `data` starts.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "data": {
+                "description": "Base64, at most 256 KiB decoded.",
+                "type": "string"
+              },
+              "total": {
+                "description": "The bytes the command has produced so far.",
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "offset",
+              "data",
+              "total"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "stderr",
+          "required": false,
+          "schema": {
+            "description": "What was written to stderr since the length the server last named.",
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "offset": {
+                "description": "Where in the stream `data` starts.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "data": {
+                "description": "Base64, at most 256 KiB decoded.",
+                "type": "string"
+              },
+              "total": {
+                "description": "The bytes the command has produced so far.",
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "offset",
+              "data",
+              "total"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "outcome",
+          "required": false,
+          "schema": {
+            "description": "The terminal answer, sent again until it is acknowledged.",
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "cancelled",
+                  "exited",
+                  "refused",
+                  "unknown"
+                ],
+                "x-open": true
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "exit_code": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "signal": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "decision"
+            ],
+            "additionalProperties": false
+          }
+        }
+      ],
+      "result": {
+        "name": "reply",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "state": {
+              "type": "string",
+              "enum": [
+                "continue",
+                "cancel",
+                "settled"
+              ]
+            },
+            "reason": {
+              "description": "`cancel`: why, as the ask's `ask_cancel_requested` records it.",
+              "type": "string"
+            },
+            "lease_expires_at": {
+              "description": "`continue`: information, as the verdict's.",
+              "type": "string"
+            },
+            "stdout_length": {
+              "description": "The bytes of stdout the server holds.",
+              "type": "integer",
+              "minimum": 0
+            },
+            "stderr_length": {
+              "description": "The bytes of stderr the server holds.",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "state",
+            "stdout_length",
+            "stderr_length"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "x-refusals": [
+        "gap",
+        "install_credential_required",
+        "install_mismatch",
+        "install_unavailable",
+        "invalid_id",
+        "mcp_guest_refused",
+        "not_accepted",
+        "not_found",
+        "person_guest_refused",
+        "personal_install_unsupported",
+        "too_large",
+        "wrong_kind"
+      ]
+    },
+    {
       "name": "mcp.list",
       "description": "The MCP servers the person sees in one project, or everywhere when `project` is null (`Gentility.MCP.Upstreams.for_desk/2`): the organization's and their own, never another member's, that are offered there. Each says its `level`, the project it is limited to, its `state`, how many tools it has, and the person's switches: `on`, not switched off everywhere, and `on_here`, not switched off in `project` either (equal to `on` when it is null). A project that does not read as one is `invalid_project`, with the context's sentence.",
       "x-phoenix": {
@@ -8082,6 +8373,7 @@
             "enum": [
               "adapter_update",
               "computer_screenshot",
+              "computer_shell",
               "host_upgrade",
               "host_upgrade_cancel",
               "phone_claim",
@@ -8933,6 +9225,72 @@
             "not_ready",
             "personal_control",
             "secret_fill",
+            "unsupported"
+          ]
+        },
+        "computer_shell": {
+          "payload": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "computer_id": {
+                "type": "string"
+              },
+              "desk_machine_id": {
+                "type": "string"
+              },
+              "binding_generation": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "deadline": {
+                "description": "The latest the guest may accept it.",
+                "type": "string"
+              },
+              "command_sha256": {
+                "description": "Hex, of the command's UTF-8 bytes. The command comes with `machine.shell_accept`.",
+                "type": "string"
+              },
+              "command_bytes": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 16384
+              },
+              "time_limit_s": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 3600
+              }
+            },
+            "required": [
+              "version",
+              "computer_id",
+              "desk_machine_id",
+              "binding_generation",
+              "deadline",
+              "command_sha256",
+              "command_bytes",
+              "time_limit_s"
+            ],
+            "additionalProperties": false
+          },
+          "decisions": [
+            "cancelled",
+            "exited",
+            "refused",
+            "unknown"
+          ],
+          "refusals": [
+            "busy",
+            "expired",
+            "forbidden",
+            "malformed",
+            "not_ready",
             "unsupported"
           ]
         }
@@ -10506,6 +10864,14 @@
           "topic": {
             "description": "`event_emit_failed`: the event topic whose emit failed.",
             "type": "string"
+          },
+          "stdout_length": {
+            "description": "`gap` (`machine.shell_report`): the bytes of stdout the server holds.",
+            "type": "integer"
+          },
+          "stderr_length": {
+            "description": "`gap` (`machine.shell_report`): the bytes of stderr the server holds.",
+            "type": "integer"
           }
         },
         "required": [

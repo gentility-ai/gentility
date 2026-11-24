@@ -1,0 +1,23 @@
+{
+  "event": "shell_accept",
+  "payload": {
+    "ask_id": "00000000-0000-7000-8000-000000000001"
+  },
+  "reply": {
+    "response": {
+      "ask_id": "00000000-0000-7000-8000-000000000001",
+      "binding_generation": 1,
+      "command": "make test",
+      "computer_id": "00000000-0000-7000-8000-000000000002",
+      "cwd": "app",
+      "desk_machine_id": "00000000-0000-7000-8000-000000000003",
+      "expires_at": "2026-01-01T00:00:00.000000Z",
+      "lease_expires_at": "2026-01-01T00:00:00.000000Z",
+      "scope": "shell",
+      "time_limit_s": 300,
+      "version": 1
+    },
+    "status": "ok"
+  },
+  "topic": "desk:<org>:<machine>"
+}

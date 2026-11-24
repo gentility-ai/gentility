@@ -98,6 +98,43 @@
       "scope_not_granted",
       "wrong_grantee",
       "wrong_kind"
+    ],
+    "shell_accept": [
+      "already_decided",
+      "computer_unavailable",
+      "expired",
+      "forbidden",
+      "held_by_another_run",
+      "install_credential_required",
+      "install_mismatch",
+      "install_unavailable",
+      "invalid_id",
+      "loop_deleted",
+      "mcp_guest_refused",
+      "not_found",
+      "not_ready",
+      "organization_closed",
+      "person_guest_refused",
+      "personal_install_unsupported",
+      "scope_not_open",
+      "scope_not_switched",
+      "switch_off",
+      "wrong_kind",
+      "wrong_owner"
+    ],
+    "shell_report": [
+      "gap",
+      "install_credential_required",
+      "install_mismatch",
+      "install_unavailable",
+      "invalid_id",
+      "mcp_guest_refused",
+      "not_accepted",
+      "not_found",
+      "person_guest_refused",
+      "personal_install_unsupported",
+      "too_large",
+      "wrong_kind"
     ]
   },
   "looper_threads": {

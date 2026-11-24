@@ -53,7 +53,8 @@
         "rpc_phone",
         "transcript_copy",
         "transcript_copy_paging",
-        "delegated_grants"
+        "delegated_grants",
+        "computer_shell_methods"
       ]
     },
     "status": "ok"

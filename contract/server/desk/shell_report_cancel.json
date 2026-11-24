@@ -1,0 +1,17 @@
+{
+  "event": "shell_report",
+  "payload": {
+    "ask_id": "00000000-0000-7000-8000-000000000001",
+    "seq": 3
+  },
+  "reply": {
+    "response": {
+      "reason": "shell_disabled",
+      "state": "cancel",
+      "stderr_length": 0,
+      "stdout_length": 3
+    },
+    "status": "ok"
+  },
+  "topic": "desk:<org>:<machine>"
+}

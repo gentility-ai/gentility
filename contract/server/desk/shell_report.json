@@ -1,0 +1,22 @@
+{
+  "event": "shell_report",
+  "payload": {
+    "ask_id": "00000000-0000-7000-8000-000000000001",
+    "seq": 1,
+    "stdout": {
+      "data": "b2sK",
+      "offset": 0,
+      "total": 3
+    }
+  },
+  "reply": {
+    "response": {
+      "lease_expires_at": "2026-01-01T00:00:00.000000Z",
+      "state": "continue",
+      "stderr_length": 0,
+      "stdout_length": 3
+    },
+    "status": "ok"
+  },
+  "topic": "desk:<org>:<machine>"
+}

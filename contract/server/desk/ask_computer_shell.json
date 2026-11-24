@@ -1,0 +1,19 @@
+{
+  "event": "ask",
+  "payload": {
+    "expires_at": "2026-01-01T00:00:00.000000Z",
+    "id": "00000000-0000-7000-8000-000000000001",
+    "kind": "computer_shell",
+    "payload": {
+      "binding_generation": 1,
+      "command_bytes": 9,
+      "command_sha256": "22cc66aa7d2624b4eb4d5b61658614cd6c32477b123afbf7dbc7fc3d7d0f3713",
+      "computer_id": "00000000-0000-7000-8000-000000000002",
+      "deadline": "2026-01-01T00:00:00.000000Z",
+      "desk_machine_id": "00000000-0000-7000-8000-000000000003",
+      "time_limit_s": 300,
+      "version": 1
+    }
+  },
+  "topic": "desk:<org>:<machine>"
+}

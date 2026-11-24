@@ -112,7 +112,8 @@
         "rpc_phone",
         "transcript_copy",
         "transcript_copy_paging",
-        "delegated_grants"
+        "delegated_grants",
+        "computer_shell_methods"
       ],
       "message_limits": {
         "chain_hops": 1000,
