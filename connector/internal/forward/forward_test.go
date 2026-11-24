@@ -19,6 +19,7 @@ import (
 	"github.com/gentility-ai/gentility/connector/internal/config"
 	"github.com/gentility-ai/gentility/connector/internal/exitcodes"
 	"github.com/gentility-ai/gentility/connector/internal/tsnode"
+	"github.com/gentility-ai/gentility/connector/internal/version"
 )
 
 const (
@@ -451,6 +452,58 @@ func TestALaterDocumentWithTwoMarkedEntriesUnbinds(t *testing.T) {
 	h.apply(document(vmrunner("approved", true), vmrunner("approved", true)))
 	if !closed(open) {
 		t.Fatal("two marked entries left the forward bound; neither is to be picked")
+	}
+}
+
+func belowTheFloor(services ...config.Service) *config.Document {
+	d := document(services...)
+	d.CapverFloor = version.NodeCapver + 1
+	return d
+}
+
+func TestBelowTheCapverFloorNothingNewIsBound(t *testing.T) {
+	h := newHarness(t)
+	h.echo()
+
+	h.apply(belowTheFloor(vmrunner("approved", true)))
+	h.apply(belowTheFloor(vmrunner("approved", true)))
+	if binds := h.binds(); len(binds) != 0 {
+		t.Fatalf("bound %v below the capver floor", binds)
+	}
+	if said := h.said(); len(said) != 1 || !strings.Contains(said[0], "below the server's capver floor") {
+		t.Fatalf("log = %q, want the floor said once", said)
+	}
+
+	h.apply(document(vmrunner("approved", true)))
+	if _, err := roundTrip(h.connect(), "raised"); err != nil {
+		t.Fatalf("after the floor fell again: %v", err)
+	}
+}
+
+// What is already carried goes on being carried, until its target changes:
+// then the old one ends, as it does above the floor, and no new one begins.
+func TestBelowTheCapverFloorAnUnchangedBindingIsKept(t *testing.T) {
+	h := newHarness(t)
+	h.echo()
+	h.apply(document(vmrunner("approved", true)))
+	open := h.connect()
+	if _, err := roundTrip(open, "above"); err != nil {
+		t.Fatal(err)
+	}
+
+	h.apply(belowTheFloor(vmrunner("approved", true)))
+	if _, err := roundTrip(open, "below"); err != nil {
+		t.Fatalf("an unchanged binding ended below the floor: %v", err)
+	}
+
+	moved := vmrunner("approved", true)
+	moved.Port++
+	h.apply(belowTheFloor(moved))
+	if !closed(open) {
+		t.Fatal("a connection outlived its target")
+	}
+	if binds := h.binds(); len(binds) != 1 {
+		t.Fatalf("binds = %v, want no new bind below the floor", binds)
 	}
 }
 

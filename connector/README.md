@@ -282,7 +282,8 @@ service to the socket. It forwards a kind only if this binary lists it
 bound only while the current document carries exactly one approved, marked
 entry. Otherwise nothing is bound, every forwarded connection is closed, and
 the node beats offering nothing and waits; its log says why. So a host's unit
-may start before the server has declared the service.
+may start before the server has declared the service. Below the server's capver
+floor, an unchanged binding is kept and nothing new is bound.
 
 With `--forward` the heartbeat offers nothing and no egress relay runs, and
 `--interface` is refused: the node stays in userspace. It listens on its own

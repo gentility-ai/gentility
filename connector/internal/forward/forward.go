@@ -19,9 +19,13 @@
 // The rule: the forward is bound only while the current document carries
 // exactly one approved, marked entry of the kind; otherwise nothing is bound,
 // the node beats offering nothing, and it waits. No document ends the process:
-// the first heartbeat waits for the first document to be applied, so a node
-// that refused a document without the entry would never be heard, and a server
-// that declares the service when it hears the node would never declare it.
+// a start is not special. A node may start, or restart, while the entry is
+// absent, whatever makes the server declare it, and a supervisor does not
+// restart an exit 2. The first heartbeat also waits for the first document to
+// be applied, so a node that exited on it would never be heard at all.
+//
+// Below the server's capver floor the node takes on nothing new: a binding
+// whose target is unchanged is kept, and nothing else is bound.
 package forward
 
 import (
@@ -40,6 +44,7 @@ import (
 	"github.com/gentility-ai/gentility/connector/internal/config"
 	"github.com/gentility-ai/gentility/connector/internal/exitcodes"
 	"github.com/gentility-ai/gentility/connector/internal/gateway"
+	"github.com/gentility-ai/gentility/connector/internal/version"
 )
 
 // Kinds is every service kind this binary will forward. It is a positive
@@ -129,6 +134,11 @@ func (f *Forwarder) Apply(ctx context.Context, document *config.Document) {
 	}
 	if want == (target{}) {
 		f.wait(reason)
+		return
+	}
+
+	if document.CapverFloor > version.NodeCapver {
+		f.wait("this connector is below the server's capver floor and takes on nothing new")
 		return
 	}
 
