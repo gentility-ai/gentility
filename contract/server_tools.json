@@ -36,6 +36,7 @@
     "desk_machine_upgrade",
     "events_recent",
     "group_convene",
+    "group_list",
     "group_post",
     "group_read",
     "group_stop",
