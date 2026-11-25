@@ -1,0 +1,63 @@
+{
+  "id": 21,
+  "response": {
+    "commands": [
+      {
+        "description": "Compact the context",
+        "name": "compact"
+      },
+      {
+        "description": "Review the diff",
+        "name": "review"
+      }
+    ],
+    "options": [
+      {
+        "category": "model",
+        "choices": [
+          {
+            "description": null,
+            "name": "Fake Large",
+            "value": "fake-large"
+          },
+          {
+            "description": null,
+            "name": "Fake Small",
+            "value": "fake-small"
+          }
+        ],
+        "current": "fake-large",
+        "id": "model",
+        "name": "Model"
+      },
+      {
+        "category": "effort",
+        "choices": [
+          {
+            "description": null,
+            "name": "Low",
+            "value": "low"
+          },
+          {
+            "description": null,
+            "name": "Medium",
+            "value": "medium"
+          },
+          {
+            "description": null,
+            "name": "High",
+            "value": "high"
+          }
+        ],
+        "current": "medium",
+        "id": "thought_level",
+        "name": "Effort"
+      }
+    ],
+    "prompts": {
+      "embedded_context": false,
+      "image": false
+    },
+    "type": "harness_config"
+  }
+}

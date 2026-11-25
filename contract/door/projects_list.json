@@ -1,0 +1,20 @@
+{
+  "id": 19,
+  "response": {
+    "projects": [
+      {
+        "agent": null,
+        "name": "checkout",
+        "nested": false,
+        "new_threads": null,
+        "organization_id": null,
+        "project_path": "/tmp/recorded",
+        "repository": null,
+        "setup_command": null,
+        "updated_at": "2026-01-01T00:00:00.000000Z",
+        "worktrees_dir": "/tmp/recorded/trees"
+      }
+    ],
+    "type": "projects"
+  }
+}

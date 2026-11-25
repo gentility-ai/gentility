@@ -1,0 +1,15 @@
+{
+  "id": 18,
+  "response": {
+    "branches": [
+      "main"
+    ],
+    "default_base": "main",
+    "nested": false,
+    "new_threads": null,
+    "remembered": true,
+    "setup_command": null,
+    "type": "worktree_layout",
+    "worktrees_dir": "/tmp/recorded/trees"
+  }
+}

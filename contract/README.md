@@ -37,7 +37,8 @@ and transport envelopes. It normalizes identities, instants, hashes, timings,
 paths, builds and machine names. Only moments the phone interprets are
 recorded: text, tool calls, turn endings, heard, handoff, continued and lagged.
 Permission questions and answers, prompt queue actions, forms, links and
-refusals are recorded too. These are examples of supported exchanges, not a
+refusals are recorded too, as are the answers a phone starts a thread from, the
+start, and the stop of a turn. These are examples of supported exchanges, not a
 complete transcript of every event the core can emit.
 
 ## Compatibility and publication

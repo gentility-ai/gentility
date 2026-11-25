@@ -1,0 +1,80 @@
+{
+  "id": 22,
+  "response": {
+    "branch": "main",
+    "config": [
+      {
+        "category": "model",
+        "choices": [
+          {
+            "description": null,
+            "name": "Fake Large",
+            "value": "fake-large"
+          },
+          {
+            "description": null,
+            "name": "Fake Small",
+            "value": "fake-small"
+          }
+        ],
+        "current": "fake-large",
+        "id": "model",
+        "name": "Model"
+      },
+      {
+        "category": "effort",
+        "choices": [
+          {
+            "description": null,
+            "name": "Low",
+            "value": "low"
+          },
+          {
+            "description": null,
+            "name": "Medium",
+            "value": "medium"
+          },
+          {
+            "description": null,
+            "name": "High",
+            "value": "high"
+          }
+        ],
+        "current": "medium",
+        "id": "thought_level",
+        "name": "Effort"
+      }
+    ],
+    "cwd": "/tmp/recorded",
+    "modes": [
+      {
+        "id": "default",
+        "kind": "supervised",
+        "name": "Manual"
+      },
+      {
+        "id": "acceptEdits",
+        "kind": "auto_accept_edits",
+        "name": "Accept edits"
+      },
+      {
+        "id": "plan",
+        "kind": null,
+        "name": "Plan"
+      },
+      {
+        "id": "auto",
+        "kind": "auto",
+        "name": "Auto"
+      },
+      {
+        "id": "bypassPermissions",
+        "kind": "full_access",
+        "name": "Bypass permissions"
+      }
+    ],
+    "session_id": "00000000-0000-7000-8000-000000000019",
+    "type": "session_started",
+    "url": "https://desk.test/cool-corp/sessions/00000000-0000-7000-8000-000000000019"
+  }
+}

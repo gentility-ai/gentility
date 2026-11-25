@@ -6,12 +6,12 @@
     "README.md": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "83bd911831f81a16ad22dc433f235742e01d8b6c23d3ed4bc54d721dd0f521d6"
+      "sha256": "efeea1732634990eada2b3f48a8e8593329a3094350c52b881f1be667db71b4e"
     },
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "19b8d5c59e421f037fe563007c7254eb8d98bc221b278c3db3e5fdbbfd52e273"
+      "sha256": "ea243e5457028e97f9bc93b37a72f8e80ea61ae081911bb037765590ee6aa435"
     },
     "config_change/README.md": {
       "executable": false,
@@ -193,10 +193,20 @@
       "owner": "core",
       "sha256": "3edc6a4d7c4c8daed47a93f7db975da41986ca9ea719e926497bb6bd3ebc98a1"
     },
+    "door/harness_config.json": {
+      "executable": false,
+      "owner": "core",
+      "sha256": "06d4d288e6895646723545e18c93687300cc7b0efc809ec4e53a61af38f25cbc"
+    },
     "door/hello.json": {
       "executable": false,
       "owner": "core",
       "sha256": "f31d666ef7712644915582ed06a713f98aac4a7c05423c6f7541c0276103db9a"
+    },
+    "door/projects_list.json": {
+      "executable": false,
+      "owner": "core",
+      "sha256": "f6533ff3e72784ebeb8af8f791325029247e43fc8d46e4f0ae5e1fe68b8802a8"
     },
     "door/prompt.json": {
       "executable": false,
@@ -207,6 +217,11 @@
       "executable": false,
       "owner": "core",
       "sha256": "761712b879952520120252b67aa7f6f4ddd99fff8228f9792cd41bee310519d7"
+    },
+    "door/readiness.json": {
+      "executable": false,
+      "owner": "core",
+      "sha256": "e4037a738f14a16f27b0c678edd7f88c8ce9c31c4354d59d62f08fd043b48696"
     },
     "door/said_answered.json": {
       "executable": false,
@@ -258,6 +273,11 @@
       "owner": "core",
       "sha256": "965da8172d3f782914145c30a3e047a93ee818341cec250d63961bb4ab682f66"
     },
+    "door/session_abort.json": {
+      "executable": false,
+      "owner": "core",
+      "sha256": "64b4ffa4204f9ed6b43c7304d2a9cde31e018bcd48f34c2a98f122d6c101c67b"
+    },
     "door/session_attention_approval.json": {
       "executable": false,
       "owner": "core",
@@ -282,6 +302,11 @@
       "executable": false,
       "owner": "core",
       "sha256": "25d158b7086788e93f2d5dbf5535e5c5639c061375e1e2ffb51c4359910a0de3"
+    },
+    "door/session_start.json": {
+      "executable": false,
+      "owner": "core",
+      "sha256": "c64705c45d637107bcbb42d4a3bab6d4c4656533bb8de40907b1a02dd95a9be8"
     },
     "door/session_transcript.json": {
       "executable": false,
@@ -322,6 +347,11 @@
       "executable": false,
       "owner": "core",
       "sha256": "23d70588342e090bf49f547eb9dd471cce09917b32d854f1cf4718e135470ae2"
+    },
+    "door/worktree_layout.json": {
+      "executable": false,
+      "owner": "core",
+      "sha256": "b0515a93627e4adea006006387fcb4257df1a10b9f5c43de6a131d710e2840d2"
     },
     "fold/README.md": {
       "executable": false,
@@ -3121,8 +3151,8 @@
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 33,
-  "source_commit": "948f9a57d823ba782ccc4a9cb2cba5d7c49ffc50",
+  "number": 34,
+  "source_commit": "235fa43dcbcf3f83963bbd07bd9b06d1466b9a3a",
   "versions": {
     "contract": "1.0.0",
     "fold": 10,

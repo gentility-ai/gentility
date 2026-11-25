@@ -1,0 +1,110 @@
+{
+  "id": 20,
+  "response": {
+    "harnesses": [
+      {
+        "adapter": {
+          "name": "claude-agent-acp",
+          "version": "0.0.0"
+        },
+        "cli": {
+          "found": true,
+          "name": "claude"
+        },
+        "driver": "acp",
+        "fixes": [],
+        "harness": "claude",
+        "launcher": {
+          "found": true,
+          "name": "node"
+        },
+        "package": "@agentclientprotocol/claude-agent-acp",
+        "ready": true,
+        "signed_in": true
+      },
+      {
+        "adapter": {
+          "name": "codex-acp",
+          "version": "0.0.0"
+        },
+        "cli": {
+          "found": true,
+          "name": "codex"
+        },
+        "driver": "acp",
+        "fixes": [
+          {
+            "command": "codex login",
+            "label": "Sign in to Codex",
+            "what": "sign_in"
+          }
+        ],
+        "harness": "codex",
+        "launcher": {
+          "found": true,
+          "name": "node"
+        },
+        "package": "@agentclientprotocol/codex-acp",
+        "ready": false,
+        "signed_in": false
+      },
+      {
+        "adapter": {
+          "name": "pi-coding-agent",
+          "version": "0.0.0"
+        },
+        "cli": null,
+        "driver": "acp",
+        "fixes": [
+          {
+            "command": null,
+            "label": "Desk could not ask the server for oh-my-pi's route",
+            "what": "sign_in"
+          }
+        ],
+        "harness": "omp",
+        "launcher": {
+          "found": true,
+          "name": "node"
+        },
+        "package": "@oh-my-pi/pi-coding-agent",
+        "ready": false,
+        "refusal": "unreachable",
+        "signed_in": false
+      },
+      {
+        "adapter": {
+          "name": "antigravity-cli",
+          "version": "0.0.0"
+        },
+        "cli": null,
+        "driver": "acp",
+        "fixes": [],
+        "harness": "antigravity",
+        "launcher": {
+          "found": true,
+          "name": "antigravity-cli"
+        },
+        "package": "antigravity-cli",
+        "ready": true,
+        "signed_in": null
+      },
+      {
+        "adapter": null,
+        "cli": null,
+        "driver": "acp",
+        "fixes": [],
+        "harness": "fake",
+        "launcher": {
+          "found": true,
+          "name": "node"
+        },
+        "package": "",
+        "ready": true,
+        "signed_in": true
+      }
+    ],
+    "path": "inherited",
+    "type": "readiness"
+  }
+}
