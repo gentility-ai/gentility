@@ -3,7 +3,7 @@
   "attention": "none",
   "attention_line": null,
   "branch": "fix-flaky",
-  "fold": 10,
+  "fold": 11,
   "harness": "claude_code",
   "holder": {
     "epoch": 1,

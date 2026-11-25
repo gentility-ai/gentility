@@ -147,35 +147,51 @@ already under way. The Desk keeps the same list (`AFTER_CLOSE`). On
   `a_sequence_gap_on_an_archived_row_holds_rather_than_diverges`,
   `ledger.rs:7239` `an_unarchive_lifts_the_archive_and_the_hold_and_dates_nothing`.
 
-**R6. The question slot: the first terminal state wins, and only a person's
-turn clears a card.** A question moves from `open` to one terminal state at
-most once. A later answer, expiry or cancellation does not move it. The one
-exception is `escalated`, which overrides `answered`. A person's
-`turn_started` clears any card. An agent's turn clears only a card that has
-already expired, judged on `emitted_at`, and it marks a harness question
-(one with a `request_id`) `replaced`. An answer, expiry or cancellation
-clears the row's slot only if it names the question in the slot. Answering
+**R6. The question slot: it shows the newest card nothing has ended, the
+first terminal state wins, and a person's turn clears any card but an
+agent's ask.** A question moves from `open` to one terminal state at most
+once. A later answer, expiry or cancellation does not move it. The one
+exception is `escalated`, which overrides `answered`. An agent's
+ask is a `question_asked` with `source: "agent"` and no `request_id`: what
+`ask` writes, and not what a harness holds. The row keeps every open card: a
+newer card takes the slot, and the one it replaces waits behind it. An
+answer, expiry or cancellation clears the card it names, in the slot or
+behind it, and no other; an ask clears the card it escalates. A person's `turn_started` clears every card that is
+not an agent's ask, whether the turn was typed or begun by an answer. Any
+turn clears every card at or past its expiry. When the slot's card goes, the
+slot takes the newest card behind it whose expiry is after that fact's time,
+and the attention and its line follow; that writes no fact. A fact's time
+here is `emitted_at`, or its arrival where it has none. So the cards kept are
+bounded: each goes at its end, or on the first turn past its expiry. A
+non-person turn marks a harness question without a card (one with a
+`request_id`) `replaced`. A `question_cancelled` by the asking session with
+`outcome: "replied_in_thread"` ends its own ask as `replied_in_thread`, with
+no answer; any other outcome, actor or question is a plain cancel. Answering
 through the server: the same value again returns `ok` with the original,
 and a different value returns `already_answered` naming the winner. A
 question that is no longer live and was never answered returns
 `question_ended`.
 - Code: `finish/3` `lib/gentility/sessions/questions.ex:673-717`; `step/2`
-  `:634-655`; `Reducer` `turn_started` clause
-  `lib/gentility/sessions/reducer.ex:320-333`, answered/expired/cancelled
-  clause `:370-377`, `fold/2` passes `emitted_at` `:172-180`;
+  `:634-655`; `Reducer` `cards/1` to `live?/2`
+  `lib/gentility/sessions/reducer.ex:264-297`, `turn_started` clause
+  `:367-381`, `question_asked` `:391-415`, answered/expired/cancelled
+  clause `:421-429`, `fold/2` passes `emitted_at` `:186-191`;
   `Commands.answer/3` `lib/gentility/sessions/questions/commands.ex:254-281`,
   `repeat_answer/3` `:387-399`. Desk: harness approvals refuse
   `already_decided` (`desk/core/src/reactors/asks.rs:710-743`, raised in
-  `desk/core/src/api/desk.rs:6877, 6954`).
+  `desk/core/src/api/desk.rs:6877, 6954`), and `Question::step`
+  `desk/core/src/ledger.rs:849`.
 - Tests: `test/gentility/sessions/questions_fold_test.exs:89` "the canonical
   first answer wins even when a losing offline answer has an older clock";
   `test/gentility/sessions/reducer_test.exs:68` "only a person turn clears
-  the question and its line"; `:95` "a non-person turn keeps a question only
-  before its expiry, using emitted time"; `:149` "an answer or expiry clears
-  only the question it names";
-  `test/gentility/sessions/question_commands_test.exs:754` "a person answers
+  the question and its line"; `:117` "the slot shows the newest card nothing
+  has ended"; "a non-person turn keeps a question only before its expiry,
+  using emitted time"; "an answer or expiry clears only the question it
+  names";
+  `test/gentility/sessions/question_commands_test.exs:890` "a person answers
   once and conflicting answers name the original winner and time"; Desk
-  `ledger.rs:7495` `only_person_turns_end_or_overtake_a_reflex_question`.
+  `ledger.rs:8699` `only_person_turns_end_or_overtake_a_reflex_question`,
+  `the_slot_shows_the_newest_card_nothing_has_ended`.
 
 **R7. An ask settles once.** The first answer or expiry settles an ask. A
 later answer is kept on the ledger and changes nothing. An answer settles

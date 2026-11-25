@@ -2208,7 +2208,12 @@ opener?: string | null, };
 /**
  * A question row supplied by the owner-scoped server read. No local fold.
  */
-export type PersonQuestion = { session_id: string, question_id: string, source: string, text: string, thread_title: string, asked_at: string, expires_at: string, joined_count: number, answerable: boolean, parked: boolean, holder_online: boolean, state: QuestionState, fields?: Array<Field>, about?: JsonValue, project?: QuestionProject, machine?: QuestionMachine, manager?: QuestionManager, ended_at?: string, ended_by?: QuestionEnder, reason?: string, };
+export type PersonQuestion = { session_id: string, question_id: string, source: string, text: string, thread_title: string, asked_at: string, expires_at: string, joined_count: number, answerable: boolean, parked: boolean, holder_online: boolean, state: QuestionState, fields?: Array<Field>, about?: JsonValue, project?: QuestionProject, machine?: QuestionMachine, manager?: QuestionManager, ended_at?: string, ended_by?: QuestionEnder, reason?: string,
+/**
+ * A cancelled row its asker closed saying the person replied in the
+ * thread. A server from before it says nothing.
+ */
+replied?: boolean, };
 
 /**
  * The person logged in to the mothership, as the server named them.

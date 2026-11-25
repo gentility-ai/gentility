@@ -1046,6 +1046,7 @@
     "PersonQuestion.project": "? QuestionProject",
     "PersonQuestion.question_id": "string",
     "PersonQuestion.reason": "? string",
+    "PersonQuestion.replied": "? boolean",
     "PersonQuestion.session_id": "string",
     "PersonQuestion.source": "string",
     "PersonQuestion.state": "QuestionState",

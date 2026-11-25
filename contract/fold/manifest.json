@@ -7,6 +7,16 @@
     "addressed_card_stale_cancellation",
     "addressed_holder_text_only_record",
     "addressed_text_only_record",
+    "agent_ask_behind_a_card_a_person_turn_ends",
+    "agent_ask_closed_in_words",
+    "agent_ask_escalated_by_one_answered",
+    "agent_ask_expired_behind_one_answered",
+    "agent_ask_then_person_turn",
+    "agent_ask_then_person_turn_at_expiry",
+    "agent_ask_then_the_turn_an_answer_starts",
+    "agent_asks_newer_answered",
+    "agent_asks_newer_closed_in_words",
+    "agent_asks_newest_of_three_answered",
     "agent_gone_mid_turn",
     "agent_gone_then_agent_opened",
     "approval_answered",
@@ -18,6 +28,7 @@
     "closed_then_reopened",
     "elicitation_then_peer_turn",
     "fork",
+    "held_question_then_person_turn",
     "keep_open_blocks_settle",
     "keep_open_removed",
     "looper_reopened_for_a_person_turn",
@@ -103,7 +114,7 @@
     "keep_open",
     "mode"
   ],
-  "fold_version": 10,
+  "fold_version": 11,
   "notes": {
     "attention": "R3 (2026-10-29): the two old Desk shapes — a question_asked carrying a bare message, an approval_requested with no request map and nothing parked beside it (old_shape_question, old_shape_approval) — fold to the kind on the server and to none on the holder, whose local parked state is the truth for a held row. The server's reading is a guess about history, not a contract, and stays pending. No open row depends on it: on 2026-10-29 production had no open row waiting on an ask in either shape (two waited on a question, both the current shape).",
     "attention_line": "The server's alone. R2 (2026-10-29): the window never computes one — it draws the parked question itself, and a row it does not hold shows the lobby's line — and Phase 2's feed row carries it from the server. Checked by the Elixir suite only; the Desk's check covers the other ten. Ruling 4 of the evaluation (holder row later) will revisit it when the holder publishes its row summary.",
@@ -111,5 +122,11 @@
     "settled_at": "settled_at moved to the inbox (ruling 2)",
     "turns": "Turn starts plus reverts: the number the next checkpoint takes, less one. Never \"turns completed\": a turn in flight has already taken its number. R1 (2026-10-29): the server adopted the Desk's count; before it the server counted ends and ignored checkpoint_reverted.",
     "working": "A turn started and not ended, nor its agent gone since. R4 (2026-10-29): the server adopted the Desk's reading — an agent_gone, any code, ends the work (agent_gone_mid_turn), turns unchanged, and the next turn_started starts it again; before it the server's working stayed true until a turn's end landed. R5 (2026-10-29): the Desk adopted the server's — an agent_opened after the death does not resume the turn it left open (agent_gone_then_agent_opened), since nothing re-sends the prompt it took; before it the Desk kept the turn's clock through the death and read working off the agent being up again."
+  },
+  "retired_cases": {
+    "addressed_card_cancelled_with_older_open": {
+      "at": 11,
+      "floor": "fold reader"
+    }
   }
 }
