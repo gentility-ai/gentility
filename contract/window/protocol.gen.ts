@@ -1689,7 +1689,41 @@ max_ms?: number | null,
 /**
  * A sampled summary's median, in milliseconds.
  */
-p50_ms?: number | null, };
+p50_ms?: number | null,
+/**
+ * On a `slow` interaction only: what ran inside it, the longest
+ * `MEASURE_PARTS` at most. Refused `malformed` past that, or where a
+ * part's `name` or `kind` is not a word.
+ */
+parts?: Array<MeasurePart> | null, };
+
+/**
+ * One thing that ran inside a slow interaction, carried in its
+ * `Measure::parts`: a request, a render, a fold, a stall.
+ */
+export type MeasurePart = {
+/**
+ * `request`, `render`, `fold`, `stall`: a word, as a measure's name is.
+ */
+name: string,
+/**
+ * The request's type, the Profiler's id: a word.
+ */
+kind?: string | null,
+/**
+ * When it started, in milliseconds from the interaction's start:
+ * negative for a request already in flight when it began.
+ */
+from_ms: number,
+/**
+ * How long it ran, in milliseconds; for a request still unanswered when
+ * the interaction ended, how long it had run by then.
+ */
+ms: number,
+/**
+ * The client's request id, for a request.
+ */
+frame?: number | null, };
 
 /**
  * Which way a message went, as this session saw it.

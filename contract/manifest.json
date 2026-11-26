@@ -11,7 +11,7 @@
     "VERSION": {
       "executable": false,
       "owner": "publisher",
-      "sha256": "a4b2c5db15348c29451e18b8307e5ef81625ea638e807935f39ceaa8d9ac7758"
+      "sha256": "b58a3da5fde2680191877ec88a1aa7d06927cc3b30cdf0d0db8c39b488891576"
     },
     "config_change/README.md": {
       "executable": false,
@@ -1516,7 +1516,7 @@
     "released.json": {
       "executable": false,
       "owner": "core",
-      "sha256": "d9ee4aa2a124dc2499239c5749ff262913452218118c351037b64774f667f839"
+      "sha256": "ede06198c0850fe8c1f222ca5ca44f683346f393fcbff6a61d51b79ccd2fa990"
     },
     "repository_forms.json": {
       "executable": false,
@@ -3256,13 +3256,13 @@
     "window/protocol.gen.ts": {
       "executable": false,
       "owner": "core",
-      "sha256": "5c613bd1a816da042149a6eb1787dc279e392ccf545afc867309b8ff9d705baf"
+      "sha256": "e999f759e1e003d50364059b8def552e07b6a1d0be4b873f39aad33265b26ab2"
     }
   },
   "format": 1,
   "manifest_owner": "publisher",
-  "number": 36,
-  "source_commit": "19f2b843d078690086b43286a4f9579ca824ee80",
+  "number": 37,
+  "source_commit": "e949f0cecc18096eddb290521f8c97c15f86aab8",
   "versions": {
     "contract": "1.0.0",
     "fold": 11,
